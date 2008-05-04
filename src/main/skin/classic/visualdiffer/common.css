@@ -29,7 +29,7 @@
 }
 
 .browse {
-  list-style-image: url("chrome://visualdiffer/skin/folder.png");
+  list-style-image: url("chrome://visualdiffer/skin/folder/folder-000.png");
 }               
 
 .sidebyside[checked="true"] {
@@ -39,12 +39,3 @@
 .sidebyside {
   list-style-image: url("chrome://visualdiffer/skin/over_under.png");
 }
-
-.folder {
-  list-style-image: url("chrome://visualdiffer/skin/folder.png");
-}
-
-.folder-open {
-  list-style-image: url("chrome://visualdiffer/skin/folder-open.png");
-}
-
