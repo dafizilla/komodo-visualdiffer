@@ -56,12 +56,9 @@ var gFileDiffer = {
             return;
         }
 
-        var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
-                      .createInstance(Components.interfaces.koIDiff);
-        unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);
-
         this.diffResults = DiffCommon.createVisualDiffInfo(
-                unifiedDiff.diff.split(/\r\n|\n|\r/),
+                DiffCommon.getUnifiedDiffContent(leftFilePath, rightFilePath)
+                    .split(/\r\n|\n|\r/),
                 VisualDifferCommon.readFile(leftFilePath).split(/\r\n|\n|\r/),
                 VisualDifferCommon.readFile(rightFilePath).split(/\r\n|\n|\r/));
 
@@ -176,31 +173,28 @@ var gFileDiffer = {
 
     onTextEntered : function(textbox, isLeftTextBox) {
         if (this._fileExists(textbox.value)) {
-            var leftFile;
-            var rightFile;
+            var leftPath;
+            var rightPath;
 
             if (isLeftTextBox) {
-                leftFile = textbox.value;
-                rightFile = this.rightTreeView.filePath;
+                leftPath = textbox.value;
+                rightPath = this.rightTreeView.filePath;
             } else {
-                leftFile = this.leftTreeView.filePath;
-                rightFile = textbox.value;
+                leftPath = this.leftTreeView.filePath;
+                rightPath = textbox.value;
             }
-            this.makeDiff(leftFile, rightFile);
+            this.makeDiff(leftPath, rightPath);
         }
     },
-    
+
     onBrowseFile : function(event, targetId) {
         var arr = this.getTreeViewSortedById(targetId);
-        var file = Components.classes["@activestate.com/koFileService;1"]
-                    .getService(Components.interfaces.koIFileService)
-                    .getFileFromURI(arr[0].filePath);
-        var filePath = this.ko.filepicker.openFile(file.dirName);
+        var filePath = VisualDifferCommon.browseFile(arr[0].filePath);
         if (filePath) {
             if (arr[0] == this.leftTreeView) {
-                this.makeDiff(filePath, this.rightTreeView.filePath);
+                this.makeDiff(filePath.path, arr[1].filePath);
             } else {
-                this.makeDiff(this.leftTreeView.filePath, filePath);
+                this.makeDiff(arr[1].filePath, filePath.path);
             }
         }
     },
@@ -320,16 +314,11 @@ var gFileDiffer = {
 
     _fileExists : function(path) {
         try {
-            var file = Components
-                            .classes["@activestate.com/koFileEx;1"]
-                            .createInstance(Components.interfaces.koIFileEx);
-            file.path = path;
-            
-            return file.exists && file.isFile;
+            var file = VisualDifferCommon.makeLocalFile(path);
+            return file.exists() && file.isFile();
         } catch (err) {
             return false;
         }
     }
-
 }
 
