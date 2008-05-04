@@ -48,8 +48,9 @@ gFolderTreeProperties["O"] = Components.classes["@mozilla.org/atom-service;1"]
             .getService(Components.interfaces.nsIAtomService)
             .getAtom("olderFile");
 
-function FolderDifferTreeView(folderEntry, treeElement) {
-    this._folderEntry = folderEntry;
+function FolderDifferTreeView(baseFolder, treeElement) {
+    this.baseFolder = baseFolder;
+    this._folderEntry = baseFolder.subfolders;
     this._visibleFolder = [];
     
     for (var i = 0; i < this._folderEntry.length; i++) {
@@ -65,15 +66,6 @@ function FolderDifferTreeView(folderEntry, treeElement) {
 }
 
 FolderDifferTreeView.prototype = {
-    init : function(lines, realLines) {
-        this.items = lines;
-        this.realLines = realLines;
-
-        this.treebox = null;
-        // Must be set after treebox
-        this.treeElement.view = this;
-    },
-    
     invalidate : function() {
         this.treebox.invalidate();
     },
@@ -105,65 +97,11 @@ FolderDifferTreeView.prototype = {
         return items;
     },
 
-    get selectedText() {
-        if (this.selection.currentIndex < 0) {
-            return "";
-        }
-        return this.items[this.selection.currentIndex].text;
-    },
-    
-    gotoLine : function(lineNumber) {
-        if (lineNumber > this.realLines.length) {
-            return false;
-        }
-        if (lineNumber <= 0) {
-            lineNumber = 1;
-        }
-        this.selectAndEnsureVisible(lineNumber - 1);
-        return true;
-    },
-
     selectAndEnsureVisible : function(index) {
         this.selection.select(index);
         this.treebox.ensureRowIsVisible(index);
     },
     
-    deleteItems : function(items) {
-        if (items && items.length > 0) {
-            for (var i = items.length - 1; i >= 0; i--) {
-                this.items.splice(items[i], 1);
-            }
-            this.treebox.rowCountChanged(items[0], -items.length);
-        }
-    },
-
-    deleteSelectedItem : function() {
-        try {
-            var selIdx = this.selection.currentIndex;
-
-            if (selIdx < 0) {
-                return;
-            }
-            var newItems = new Array();
-
-            for (var i = 0; i < this.items.length; i++) {
-                if (i != selIdx) {
-                    newItems.push(this.items[i]);
-                }
-            }
-
-            this.items = newItems;
-            // -1 means remove (< 0)
-            this.treebox.rowCountChanged(selIdx, -1);
-
-            if (newItems.length > 0) {
-                this.selection.select(this.rowCount == selIdx ? selIdx - 1 : selIdx);
-            }
-        } catch (err) {
-            alert(err);
-        }
-    },
-
     removeAllItems : function() {
         this.selection.clearSelection();
     },
@@ -175,30 +113,25 @@ FolderDifferTreeView.prototype = {
         this.treebox.ensureRowIsVisible(0);
     },
 
+    getImageSequence : function(folderStatus) {
+        return (folderStatus.addedFiles == 0 ? "0" : "1")
+                + (folderStatus.changedFiles == 0 ? "0" : "1")
+                + (folderStatus.olderFiles == 0 ? "0" : "1");
+    },
+    
     getCellText : function(row, column){
         if (this._visibleFolder[row].file) {
             switch (column.id || column) {
                 case "filename":
-                    return this._visibleFolder[row].file.leafName + " A = " + this._visibleFolder[row].addedFiles + "-- M = " + this._visibleFolder[row].modifiedFiles;
+                    return this._visibleFolder[row].file.leafName;
                 case "filesize":
                     if (this._visibleFolder[row].file.isFile()) {
                         return this._visibleFolder[row].file.fileSize;
                     }
                     break;
                 case "filetime":
-                    const dateTimeContractID = "@mozilla.org/intl/scriptabledateformat;1";
-                    const dateTimeIID = Components.interfaces.nsIScriptableDateFormat;
-                    var dateTimeService = Components.classes[dateTimeContractID].getService(dateTimeIID);  
-                    var dateStarted = new Date(this._visibleFolder[row].file.lastModifiedTime);
-                    return dateTimeService.FormatDateTime("",
-                                dateTimeService.dateFormatShort,
-                                dateTimeService.timeFormatSeconds,
-                                dateStarted.getFullYear(),
-                                dateStarted.getMonth()+1,
-                                dateStarted.getDate(),
-                                dateStarted.getHours(),
-                                dateStarted.getMinutes(),
-                                dateStarted.getSeconds());
+                    return VisualDifferCommon.formatDateFromMillisecs(
+                            this._visibleFolder[row].file.lastModifiedTime)
             }
         }
 
@@ -213,11 +146,16 @@ FolderDifferTreeView.prototype = {
         switch (column.id || column) {
             case "filename":
                 if (this.isContainer(row)) {
+                    var openSuffix;
                     if (this.isContainerOpen(row)) {
-                        return "chrome://visualdiffer/skin/folder-open.png";
+                        openSuffix = "-open";
                     } else {
-                        return "chrome://visualdiffer/skin/folder.png";
+                        openSuffix = "";
                     }
+                    return "chrome://visualdiffer/skin/folder/folder-"
+                        + this.getImageSequence(this._visibleFolder[row])
+                        + openSuffix
+                        + ".png";
                 }
             break;
         }
