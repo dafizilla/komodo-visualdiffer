@@ -1,5 +1,5 @@
 <!DOCTYPE extension [
-<!ENTITY extension.version "0.9">
+<!ENTITY extension.version "0.9.1">
 ]>
 
 <extension name="visualdiffer">
@@ -32,7 +32,7 @@
 
     <locales>
         <locale pos="1" code="en-US" />
-        <locale pos="2" code="it-IT" />
+        <!--<locale pos="2" code="it-IT" />-->
     </locales>
 
     <styles>
