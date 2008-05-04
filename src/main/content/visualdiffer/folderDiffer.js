@@ -57,9 +57,9 @@ var gFolderDiffer = {
             comparator.prepare();
             DiffCommon.alignFolderDiff(leftTree[0].subfolders, rightTree[0].subfolders, comparator);
 
-            this.leftTreeView = new FolderDifferTreeView(leftTree[0].subfolders,
+            this.leftTreeView = new FolderDifferTreeView(leftTree[0],
                         document.getElementById("left-tree"));
-            this.rightTreeView = new FolderDifferTreeView(rightTree[0].subfolders,
+            this.rightTreeView = new FolderDifferTreeView(rightTree[0],
                         document.getElementById("right-tree"));
             this.leftTreeView.otherView = this.rightTreeView;
             this.rightTreeView.otherView = this.leftTreeView;
@@ -124,8 +124,6 @@ var gFolderDiffer = {
         
         if (leftItem.isFileObject && rightItem.isFileObject) {
             DiffCommon.openFileDiffer(leftItem.file.path, rightItem.file.path);
-        } else {
-            //alert("TBD NO OP ON FOLDERS");
         }
     },
     
@@ -149,37 +147,34 @@ var gFolderDiffer = {
         return true;
     },
 
-    onTextEntered : function(textbox, isOldTextBox) {
-        alert("TBD");
-        //if (this._fileExists(textbox.value)) {
-        //    var oldFile;
-        //    var newFile;
-        //
-        //    if (isOldTextBox) {
-        //        oldFile = textbox.value;
-        //        newFile = this.rightTreeView.filePath;
-        //    } else {
-        //        oldFile = this.leftTreeView.filePath;
-        //        newFile = textbox.value;
-        //    }
-        //    alert("TBD");
-        //}
+    onTextEntered : function(textbox, isLeftTextBox) {
+        if (this._folderExists(textbox.value)) {
+            var leftPath;
+            var rightPath;
+
+            if (isLeftTextBox) {
+                leftPath = textbox.value;
+                rightPath = this.rightTreeView.baseFolder.file.path;
+            } else {
+                leftPath = this.leftTreeView.baseFolder.file.path;
+                rightPath = textbox.value;
+            }
+            this.makeDiff(leftPath, rightPath);
+        }
     },
-    
+
     onBrowseFile : function(event, targetId) {
         var arr = this.getTreeViewSortedById(targetId);
-        var file = Components.classes["@activestate.com/koFileService;1"]
-                    .getService(Components.interfaces.koIFileService)
-                    .getFileFromURI(arr[0].filePath);
-        var filePath = opener.ko.filepicker.openFile(file.dirName);
+        var filePath = VisualDifferCommon.browseDirectory(arr[0].baseFolder.file.path);
         if (filePath) {
             if (arr[0] == this.leftTreeView) {
-                alert("TBD");
+                this.makeDiff(filePath.path, arr[1].baseFolder.file.path);
             } else {
-                alert("TBD");
+                this.makeDiff(arr[1].baseFolder.file.path, filePath.path);
             }
         }
     },
+
     onSideBySide : function(toolbarButton) {
         var orient = toolbarButton.checked ? "horizontal" : "vertical";
 
@@ -216,5 +211,14 @@ var gFolderDiffer = {
                 .warn("getViewSortedById : Invalid id '" + id + "'");
         }
         return arr;
+    },
+
+    _folderExists : function(path) {
+        try {
+            var file = VisualDifferCommon.makeLocalFile(path);
+            return file.exists() && file.isDirectory();
+        } catch (err) {
+            return false;
+        }
     }
 }
