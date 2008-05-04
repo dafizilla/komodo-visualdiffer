@@ -116,6 +116,8 @@ var gChooseCompare = {
         }
         alert("Invalid directory ");
         textBox.setSelectionRange(0, textBox.value.length);
+        textBox.focus();
+
         return false;
     },
 
@@ -163,15 +165,9 @@ var gChooseCompare = {
         var target = document.getElementById(targetId);
         
         if (pickType == "file") {
-            var file = Components.classes["@activestate.com/koFileService;1"]
-                        .getService(Components.interfaces.koIFileService)
-                        .getFileFromURI(target.value);
-            var filePath = this.ko.filepicker.openFile(file.dirName);
-            if (filePath) {
-                target.value = filePath;
-            }
+            VisualDifferCommon.browseFile(target.value, null, target);
         } else if (pickType == "folder") {
-            this.ko.filepicker.browseForDir(target);
+            VisualDifferCommon.browseDirectory(target.value, null, target);
         } else {
             alert("Invalid pickType = " + pickType);
             this.ko.logging.getLogger("ko.main")
