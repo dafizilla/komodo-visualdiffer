@@ -170,6 +170,7 @@ FileDifferTreeView.prototype = {
                 if (this.items[row].number >= 1) {
                     return this.items[row].number;
                 }
+                break;
             case "line":
                 return this.items[row].text;
         }
