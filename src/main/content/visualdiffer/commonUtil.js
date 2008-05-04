@@ -98,3 +98,94 @@ VisualDifferCommon.findKomodo = function(parentWindow) {
     }
     return parentWindow.ko;
 }
+
+VisualDifferCommon.makeFilePicker = function(win, title, mode, startDir) {
+    const nsIFilePicker                 = Components.interfaces.nsIFilePicker;
+    const CONTRACTID_FILE_PICKER        = "@mozilla.org/filepicker;1";
+
+    if (mode == null || typeof(mode) == "undefined") {
+        mode = nsIFilePicker.modeOpen;
+    }
+    if (win == null || typeof(win) == "undefined") {
+        win = window;
+    }
+
+    var fp = Components.classes[CONTRACTID_FILE_PICKER]
+                .createInstance(nsIFilePicker);
+    fp.init(win, title, mode);
+
+    if (startDir) {
+        VisualDifferCommon.setDisplayDirectory(fp, startDir);
+    }
+
+    return fp;
+}
+
+VisualDifferCommon.setDisplayDirectory = function(filePicker, path) {
+    try {
+        var currDir = VisualDifferCommon.makeLocalFile(path);
+        if (currDir.isFile()) {
+            currDir = currDir.parent;
+        }
+        if (currDir.isDirectory()) {
+            filePicker.displayDirectory = currDir;
+        }
+    } catch (err) {
+        // simply don't set displayDirectory
+    }
+}
+
+VisualDifferCommon.browseByMode = function(filePickerMode,
+                                           startFileOrDir,
+                                           title,
+                                           domTextBox) {
+    var picker = VisualDifferCommon.makeFilePicker(null,
+                                title,
+                                filePickerMode,
+                                startFileOrDir);
+    var res = picker.show();
+
+    if (res != Components.interfaces.returnCancel) {
+        if (domTextBox) {
+            domTextBox.value = picker.file.path;
+        }
+        return picker.file;
+    }
+    return null;
+}
+
+
+VisualDifferCommon.browseFile = function(startFileOrDir, title, domTextBox) {
+    return VisualDifferCommon.browseByMode(
+                Components.interfaces.nsIFilePicker.modeOpen,
+                startFileOrDir,
+                title,
+                domTextBox);
+}
+
+VisualDifferCommon.browseDirectory = function(startFileOrDir, title, domTextBox) {
+    return VisualDifferCommon.browseByMode(
+                Components.interfaces.nsIFilePicker.modeGetFolder,
+                startFileOrDir,
+                title,
+                domTextBox);
+}
+
+VisualDifferCommon.formatDateFromMillisecs = function(millisecs) {
+    const dateTimeContractID = "@mozilla.org/intl/scriptabledateformat;1";
+    const dateTimeIID = Components.interfaces.nsIScriptableDateFormat;
+
+    var dateTimeService = Components.classes[dateTimeContractID]
+                                .getService(dateTimeIID);  
+    var dateStarted = new Date(millisecs);
+
+    return dateTimeService.FormatDateTime("",
+                dateTimeService.dateFormatShort,
+                dateTimeService.timeFormatSeconds,
+                dateStarted.getFullYear(),
+                dateStarted.getMonth() + 1,
+                dateStarted.getDate(),
+                dateStarted.getHours(),
+                dateStarted.getMinutes(),
+                dateStarted.getSeconds());
+}
