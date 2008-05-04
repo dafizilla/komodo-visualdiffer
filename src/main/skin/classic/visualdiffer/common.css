@@ -1,0 +1,50 @@
+
+.panelgrip[orient=vertical] {
+    background-image: url('chrome://visualdiffer/skin/vertgrip.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    
+}
+
+.panelgrip[orient=horizontal] {
+    background-image: url('chrome://visualdiffer/skin/horzgrip.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.movedifference-up {
+  list-style-image: url("chrome://visualdiffer/skin/arrow_up.png");
+}               
+
+.movedifference-up[disabled="true"] {
+  list-style-image: url("chrome://visualdiffer/skin/arrow_up_dis.png");
+}
+
+.movedifference-down {
+  list-style-image: url("chrome://visualdiffer/skin/arrow_down.png");
+}
+
+.movedifference-down[disabled="true"] {
+  list-style-image: url("chrome://visualdiffer/skin/arrow_down_dis.png");
+}
+
+.browse {
+  list-style-image: url("chrome://visualdiffer/skin/folder.png");
+}               
+
+.sidebyside[checked="true"] {
+  list-style-image: url("chrome://visualdiffer/skin/side_by_side.png");
+}
+
+.sidebyside {
+  list-style-image: url("chrome://visualdiffer/skin/over_under.png");
+}
+
+.folder {
+  list-style-image: url("chrome://visualdiffer/skin/folder.png");
+}
+
+.folder-open {
+  list-style-image: url("chrome://visualdiffer/skin/folder-open.png");
+}
+

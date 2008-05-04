@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://visualdiffer/skin/common.css" type="text/css"?>
+<?xml-stylesheet href="chrome://komodo/skin/autocomplete.css" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://visualdiffer/locale/chooseCompare.dtd" >
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    id="chooseCompare-dialog"
+    minwidth="400"
+    minheight="170"
+    onload="return gChooseCompare.onLoad();"
+    buttons="accept,cancel"
+    ondialogcancel="return gChooseCompare.onCancel();"
+    ondialogaccept="return gChooseCompare.onAccept();"
+    title="&choosecompare.title;"
+    persist="width height screenX screenY">
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonUtil.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/chooseCompare.js" />
+
+    <hbox>
+        <groupbox>
+            <radiogroup id="fileobject-radiogroup" selectedIndex="0">
+                <radio id="folders-radio" label="&folders.label;"/>
+                <radio id="files-radio" label="&files.label;"/>
+            </radiogroup>
+        </groupbox>
+
+        <vbox id="folders-box" flex="1">
+            <vbox>
+                <label value="&left.folders.label;" />
+                <hbox>
+                    <textbox id="left-folder-textbox"
+                             style="min-height: 20px;"
+                             flex="1"
+                             type="autocomplete"
+                             autocompletepopup="popupTextboxAutoComplete"
+                             autocompletesearch="mru_and_filepath"
+                             autocompletesearchparam="mru: visual_differ_left_folders; maxmru: 10"
+                             maxrows="10"
+                             enablehistory="true"
+                             completeselectedindex="true"
+                             tabscrolling="true"/>
+                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'left-folder-textbox', 'folder')"/>
+                    </hbox>
+            </vbox>
+    
+            <vbox>
+                <label value="&right.folders.label;" />
+                <hbox>
+                    <textbox id="right-folder-textbox"
+                             style="min-height: 20px;"
+                             flex="1"
+                             type="autocomplete"
+                             autocompletepopup="popupTextboxAutoComplete"
+                             autocompletesearch="mru_and_filepath"
+                             autocompletesearchparam="mru: visual_differ_right_folders; maxmru: 10"
+                             maxrows="10"
+                             enablehistory="true"
+                             completeselectedindex="true"
+                             tabscrolling="true"/>
+                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'right-folder-textbox', 'folder')"/>
+                    </hbox>
+            </vbox>
+        </vbox>
+        
+        <vbox id="files-box" flex="1" collapsed="true">
+            <vbox>
+                <label value="&left.file.label;" />
+                <hbox>
+                    <textbox id="left-file-textbox"
+                             style="min-height: 20px;"
+                             flex="1"
+                             type="autocomplete"
+                             autocompletepopup="popupTextboxAutoComplete"
+                             autocompletesearch="mru_and_filepath"
+                             autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
+                             maxrows="10"
+                             enablehistory="true"
+                             completeselectedindex="true"
+                             tabscrolling="true"/>
+                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'left-file-textbox', 'file')"/>
+                    </hbox>
+            </vbox>
+    
+            <vbox>
+                <label value="&right.file.label;" />
+                <hbox>
+                    <textbox id="right-file-textbox"
+                             style="min-height: 20px;"
+                             flex="1"
+                             type="autocomplete"
+                             autocompletepopup="popupTextboxAutoComplete"
+                             autocompletesearch="mru_and_filepath"
+                             autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
+                             maxrows="10"
+                             enablehistory="true"
+                             completeselectedindex="true"
+                             tabscrolling="true"/>
+                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'right-file-textbox', 'file')"/>
+                    </hbox>
+            </vbox>
+        </vbox>
+        
+    </hbox>
+</dialog>

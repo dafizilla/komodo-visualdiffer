@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://visualdiffer/locale/visualdiffer.dtd" >
+
+<overlay id="visualdifferOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonUtil.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonDiff.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/visualdifferOverlay.js" />
+
+    <menupopup id="popup_tools">
+        <menuitem id="visualdiffer-cutappend"
+                    class="menuitem-iconic-wide"
+                    label="&visual.compare.menuitem.label;"
+                    oncommand="showCompareDialog();"
+                    insertafter="menu_compareFiles"/>
+    </menupopup>
+
+</overlay>
+   

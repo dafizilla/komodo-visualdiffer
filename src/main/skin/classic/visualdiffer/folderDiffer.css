@@ -1,0 +1,51 @@
+.diffViewer {
+    /*font-family: "Bitstream Vera Sans Mono", courier;*/
+    font-family: "Sans";
+}
+
+#filename {
+  width: 20em;
+}
+
+#filesize {
+  text-align: right;
+}
+
+#filetime {
+}
+
+.folderTreeChildren::-moz-tree-cell(selected) {
+    background-color: #CCFFCC;
+}
+
+.folderTreeChildren::-moz-tree-cell-text(changedFile) {
+    color: #FF0000;
+}
+
+.folderTreeChildren::-moz-tree-cell(changedFile) {
+    /*background-color: #FFF0F0;*/
+    background-color: #FFFFFF;
+}
+
+.folderTreeChildren::-moz-tree-cell(addedFile) {
+    /*background-color: #F0F0FF;*/
+    background-color: #FFFFFF;
+}
+
+.folderTreeChildren::-moz-tree-cell-text(addedFile) {
+    color: #0000FF;
+}
+
+.folderTreeChildren::-moz-tree-cell(olderFile) {
+    background-color: #FFFFFF;
+}
+
+.folderTreeChildren::-moz-tree-cell-text(olderFile) {
+    color: #808080;
+}
+
+.folderTreeChildren::-moz-tree-twisty {
+  margin-left: -2px;
+  list-style-image: none;
+  width: 0px;
+}

@@ -1,0 +1,8 @@
+<!ENTITY choosecompare.title "Visual Compare - Open">
+
+<!ENTITY folders.label "Folders">
+<!ENTITY files.label "Files">
+<!ENTITY left.folders.label "Left Folder">
+<!ENTITY right.folders.label "Right Folder">
+<!ENTITY left.file.label "Left File">
+<!ENTITY right.file.label "Right File">

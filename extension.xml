@@ -1,0 +1,73 @@
+<!DOCTYPE extension [
+<!ENTITY extension.version "0.9">
+]>
+
+<extension name="visualdiffer">
+    <title-name>Visual Differ</title-name>
+    <uuid>visualdiffer@dafizilla.sourceforge.net</uuid>
+    <version>&extension.version;</version>
+    <description>Show visually file differences</description>
+    <homepage>http://dafizilla.sourceforge.net/visualdiffer</homepage>
+    <updateurl>http://dafizilla.sourceforge.net/visualdiffer/update.php?item_id=%ITEM_ID%&amp;item_version=%ITEM_VERSION%&amp;app_id=%APP_ID%&amp;app_version=%APP_VERSION%</updateurl>
+    <iconurl-path>skin/appicon.png</iconurl-path>
+    <optionurl-path/>
+    <author>Davide Ficano</author>
+    
+    <!-- Point to directory containing content, locales and skins. -->
+    <!-- If present must start with / (slash) -->
+    <chrome-extension-directory>/visualdiffer</chrome-extension-directory>
+
+    <!-- Used by web site update.rdf -->
+    <updateLink>http://dafizilla.sourceforge.net/visualdiffer/visualdiffer-&extension.version;.xpi</updateLink>
+
+    <!-- used by install.js -->
+    <skins>
+        <skin>classic</skin>
+    </skins>
+    
+    <!-- used by install.js and build process to set the prefs.js.xsl destination file name -->
+    <prefs>
+        <pref>visualdiffer.js</pref>
+    </prefs>
+
+    <locales>
+        <locale pos="1" code="en-US" />
+        <locale pos="2" code="it-IT" />
+    </locales>
+
+    <styles>
+    </styles>
+
+    <overlays>
+        <overlay description="Editor" uri="chrome://komodo/content/komodo.xul" value="chrome://visualdiffer/content/visualdifferOverlay.xul" />
+    </overlays>
+
+    <compatibility>
+        <application>
+            <description>Komodo IDE</description>
+            <id>{36E66FA0-F259-11D9-850E-000D935D3368}</id>
+            <minVersion>4.2</minVersion>
+            <maxVersion>4.*</maxVersion>
+        </application>
+        
+        <application>
+            <description>Komodo Edit</description>
+            <id>{b1042fb5-9e9c-11db-b107-000d935d3368}</id>
+            <minVersion>4.0</minVersion>
+            <maxVersion>4.*</maxVersion>
+        </application>
+    
+        <application>
+            <description>OpenKomodo Snapdragon</description>
+            <id>{2cb9d397-8ec9-4211-bd89-7fea34120af6}</id>
+            <minVersion>0</minVersion>
+            <maxVersion>1.*</maxVersion>
+        </application>
+    </compatibility>
+
+    <contributors>
+    </contributors>
+
+    <translators>
+    </translators>
+</extension>

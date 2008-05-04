@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    title="Go to line"
+    buttons="accept,cancel"
+    onload="return gDiffSelectLine.onLoad();"
+    ondialogaccept="return gDiffSelectLine.onOk();"
+    ondialogcancel="return gDiffSelectLine.onCancel();">
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/gotoLine.js" />
+
+    <hbox>
+        <vbox>
+            <label control="line-number-text" value="Line number"/>
+            <textbox id="line-number-text" value=""/>
+        </vbox>
+        <vbox>
+            <radiogroup id="destination-view">
+                <radio label="At left" value="LEFT"/>
+                <radio label="At right" value="RIGHT"/>
+            </radiogroup>
+        </vbox>
+    </hbox>
+</dialog>

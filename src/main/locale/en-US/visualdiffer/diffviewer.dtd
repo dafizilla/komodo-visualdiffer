@@ -1,0 +1,16 @@
+<!ENTITY diffviewer.close "Close">
+<!ENTITY diffviewer.copy.tooltiptext "Copy Selection To Clipboard">
+<!ENTITY diffviewer.copy.label "Copy">
+<!ENTITY diffviewer.gotoline.tooltiptext "Move Cursor To Specific Line">
+<!ENTITY diffviewer.gotoline.label "Goto Line">
+<!ENTITY diffviewer.layout.tooltiptext "Change panels layout">
+
+<!ENTITY fileDiffer.title "Compare Files Result">
+<!ENTITY fileDiffer.treecol.left.file.label "First File">
+<!ENTITY fileDiffer.treecol.right.file.label "Second File">
+<!ENTITY fileDiffer.treecol.number.label "#">
+
+<!ENTITY folderdiffer.title "Folder Differ">
+<!ENTITY folderdiffer.treecol.filename.label "Name">
+<!ENTITY folderdiffer.treecol.filesize.label "Size">
+<!ENTITY folderdiffer.treecol.filetime.label "Modified">
