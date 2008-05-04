@@ -51,7 +51,9 @@ function FolderStatus(file, subfolders, level, parent) {
     this.status = "A";
 
     this.parent = typeof(parent) == "undefined" ? null : parent;
-    this.modifiedFiles = 0;
+    
+    this.olderFiles = 0;
+    this.changedFiles = 0;
     this.addedFiles = 0;
 
     this.isFileObject = file && file.isFile();
@@ -62,6 +64,14 @@ function FolderStatus(file, subfolders, level, parent) {
 // https://addons.mozilla.org/en-US/thunderbird/addon/4268
 
 var DiffCommon = {
+    getUnifiedDiffContent : function(leftFilePath, rightFilePath) {
+        var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
+                      .createInstance(Components.interfaces.koIDiff);
+        unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);
+        
+        return unifiedDiff.diff;
+    },
+
     openFolderDiffer : function(leftFilePath, rightFilePath) {
         window.openDialog("chrome://visualdiffer/content/folderDiffer.xul",
                           "_blank",
@@ -211,14 +221,22 @@ var DiffCommon = {
             newLastWrittenLine = chunks[i].startNewChunkLine + chunks[i].endNewChunkLine;
         }
         
+        if (chunks.length == 0) {
+            oldLastWrittenLine = -1;
+            newLastWrittenLine = -1;
+            lineOffset = 1;
+        } else {
+            lineOffset = 0;
+        }
+
         // add all following same lines on old
         for (var ii = oldLastWrittenLine + 1; ii < oldFileContent.length; ii++) {
-            oldVisualLineStatus.push(new VisualLineStatus("S", ii, oldFileContent[ii]));
+            oldVisualLineStatus.push(new VisualLineStatus("S", lineOffset + ii, oldFileContent[ii]));
         }
     
         // add all following same lines on new
         for (var ii = newLastWrittenLine + 1; ii < newFileContent.length; ii++) {
-            newVisualLineStatus.push(new VisualLineStatus("S", ii, newFileContent[ii]));
+            newVisualLineStatus.push(new VisualLineStatus("S", lineOffset + ii, newFileContent[ii]));
         }
         return [oldVisualLineStatus, newVisualLineStatus, sections];
     },
@@ -240,12 +258,14 @@ var DiffCommon = {
                         leftTree[l].status = "O";
                         rightTree[r].status = "C";
                         
-                        ++rightTree[r].modifiedFiles;
+                        ++leftTree[l].olderFiles;
+                        ++rightTree[r].changedFiles;
                     } else if (diffResult > 0) {
                         leftTree[l].status = "C";
                         rightTree[r].status = "O";
 
-                        ++leftTree[l].modifiedFiles;
+                        ++leftTree[l].changedFiles;
+                        ++rightTree[r].olderFiles;
                     } else {
                         leftTree[l].status = "S";
                         rightTree[r].status = "S";
@@ -255,19 +275,20 @@ var DiffCommon = {
                 }
 
                 if (leftTree[l].parent) {
+                    leftTree[l].parent.olderFiles += leftTree[l].olderFiles;
+                    leftTree[l].parent.changedFiles += leftTree[l].changedFiles;
                     leftTree[l].parent.addedFiles += leftTree[l].addedFiles;
-                    leftTree[l].parent.modifiedFiles += leftTree[l].modifiedFiles;
                 }
                 if (rightTree[r].parent) {
+                    rightTree[r].parent.olderFiles += rightTree[r].olderFiles;
+                    rightTree[r].parent.changedFiles += rightTree[r].changedFiles;
                     rightTree[r].parent.addedFiles += rightTree[r].addedFiles;
-                    rightTree[r].parent.modifiedFiles += rightTree[r].modifiedFiles;
                 }
                 l++;
                 r++;
             } else if (pos < 0) {
                 rightTree.splice(r++, 0, new FolderStatus(null, null, leftTree[l].level));
 
-                ++leftTree[l].addedFiles;
                 if (leftTree[l].parent) {
                     ++leftTree[l].parent.addedFiles;
                 }
@@ -276,7 +297,6 @@ var DiffCommon = {
             } else {
                 leftTree.splice(l++, 0, new FolderStatus(null,  null, rightTree[r].level));
 
-                ++rightTree[r].addedFiles;
                 if (rightTree[r].parent) {
                     ++rightTree[r].parent.addedFiles;
                 }
