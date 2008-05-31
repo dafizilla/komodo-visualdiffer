@@ -1,0 +1,6 @@
+<!ENTITY comparison.title "Comparison Criteria">
+<!ENTITY comparison.criteria "Criteria">
+<!ENTITY comparison.timestamp "Use Timestamp">
+<!ENTITY comparison.contents "Contents">
+<!ENTITY comparison.size "Use Size">
+<!ENTITY comparison.binary "Binary comparision">

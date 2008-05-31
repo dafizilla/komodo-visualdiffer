@@ -14,7 +14,7 @@
 #
 # The Initial Developer of the Original Code is
 # Davide Ficano.
-# Portions created by the Initial Developer are Copyright (C) 2007
+# Portions created by the Initial Developer are Copyright (C) 2008
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
@@ -35,10 +35,9 @@
 # ***** END LICENSE BLOCK *****
 */
 
-var gDiffSelectLine = {
+var gFilter = {
     onLoad : function() {
         try {
-            this.data = window.arguments[0];
             this.initControls();
         } catch (err) {
             alert(err);
@@ -47,34 +46,51 @@ var gDiffSelectLine = {
     },
 
     initControls : function() {
-        this.lineNumber = document.getElementById("line-number-text");
-        this.destinationView = document.getElementById("destination-view");
-        
+        this.includeFilesText = document.getElementById("include-files-text");
+        this.includeFoldersText = document.getElementById("include-folders-text");
+        this.excludeFilesText = document.getElementById("exclude-files-text");
+        this.excludeFoldersText = document.getElementById("exclude-folders-text");
+
         this.initValues();
     },
 
     initValues : function() {
-        if (this.data.lineNumber) {
-            this.lineNumber.value = this.data.lineNumber;
-        }
-        this.destinationView.selectedIndex = this.data.atLeft ? 0 : 1;
+        var fileFilter = window.arguments[0].fileFilter;
+
+        this.includeFilesText.value = fileFilter.includeFilesArray.join("\n");
+        this.includeFoldersText.value = fileFilter.includeFoldersArray.join("\n");
+        this.excludeFilesText.value = fileFilter.excludeFilesArray.join("\n");
+        this.excludeFoldersText.value = fileFilter.excludeFoldersArray.join("\n");
     },
-    
-    onOk : function() {
-        var isValid = /^[0-9]+$/.test(this.lineNumber.value);
-        if (!isValid) {
-            alert("Invalid number");
-            this.lineNumber.focus();
-            return false;
-        }
-        this.data.lineNumber = new Number(this.lineNumber.value);
-        this.data.atLeft = this.destinationView.selectedIndex == 0;
-        this.data.isOk = true;
+
+    onAccept : function() {
+        var fileFilter = window.arguments[0].fileFilter;
+
+        fileFilter.includeFilesArray = this._createArray(this.includeFilesText.value);
+        fileFilter.includeFoldersArray = this._createArray(this.includeFoldersText.value);
+        fileFilter.excludeFilesArray = this._createArray(this.excludeFilesText.value);
+        fileFilter.excludeFoldersArray = this._createArray(this.excludeFoldersText.value);
+
+        window.arguments[0].isOk = true;
+
         return true;
     },
-    
+
+    _createArray : function(text) {
+        var lines = text.split(/\r\n|\n|\r/);
+        var arr = [];
+
+        for (var i in lines) {
+            var trimmed = lines[i].replace(/^\s*/, "").replace(/\s*$/, "");
+            if (trimmed.length) {
+                arr.push(trimmed);
+            }
+        }
+        return arr;
+    },
+
     onCancel : function() {
-        this.data.isOk = false;
+        window.arguments[0].isOk = false;
         return true;
     }
 }

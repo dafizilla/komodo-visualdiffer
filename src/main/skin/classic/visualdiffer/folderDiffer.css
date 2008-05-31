@@ -14,30 +14,12 @@
 #filetime {
 }
 
-.folderTreeChildren::-moz-tree-cell(selected) {
-    background-color: #CCFFCC;
-}
-
 .folderTreeChildren::-moz-tree-cell-text(changedFile) {
     color: #FF0000;
 }
 
-.folderTreeChildren::-moz-tree-cell(changedFile) {
-    /*background-color: #FFF0F0;*/
-    background-color: #FFFFFF;
-}
-
-.folderTreeChildren::-moz-tree-cell(addedFile) {
-    /*background-color: #F0F0FF;*/
-    background-color: #FFFFFF;
-}
-
 .folderTreeChildren::-moz-tree-cell-text(addedFile) {
     color: #0000FF;
-}
-
-.folderTreeChildren::-moz-tree-cell(olderFile) {
-    background-color: #FFFFFF;
 }
 
 .folderTreeChildren::-moz-tree-cell-text(olderFile) {
@@ -48,4 +30,46 @@
   margin-left: -2px;
   list-style-image: none;
   width: 0px;
+}
+
+.folderTreeChildren::-moz-tree-row(odd) {
+    background-color: #F0F8F0;
+}
+
+.folderTreeChildren::-moz-tree-row(odd, focus, selected),
+.folderTreeChildren::-moz-tree-row(even, focus, selected) {
+  background-color: #CCFFCC;
+}
+
+.folderTreeChildren::-moz-tree-row(odd, selected),
+.folderTreeChildren::-moz-tree-row(even, selected) {
+  border: 1px dotted #000000;
+}
+
+.folderTreeChildren::-moz-tree-line(FileIsNull) {
+  visibility: hidden;
+}
+
+.browse-up {
+  list-style-image: url("chrome://visualdiffer/skin/folder/up_level.png");
+}
+
+.filter {
+  list-style-image: url("chrome://visualdiffer/skin/filter.png");
+}
+
+.disable-filter[checked="true"] {
+  list-style-image: url("chrome://visualdiffer/skin/disable-filter-checked.png");
+}
+
+.disable-filter {
+  list-style-image: url("chrome://visualdiffer/skin/disable-filter.png");
+}
+
+.comparison {
+  list-style-image: url("chrome://visualdiffer/skin/comparison.png");
+}
+
+.save {
+  list-style-image: url("chrome://visualdiffer/skin/save.png");
 }

@@ -39,9 +39,9 @@ var gFileDiffer = {
     onLoad : function() {
         try {
             this.lastUsedGotoLineNumber = null;
-            
-            this.ko = VisualDifferCommon.findKomodo(opener);
+
             this.initControls();
+            this.leftTreeView.treeElement.focus();
         } catch (err) {
             alert(err);
         }
@@ -50,18 +50,13 @@ var gFileDiffer = {
 
     makeDiff : function(leftFilePath, rightFilePath) {
         try {
-        this.leftTreeView.filePath = leftFilePath;
-        this.rightTreeView.filePath = rightFilePath;
-        if (!this._fileExists(leftFilePath) || !this._fileExists(rightFilePath)) {
+        this.leftTreeView.filePath = "";
+        this.rightTreeView.filePath = "";
+
+        this.diffResults = this.createVisualDiffInfo(leftFilePath, rightFilePath);
+        if (!this.diffResults) {
             return;
         }
-
-        this.diffResults = DiffCommon.createVisualDiffInfo(
-                DiffCommon.getUnifiedDiffContent(leftFilePath, rightFilePath)
-                    .split(/\r\n|\n|\r/),
-                VisualDifferCommon.readFile(leftFilePath).split(/\r\n|\n|\r/),
-                VisualDifferCommon.readFile(rightFilePath).split(/\r\n|\n|\r/));
-
         this.leftTreeView.init(this.diffResults.oldVisualLineStatus,
                         this.diffResults.oldRealLines);
         this.rightTreeView.init(this.diffResults.newVisualLineStatus,
@@ -71,16 +66,53 @@ var gFileDiffer = {
 
         this.updateInputBoxes(leftFilePath, rightFilePath);
         } catch (err) {
+            VisualDifferCommon.log("file makeDiff " + err);
             alert(err);
         }
     },
 
-    updateInputBoxes : function(leftFilePath, rightFilePath) {
-        this.leftFileTextBox.value = leftFilePath;
-        this.rightFileTextBox.value = rightFilePath;
+    createVisualDiffInfo : function(leftFilePath, rightFilePath) {
+        var leftLines = "";
+        var rightLines = "";
 
-        this.ko.mru.addFromACTextbox(this.leftFileTextBox);
-        this.ko.mru.addFromACTextbox(this.rightFileTextBox);
+        if (leftFilePath != null && this._fileExists(leftFilePath)) {
+            this.leftTreeView.filePath = leftFilePath;
+            leftLines = VisualDifferCommon.readFile(leftFilePath).split(/\r\n|\n|\r/);
+        } else {
+            // make a diff with same file, this is necessary because getUnifiedDiffContent
+            // works only with files not with file content
+            leftFilePath = rightFilePath;
+        }
+        if (rightFilePath != null && this._fileExists(rightFilePath)) {
+            this.rightTreeView.filePath = rightFilePath;
+            rightLines = VisualDifferCommon.readFile(rightFilePath).split(/\r\n|\n|\r/);
+        } else {
+            // make a diff with same file, this is necessary because getUnifiedDiffContent
+            // works only with files not with file content
+            rightFilePath = leftFilePath;
+        }
+        if (leftLines == "" && rightLines == "") {
+            // both sides are empty
+            return null;
+        }
+
+        return DiffCommon.createVisualDiffInfo(
+                DiffCommon.getUnifiedDiffContent(leftFilePath, rightFilePath)
+                    .split(/\r\n|\n|\r/),
+                leftLines,
+                rightLines);
+    },
+
+    updateInputBoxes : function(leftFilePath, rightFilePath) {
+        if (leftFilePath != null && this._fileExists(leftFilePath)) {
+            this.leftFileTextBox.value = leftFilePath;
+            ko.mru.addFromACTextbox(this.leftFileTextBox);
+        }
+
+        if (rightFilePath != null && this._fileExists(rightFilePath)) {
+            this.rightFileTextBox.value = rightFilePath;
+            ko.mru.addFromACTextbox(this.rightFileTextBox);
+        }
     },
 
     initControls : function() {
@@ -108,7 +140,7 @@ var gFileDiffer = {
 
     onCancel : function() {
     },
-    
+
     onScroll : function(event) {
         if (event.attrName == "curpos") {
             var arr = this.getTreeViewSortedById(event.target.id);
@@ -118,7 +150,7 @@ var gFileDiffer = {
             }
         }
     },
-    
+
     onSelect : function(event) {
         if (this.selectionInProgress) {
             return;
@@ -128,7 +160,7 @@ var gFileDiffer = {
         this.leftSelectedLine.value = this.leftTreeView.selectedText;
         this.rightSelectedLine.value = this.rightTreeView.selectedText;
     },
-    
+
     onDblClick : function(event) {
         var arr = this.getTreeViewSortedById(event.target.parentNode.id);
         var selection = arr[0].selection;
@@ -150,7 +182,7 @@ var gFileDiffer = {
             this.selectionInProgress = false;
         }
     },
-    
+
     onTreeKeyPress : function(event) {
         if (event.ctrlKey) {
             var key = String.fromCharCode(event.which).toLowerCase();
@@ -214,7 +246,7 @@ var gFileDiffer = {
             if (sectionIndex < sections.length) {
                 this.leftTreeView.selectAndEnsureVisible(sections[sectionIndex].start - 1);
             } else {
-                alert("No more differences");
+                alert(VisualDifferCommon.getLocalizedMessage("mo.more.differences"));
             }
         } else {
             for (sectionIndex = sections.length - 1; sectionIndex >= 0; sectionIndex--) {
@@ -226,11 +258,11 @@ var gFileDiffer = {
             if (sectionIndex >= 0) {
                 this.leftTreeView.selectAndEnsureVisible(sections[sectionIndex].start - 1);
             } else {
-                alert("No more differences");
+                alert(VisualDifferCommon.getLocalizedMessage("mo.more.differences"));
             }
         }
     },
-    
+
     onCopySelection : function(event) {
         var focusedId = document.commandDispatcher.focusedElement.id;
         var arr = this.getTreeViewSortedById(focusedId);
@@ -246,14 +278,14 @@ var gFileDiffer = {
             VisualDifferCommon.copyToClipboard(str);
         }
     },
-    
+
     onSideBySide : function(toolbarButton) {
         var orient = toolbarButton.checked ? "horizontal" : "vertical";
 
         this.panelLayout.setAttribute("orient", orient);
         this.panelSplitter.setAttribute("orient", orient);
     },
-    
+
     onGotoLine : function(event) {
         try {
         var focusedId = document.commandDispatcher.focusedElement.id;
@@ -263,17 +295,18 @@ var gFileDiffer = {
                     isOk : false
                 };
 
-        window.openDialog("chrome://visualdiffer/content/gotoLine.xul",
+        window.openDialog("chrome://visualdiffer/content/file/gotoLine.xul",
                           "_blank",
                           "chrome,resizable=false,dependent=yes,modal=yes",
                           data);
         if (data.isOk) {
             var view = data.atLeft ? this.leftTreeView : this.rightTreeView;
-            
+
             if (view.gotoLine(data.lineNumber)) {
                 this.lastUsedGotoLineNumber = data.lineNumber;
             } else {
-                alert("Line number XXX out of range");
+                alert(VisualDifferCommon
+                      .getFormattedMessage("line.out.of.range", [data.lineNumber]));
             }
         }
         } catch (err) {
@@ -298,7 +331,7 @@ var gFileDiffer = {
      */
     getTreeViewSortedById : function(id) {
         var arr = [];
-        
+
         if (id == "left-tree") {
             arr[0] = this.leftTreeView;
             arr[1] = this.rightTreeView;
@@ -306,8 +339,7 @@ var gFileDiffer = {
             arr[0] = this.rightTreeView;
             arr[1] = this.leftTreeView;
         } else {
-            this.ko.logging.getLogger("ko.main")
-                .warn("getViewSortedById : Invalid id '" + id + "'");
+            VisualDifferCommon.log("getViewSortedById : Invalid id '" + id + "'");
         }
         return arr;
     },

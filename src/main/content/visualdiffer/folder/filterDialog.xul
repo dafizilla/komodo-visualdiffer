@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://visualdiffer/locale/filter.dtd" >
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    id="filter-dialog"
+    title="&filter.title;"
+    buttons="accept,cancel"
+    onload="return gFilter.onLoad();"
+    ondialogaccept="return gFilter.onAccept();"
+    ondialogcancel="return gFilter.onCancel();"
+    persist="width height screenX screenY">
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/filterDialog.js" />
+
+    <groupbox flex="1">
+        <caption label="&include.label;" />
+        <hbox flex="1">
+            <vbox flex="1">
+                <hbox>
+                    <image src="chrome://visualdiffer/skin/folder/file_include.png" width="16" height="16"/>
+                    <label value="&files.label;" />
+                </hbox>
+                <textbox id="include-files-text" multiline="true" flex="1"/>
+            </vbox>
+            <vbox flex="1">
+                <hbox>
+                    <image src="chrome://visualdiffer/skin/folder/folder_include.png" width="16" height="16"/>
+                    <label value="&folders.label;" />
+                </hbox>
+                <textbox id="include-folders-text" multiline="true" flex="1"/>
+            </vbox>
+        </hbox>
+    </groupbox>
+
+    <groupbox flex="1">
+        <caption label="&exclude.label;" />
+        <hbox flex="1">
+            <vbox flex="1">
+                <hbox>
+                    <image src="chrome://visualdiffer/skin/folder/file_exclude.png" width="16" height="16"/>
+                    <label value="&files.label;" />
+                </hbox>
+                <textbox id="exclude-files-text" multiline="true" flex="1"/>
+            </vbox>
+            <vbox flex="1">
+                <hbox>
+                    <image src="chrome://visualdiffer/skin/folder/folder_exclude.png" width="16" height="16"/>
+                    <label value="&folders.label;" />
+                </hbox>
+                <textbox id="exclude-folders-text" multiline="true" flex="1"/>
+            </vbox>
+        </hbox>
+    </groupbox>
+</dialog>

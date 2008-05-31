@@ -73,7 +73,7 @@ FileDifferTreeView.prototype = {
         // Must be set after treebox
         this.treeElement.view = this;
     },
-    
+
     invalidate : function() {
         this.treebox.invalidate();
     },
@@ -95,12 +95,12 @@ FileDifferTreeView.prototype = {
     },
 
     get selectedText() {
-        if (this.selection.currentIndex < 0) {
+        if (this.selection.currentIndex < 0 || this.items.length == 0) {
             return "";
         }
         return this.items[this.selection.currentIndex].text;
     },
-    
+
     gotoLine : function(lineNumber) {
         if (lineNumber > this.realLines.length) {
             return false;
@@ -108,7 +108,14 @@ FileDifferTreeView.prototype = {
         if (lineNumber <= 0) {
             lineNumber = 1;
         }
-        this.selectAndEnsureVisible(lineNumber - 1);
+        // find line number (slow and dirty)
+        var index = 0;
+        for (; index < this.items.length; index++) {
+            if (this.items[index].number == lineNumber) {
+                break;
+            }
+        }
+        this.selectAndEnsureVisible(index);
         return true;
     },
 
@@ -116,7 +123,7 @@ FileDifferTreeView.prototype = {
         this.selection.select(index);
         this.treebox.ensureRowIsVisible(index);
     },
-    
+
     deleteItems : function(items) {
         if (items && items.length > 0) {
             for (var i = items.length - 1; i >= 0; i--) {
@@ -164,7 +171,7 @@ FileDifferTreeView.prototype = {
         this.treebox.ensureRowIsVisible(0);
     },
 
-    getCellText : function(row, column){
+    getCellText : function(row, column) {
         switch (column.id || column) {
             case "number":
                 if (this.items[row].number >= 1) {

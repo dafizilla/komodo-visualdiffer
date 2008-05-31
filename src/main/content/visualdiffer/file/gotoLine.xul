@@ -1,24 +1,29 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://visualdiffer/locale/gotoline.dtd" >
+
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    title="Go to line"
+    id="gotoline-dialog"
+    title="&gotoline.title;"
     buttons="accept,cancel"
     onload="return gDiffSelectLine.onLoad();"
     ondialogaccept="return gDiffSelectLine.onOk();"
-    ondialogcancel="return gDiffSelectLine.onCancel();">
+    ondialogcancel="return gDiffSelectLine.onCancel();"
+    persist="width height screenX screenY">
 
     <script type="application/x-javascript"
-            src="chrome://visualdiffer/content/gotoLine.js" />
+            src="chrome://visualdiffer/content/file/gotoLine.js" />
 
     <hbox>
         <vbox>
-            <label control="line-number-text" value="Line number"/>
+            <label control="line-number-text" value="&line.number.label;"/>
             <textbox id="line-number-text" value=""/>
         </vbox>
         <vbox>
             <radiogroup id="destination-view">
-                <radio label="At left" value="LEFT"/>
-                <radio label="At right" value="RIGHT"/>
+                <radio label="&at.left.label;" value="LEFT"/>
+                <radio label="&at.right.label;" value="RIGHT"/>
             </radiogroup>
         </vbox>
     </hbox>

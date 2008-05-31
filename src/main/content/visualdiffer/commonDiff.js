@@ -44,14 +44,17 @@ function VisualLineStatus(status, number, text) {
     this.text = text;
 }
 
+/*
+ * status : { A = Added, S = Same, C = Changed, O = Older }
+ */
 function FolderStatus(file, subfolders, level, parent) {
     this.file = file;
-    this.subfolders = subfolders;
+    this.subfolders = subfolders ? subfolders : [];
     this.level = level;
     this.status = "A";
 
     this.parent = typeof(parent) == "undefined" ? null : parent;
-    
+
     this.olderFiles = 0;
     this.changedFiles = 0;
     this.addedFiles = 0;
@@ -68,20 +71,24 @@ var DiffCommon = {
         var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
                       .createInstance(Components.interfaces.koIDiff);
         unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);
-        
+
         return unifiedDiff.diff;
     },
 
-    openFolderDiffer : function(leftFilePath, rightFilePath) {
-        window.openDialog("chrome://visualdiffer/content/folderDiffer.xul",
+    openFolderDifferFromSession : function(session) {
+        window.openDialog("chrome://visualdiffer/content/folder/folderDiffer.xul",
                           "_blank",
                           "chrome,resizable=yes,dependent=yes",
-                            leftFilePath,
-                            rightFilePath);
+                          session);
     },
-    
+
+    openFolderDiffer : function(leftFilePath, rightFilePath) {
+        this.openFolderDifferFromSession(
+            VisualDifferSession(leftFilePath, rightFilePath));
+    },
+
     openFileDiffer : function(leftFilePath, rightFilePath) {
-        window.openDialog("chrome://visualdiffer/content/fileDiffer.xul",
+        window.openDialog("chrome://visualdiffer/content/file/fileDiffer.xul",
                           "_blank",
                           "chrome,resizable=yes,dependent=yes",
                             leftFilePath,
@@ -103,10 +110,10 @@ var DiffCommon = {
             var newChunkLine = Number(regExpRes[3]);
 
             var alignInfo = { lineStatus : [], oldLineCount : 0, newLineCount : 0};
-        
+
             while (++currLine < lines.length) {
                 line = lines[currLine];
-        
+
                 if (/^\-(.*)$/.test(line)) {
                     alignInfo.lineStatus[alignInfo.oldLineCount] = "C";
                     ++oldChunkLine;
@@ -127,7 +134,7 @@ var DiffCommon = {
                 }
             }
             this._alignLines(alignInfo);
-        
+
             chunks.push({
                         startOldChunkLine : Number(regExpRes[1]),
                         endOldChunkLine : Number(regExpRes[2]),
@@ -162,24 +169,24 @@ var DiffCommon = {
         var oldVisualLineStatus = [];
         var newVisualLineStatus = [];
         var sections = [];
-        
+
         for (var i = 0; i < chunks.length; i++) {
             var lineStatus = chunks[i].lineStatus;
-    
+
             // add all preceding same lines on old
             for (var ii = oldLastWrittenLine; ii < chunks[i].startOldChunkLine; ii++) {
                 oldVisualLineStatus.push(new VisualLineStatus("S", ii, oldFileContent[ii - 1]));
             }
-    
+
             // add all preceding same lines on new
             for (var ii = newLastWrittenLine; ii < chunks[i].startNewChunkLine; ii++) {
                 newVisualLineStatus.push(new VisualLineStatus("S", ii, newFileContent[ii - 1]));
             }
-            
+
             oldLastWrittenLine = chunks[i].startOldChunkLine - 1;
             newLastWrittenLine = chunks[i].startNewChunkLine - 1;
             var sectionFound = false;
-            
+
             for (var j = 0; j < lineStatus.length; j++) {
                 if (lineStatus[j] == "S" || lineStatus[j] == "C") {
                     oldVisualLineStatus.push(new VisualLineStatus(
@@ -220,7 +227,7 @@ var DiffCommon = {
             oldLastWrittenLine = chunks[i].startOldChunkLine + chunks[i].endOldChunkLine;
             newLastWrittenLine = chunks[i].startNewChunkLine + chunks[i].endNewChunkLine;
         }
-        
+
         if (chunks.length == 0) {
             oldLastWrittenLine = -1;
             newLastWrittenLine = -1;
@@ -233,7 +240,7 @@ var DiffCommon = {
         for (var ii = oldLastWrittenLine + 1; ii < oldFileContent.length; ii++) {
             oldVisualLineStatus.push(new VisualLineStatus("S", lineOffset + ii, oldFileContent[ii]));
         }
-    
+
         // add all following same lines on new
         for (var ii = newLastWrittenLine + 1; ii < newFileContent.length; ii++) {
             newVisualLineStatus.push(new VisualLineStatus("S", lineOffset + ii, newFileContent[ii]));
@@ -241,23 +248,35 @@ var DiffCommon = {
         return [oldVisualLineStatus, newVisualLineStatus, sections];
     },
 
- // status : { A = Added, D = Deleted, S = Same, C = Changed, M = Missing, O = Older }
-    
     alignFolderDiff : function(leftTree, rightTree, comparator) {
         var l = 0;
         var r = 0;
 
         while ((l < leftTree.length) || (r < rightTree.length)) {
-            var pos = l >= leftTree.length ? 1 : r >= rightTree.length ? -1
-                : this.compareTo(leftTree[l].file.leafName, rightTree[r].file.leafName);
+            var pos;
 
+            if (l >= leftTree.length) {
+                pos = 1;
+            } else if (r >= rightTree.length) {
+                pos = -1;
+            } else if (leftTree[l].file && rightTree[r].file) {
+                pos = this.compareFileTo(leftTree[l].file, rightTree[r].file);
+            } else {
+                if (!leftTree[l].file) {
+                    l++;
+                }
+                if (!rightTree[r].file) {
+                    r++;
+                }
+                continue;
+            }
             if (pos == 0) {
                 if (leftTree[l].isFileObject && rightTree[r].isFileObject) {
                     var diffResult = comparator.compare(leftTree[l], rightTree[r]);
                     if (diffResult < 0) {
                         leftTree[l].status = "O";
                         rightTree[r].status = "C";
-                        
+
                         ++leftTree[l].olderFiles;
                         ++rightTree[r].changedFiles;
                     } else if (diffResult > 0) {
@@ -305,45 +324,53 @@ var DiffCommon = {
             }
         }
     },
-    
+
     compareTo : function(str1, str2) {
         return str1 == str2 ? 0 : str1 < str2 ? -1 : 1;
     },
 
-    getDirectoryTree : function(fullPathDir, recursive) {
+    getDirectoryTree : function(fullPathDir, recursive, fileFilter) {
         var dir = Components.classes["@mozilla.org/file/local;1"]
                .createInstance(Components.interfaces.nsILocalFile);
         dir.initWithPath(fullPathDir);
-        
-        var root = new FolderStatus(dir, null, -1);
-        root.subfolders = this.readDirectory(dir, recursive, 0, root);
-        var tree = [root];
-    
-        this.traverseTree(tree, function(el) {el.subfolders.sort(DiffCommon.dirSorter); });
-        
+
+        var tree = [];
+
+        if (dir.isDirectory() && (fileFilter == null || fileFilter.includes(dir))) {
+            var root = new FolderStatus(dir, null, -1);
+            root.subfolders = this.readDirectory(dir, recursive, 0, root, fileFilter);
+            tree.push(root);
+
+            //this.traverseTree(tree, function(el) {el.subfolders.sort(DiffCommon.dirSorter); });
+        }
+
         return tree;
     },
 
-    readDirectory : function(dir, recursive, level, parent) {
+    /**
+     * Must receive a directory
+     */
+    readDirectory : function(dir, recursive, level, parent, fileFilter) {
         var arr = [];
-        
-        if (dir.isDirectory()) {
-            var entries = dir.directoryEntries;
-    
-            while (entries.hasMoreElements()) {
-                var entry = entries.getNext().QueryInterface(Components.interfaces.nsIFile);
+
+        var entries = dir.directoryEntries;
+
+        while (entries.hasMoreElements()) {
+            var entry = entries.getNext().QueryInterface(Components.interfaces.nsIFile);
+            if (fileFilter == null || fileFilter.includes(entry)) {
                 var folderStatus = new FolderStatus(entry, [], level, parent);
 
                 if (recursive && entry.isDirectory()) {
                     folderStatus.subfolders = this.readDirectory(
-                            entry, recursive, level + 1, folderStatus);
+                            entry, recursive, level + 1, folderStatus, fileFilter);
                 }
                 arr.push(folderStatus);
             }
         }
+        arr.sort(DiffCommon.dirSorter);
         return arr;
     },
-    
+
     traverseTree : function(tree, callback) {
         for (var i in tree) {
             var el = tree[i];
@@ -356,74 +383,41 @@ var DiffCommon = {
         }
     },
 
-    dirSorter : function(ea, eb) {
-        var afile = ea.file;
-        var bfile = eb.file;
-    
-        if (afile.isDirectory() && bfile.isDirectory()) {
-            return DiffCommon.compareTo(afile.leafName.toLowerCase(),
-                                  bfile.leafName.toLowerCase());
+    compareFileTo : function(file1, file2) {
+        if (file1.isDirectory() && file2.isDirectory()) {
+            return DiffCommon.compareTo(file1.leafName.toLowerCase(),
+                                  file2.leafName.toLowerCase());
         }
-        if (afile.isFile() && bfile.isFile()) {
-            return DiffCommon.compareTo(afile.leafName.toLowerCase(),
-                                  bfile.leafName.toLowerCase());
+        if (file1.isFile() && file2.isFile()) {
+            var fn1 = DiffCommon.fnSplit(file1.leafName.toLowerCase());
+            var fn2 = DiffCommon.fnSplit(file2.leafName.toLowerCase());
+            var cmp = DiffCommon.compareTo(fn1[0], fn2[0]);
+            if (cmp == 0) {
+                return DiffCommon.compareTo(fn1[1], fn2[1]);
+            }
+            return cmp;
         }
         // Place directories before files
-        if (afile.isDirectory()) {
+        if (file1.isDirectory()) {
             return -1;
         }
         return 1;
-    }
-}
-
-function Comparator() {
-    this.useTimestamp = false;
-    this.useSize = false;
-    this.useContent = false;
-}
-
-Comparator.prototype = {
-    prepare : function() {
-        this._arrFunctions = [];
-    
-        if (this.useTimestamp) {
-            this._arrFunctions.push(this._compareTimestamp);
-        }
-    
-        // size and content are mutual exclusive
-        if (this.useSize) {
-            this._arrFunctions.push(this._compareSize);
-        } else if (this.useContent) {
-            this._arrFunctions.push(this._compareContent);
-        }
-    },
-    
-    compare : function(leftFolderStatus, rightFolderStatus) {
-        for (var i in this._arrFunctions) {
-            var result = this._arrFunctions[i](leftFolderStatus, rightFolderStatus);
-            if (result != 0) {
-                return result;
-            }
-        }
-        return 0;
     },
 
-    _compareTimestamp : function(leftFolderStatus, rightFolderStatus) {
-        if (leftFolderStatus.file && rightFolderStatus.file) {
-            return leftFolderStatus.file.lastModifiedTime - rightFolderStatus.file.lastModifiedTime;
-        }
-        return 0;
+    dirSorter : function(ea, eb) {
+        return DiffCommon.compareFileTo(ea.file, eb.file);
     },
-    
-    _compareSize : function(leftFolderStatus, rightFolderStatus) {
-        if (leftFolderStatus.file && rightFolderStatus.file) {
-            return leftFolderStatus.file.fileSize - rightFolderStatus.file.fileSize;
+
+    fnSplit : function(str) {
+        var pos = str.lastIndexOf(".");
+        var arr = [0, 0];
+        if (pos < 0) {
+            arr[0] = str;
+            arr[1] = "";
+        } else {
+            arr[0] = str.substring(0, pos);
+            arr[1] = str.substring(pos + 1);
         }
-        return 0;
-    },
-    
-    _compareContent : function(leftFolderStatus, rightFolderStatus) {
-        // not implemented yet
-        return 0;
+        return arr;
     }
 }

@@ -6,7 +6,7 @@
 <!DOCTYPE dialog SYSTEM "chrome://visualdiffer/locale/chooseCompare.dtd" >
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    id="chooseCompare-dialog"
+    id="choose-compare-dialog"
     minwidth="400"
     minheight="170"
     onload="return gChooseCompare.onLoad();"
@@ -15,6 +15,14 @@
     ondialogaccept="return gChooseCompare.onAccept();"
     title="&choosecompare.title;"
     persist="width height screenX screenY">
+
+    <!-- Komodo specific code -->
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/logging.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/stringutils.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/mru.js" />
 
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonUtil.js" />
@@ -47,7 +55,7 @@
                     <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'left-folder-textbox', 'folder')"/>
                     </hbox>
             </vbox>
-    
+
             <vbox>
                 <label value="&right.folders.label;" />
                 <hbox>
@@ -66,7 +74,7 @@
                     </hbox>
             </vbox>
         </vbox>
-        
+
         <vbox id="files-box" flex="1" collapsed="true">
             <vbox>
                 <label value="&left.file.label;" />
@@ -85,7 +93,7 @@
                     <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'left-file-textbox', 'file')"/>
                     </hbox>
             </vbox>
-    
+
             <vbox>
                 <label value="&right.file.label;" />
                 <hbox>
@@ -104,6 +112,18 @@
                     </hbox>
             </vbox>
         </vbox>
-        
     </hbox>
+    <groupbox>
+        <caption label="&sessions.label;" />
+        <hbox>
+            <listbox id="session-list"
+                    flex="1"
+                    onclick="gChooseCompare.onSelectSession()"
+                    ondblclick="gChooseCompare.onDblClickSession()"/>
+            <vbox>
+                <button class="remove-button" label="&remove.label;"
+                        onclick="gChooseCompare.onRemoveSession()"/>
+            </vbox>
+        </hbox>
+    </groupbox>
 </dialog>

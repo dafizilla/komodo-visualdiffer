@@ -34,41 +34,49 @@
 #
 # ***** END LICENSE BLOCK *****
 */
-var VisualDifferCommon = {
-    readFile : function(fullPath) {
-        var file = Components
-                        .classes["@activestate.com/koFileEx;1"]
-                        .createInstance(Components.interfaces.koIFileEx);
-        file.path = fullPath;
-        
-        file.open('rb');
-        
-        var content = file.readfile();
-        file.close();
-        
-        return content;
-    },
-    
-    saveFile : function(filePath, selection) {
-        if (filePath == "") {
-            return;
-        }
-        var file = Components
-                        .classes["@activestate.com/koFileEx;1"]
-                        .createInstance(Components.interfaces.koIFileEx);
-        file.path = filePath;
-        
-        file.open('w');
-        
-        file.puts(selection);
-        file.close();
-    },
-    
-    copyToClipboard : function(str) {
-        Components.classes["@mozilla.org/widget/clipboardhelper;1"]
-            .getService(Components.interfaces.nsIClipboardHelper)
-            .copyString(str);
+function VisualDifferCommon() {
+    return this;
+}
+
+VisualDifferCommon.locale = Components.classes["@mozilla.org/intl/stringbundle;1"]
+    .getService(Components.interfaces.nsIStringBundleService)
+    .createBundle("chrome://visualdiffer/locale/visualdiffer.properties");
+
+VisualDifferCommon.readFile = function(fullPath) {
+    var file = VisualDifferCommon.makeLocalFile(fullPath);
+    var fileContent = VisualDifferCommon.read(file);
+
+    return fileContent;
+}
+
+VisualDifferCommon.saveFile = function(fileName, fileContent) {
+    var os = VisualDifferCommon.makeOutputStream(fileName);
+    os.write(fileContent, fileContent.length);
+    os.flush();
+    os.close();
+}
+
+VisualDifferCommon.makeOutputStream = function(fileNameOrLocalFile, append) {
+    const CONTRACTID_FOS = "@mozilla.org/network/file-output-stream;1";
+    const nsFos = Components.interfaces.nsIFileOutputStream;
+
+    var os = Components.classes[CONTRACTID_FOS].createInstance(nsFos);
+    var flags = 0x02 | 0x08 | 0x20; // wronly | create | truncate
+    if (append != null && append != undefined && append) {
+        flags = 0x02 | 0x10; // wronly | append
     }
+    var file = VisualDifferCommon.makeLocalFile(fileNameOrLocalFile);
+
+    os.init(file, flags, 0600, 0);
+
+    return os;
+}
+
+
+VisualDifferCommon.copyToClipboard = function(str) {
+    Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+        .getService(Components.interfaces.nsIClipboardHelper)
+        .copyString(str);
 }
 
 VisualDifferCommon.makeLocalFile = function(path, arrayAppendPaths) {
@@ -90,13 +98,6 @@ VisualDifferCommon.makeLocalFile = function(path, arrayAppendPaths) {
         }
     }
     return file;
-}
-
-VisualDifferCommon.findKomodo = function(parentWindow) {
-    while (parentWindow && !("ko" in parentWindow)) {
-        parentWindow = parentWindow.opener;
-    }
-    return parentWindow.ko;
 }
 
 VisualDifferCommon.makeFilePicker = function(win, title, mode, startDir) {
@@ -176,7 +177,7 @@ VisualDifferCommon.formatDateFromMillisecs = function(millisecs) {
     const dateTimeIID = Components.interfaces.nsIScriptableDateFormat;
 
     var dateTimeService = Components.classes[dateTimeContractID]
-                                .getService(dateTimeIID);  
+                                .getService(dateTimeIID);
     var dateStarted = new Date(millisecs);
 
     return dateTimeService.FormatDateTime("",
@@ -189,3 +190,61 @@ VisualDifferCommon.formatDateFromMillisecs = function(millisecs) {
                 dateStarted.getMinutes(),
                 dateStarted.getSeconds());
 }
+
+VisualDifferCommon.log = function(msg) {
+    ko.logging.getLogger("extensions.visualdiffer").warn(msg);
+}
+
+VisualDifferCommon.read = function(file) {
+    const CONTRACTID_FIS = "@mozilla.org/network/file-input-stream;1";
+    const nsFis = Components.interfaces.nsIFileInputStream;
+    const CONTRACTID_SIS = "@mozilla.org/scriptableinputstream;1";
+    const nsSis = Components.interfaces.nsIScriptableInputStream;
+
+
+    var str = "";
+    var fiStream = Components.classes[CONTRACTID_FIS].createInstance(nsFis);
+    var siStream = Components.classes[CONTRACTID_SIS].createInstance(nsSis);
+
+    fiStream.init(file, 1, 0, false);
+    siStream.init(fiStream);
+    str += siStream.read(-1);
+    siStream.close();
+    fiStream.close();
+    return str;
+}
+
+VisualDifferCommon.showFileInFileManager = function(path) {
+    Components.classes["@activestate.com/koSysUtils;1"]
+                .getService(Components.interfaces.koISysUtils)
+                .ShowFileInFileManager(path);
+}
+
+VisualDifferCommon.getLocalizedMessage = function(msg) {
+    return VisualDifferCommon.locale.GetStringFromName(msg);
+}
+
+VisualDifferCommon.getFormattedMessage = function(msg, ar) {
+    return VisualDifferCommon.locale.formatStringFromName(msg, ar, ar.length);
+}
+
+VisualDifferCommon.getProfileDir = function() {
+    return VisualDifferCommon.getPrefDir("PrefD");
+}
+
+VisualDifferCommon.getPrefDir = function(dir) {
+    const CONTRACTID_DIR = "@mozilla.org/file/directory_service;1";
+    const nsDir = Components.interfaces.nsIProperties;
+
+    var dirService = Components.classes[CONTRACTID_DIR].getService(nsDir);
+    return dirService.get(dir, Components.interfaces.nsILocalFile);
+}
+
+VisualDifferCommon.removeChildren = function(node) {
+    var children = node.childNodes;
+
+    for (var i = children.length - 1; i >= 0; i--) {
+        node.removeChild(children[i]);
+    }
+}
+

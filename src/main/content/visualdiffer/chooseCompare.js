@@ -38,7 +38,6 @@
 var gChooseCompare = {
     onLoad : function() {
         try {
-            this.ko = VisualDifferCommon.findKomodo(opener);
             this.initControls();
         } catch (err) {
             alert(err);
@@ -49,19 +48,29 @@ var gChooseCompare = {
     initControls : function() {
         this.leftFolderTextBox = document.getElementById("left-folder-textbox");
         this.rightFolderTextBox = document.getElementById("right-folder-textbox");
-        
+
         this.leftFileTextBox = document.getElementById("left-file-textbox");
         this.rightFileTextBox = document.getElementById("right-file-textbox");
         this.radioGroup = document.getElementById("fileobject-radiogroup");
+        this.sessionList = document.getElementById("session-list");
 
         this.radioGroup.addEventListener("RadioStateChange", this.onRadioStateChange, true);
-                
+
+        this.data = window.arguments[0];
+
         this.initValues();
     },
 
     initValues : function() {
         this.radioGroup.selectedIndex = 0;
-        
+
+        var sessions = this.data.manager.sessions;
+        for (var i = 0; i < sessions.length; i++) {
+            var node = document.createElement("listitem");
+            node.setAttribute("label", sessions[i].name);
+            this.sessionList.appendChild(node);
+        }
+
         // listener doesn't receive immediately notification so use a timeout
         //window.setTimeout(function() {
         //    document.getElementById("fileobject-radiogroup").selectedIndex = 1;
@@ -79,8 +88,9 @@ var gChooseCompare = {
                 retVal.leftPath = this.leftFolderTextBox.value;
                 retVal.rightPath = this.rightFolderTextBox.value;
 
-                this.ko.mru.addFromACTextbox(this.leftFolderTextBox);
-                this.ko.mru.addFromACTextbox(this.rightFolderTextBox);
+                ko.mru.addFromACTextbox(this.leftFolderTextBox);
+                ko.mru.addFromACTextbox(this.rightFolderTextBox);
+                this.setupFolderSessionSelected();
             } else {
                 return false;
             }
@@ -91,8 +101,8 @@ var gChooseCompare = {
                 retVal.leftPath = this.leftFileTextBox.value;
                 retVal.rightPath = this.rightFileTextBox.value;
 
-                this.ko.mru.addFromACTextbox(this.leftFileTextBox);
-                this.ko.mru.addFromACTextbox(this.rightFileTextBox);
+                ko.mru.addFromACTextbox(this.leftFileTextBox);
+                ko.mru.addFromACTextbox(this.rightFileTextBox);
             } else {
                 return false;
             }
@@ -104,6 +114,17 @@ var gChooseCompare = {
         return true;
     },
 
+    setupFolderSessionSelected : function() {
+        if (this.data.selectedSessionIndex >= 0) {
+            var session = this.data.manager.sessions[this.data.selectedSessionIndex];
+            // selected paths differ from session
+            if (this.leftFolderTextBox.value != session.leftPath
+                || this.rightFolderTextBox.value != session.rightPath) {
+                this.data.selectedSessionIndex = -1;
+            }
+        }
+    },
+
     checkDirectory : function(textBox) {
         try {
             var file = VisualDifferCommon.makeLocalFile(textBox.value);
@@ -111,7 +132,7 @@ var gChooseCompare = {
                 return true;
             }
         } catch (err) {
-            this.ko.logging.getLogger("ko.main")
+            ko.logging.getLogger("ko.main")
                 .warn("checkDirectory = " + err);
         }
         alert("Invalid directory ");
@@ -128,34 +149,31 @@ var gChooseCompare = {
                 return true;
             }
         } catch (err) {
-            this.ko.logging.getLogger("ko.main")
+            ko.logging.getLogger("ko.main")
                 .warn("checkFile = " + err);
         }
         alert("Invalid file");
         textBox.setSelectionRange(0, textBox.value.length);
         return false;
     },
-    
+
     onCancel : function() {
         var retVal = window.arguments[0];
         retVal.isOk = false;
     },
 
     onRadioStateChange : function (event) {
-        var showItem;
-        var hideItem;
+        var showItem = null;
+        var hideItem = null;
 
-        if (event.target.selected) {
-            switch (event.target.id) {
-                case "folders-radio":
-                    showItem = "folders-box";
-                    hideItem = "files-box";
-                    break;
-                case "files-radio":
-                    showItem = "files-box";
-                    hideItem = "folders-box";
-                    break;
-            }
+        if (document.getElementById("folders-radio").selected) {
+            showItem = "folders-box";
+            hideItem = "files-box";
+        } else if (document.getElementById("files-radio").selected) {
+            showItem = "files-box";
+            hideItem = "folders-box";
+        }
+        if (showItem) {
             document.getElementById(showItem).removeAttribute("collapsed");
             document.getElementById(hideItem).setAttribute("collapsed", "true");
         }
@@ -163,15 +181,58 @@ var gChooseCompare = {
 
     onBrowse : function(event, targetId, pickType) {
         var target = document.getElementById(targetId);
-        
+
         if (pickType == "file") {
             VisualDifferCommon.browseFile(target.value, null, target);
         } else if (pickType == "folder") {
             VisualDifferCommon.browseDirectory(target.value, null, target);
         } else {
             alert("Invalid pickType = " + pickType);
-            this.ko.logging.getLogger("ko.main")
+            ko.logging.getLogger("ko.main")
                 .warn("Invalid pickType = " + pickType);
+        }
+    },
+
+    onSelectSession : function() {
+        var idx = this.sessionList.selectedIndex;
+        if (idx >= 0) {
+            var session = this.data.manager.sessions[idx];
+            this.data.selectedSessionIndex = idx;
+
+            this.leftFolderTextBox.value = session.leftPath;
+            this.rightFolderTextBox.value = session.rightPath;
+            this.radioGroup.selectedIndex = 0; // folders
+
+            var myEvent = document.createEvent("Events");
+            myEvent.initEvent("RadioStateChange", true, true);
+            this.radioGroup.dispatchEvent(myEvent);
+        }
+    },
+
+    onDblClickSession : function() {
+        this.data.selectedSessionIndex = this.sessionList.selectedIndex;
+        document.documentElement.acceptDialog();
+    },
+
+    onRemoveSession : function() {
+        var idx = this.sessionList.selectedIndex;
+        if (idx >= 0) {
+            this.data.hasRemovedSession = true;
+            this.data.manager.removeSession(idx);
+            this.sessionList.removeItemAt(idx);
+
+            var rowCount = this.data.manager.sessions.length;
+            if (rowCount > 0) {
+                this.sessionList.selectedIndex = rowCount == idx ? idx - 1 : idx;
+            }
+
+            this.leftFileTextBox.value = "";
+            this.rightFileTextBox.value = "";
+
+            this.leftFolderTextBox.value = "";
+            this.rightFolderTextBox.value = "";
+
+            this.onSelectSession();
         }
     }
 };

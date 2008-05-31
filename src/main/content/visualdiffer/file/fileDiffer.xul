@@ -7,7 +7,7 @@
 <!DOCTYPE dialog SYSTEM "chrome://visualdiffer/locale/diffviewer.dtd" >
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    id="fileDiffer-dialog"
+    id="file-differ-dialog"
     minwidth="400"
     minheight="300"
     onload="return gFileDiffer.onLoad();"
@@ -17,35 +17,81 @@
     buttonlabelcancel="&diffviewer.close;"
     persist="width height screenX screenY">
 
+    <!-- Komodo specific code -->
     <script type="application/x-javascript"
-            src="chrome://visualdiffer/content/fileDifferTreeView.js" />
+            src="chrome://komodo/content/library/logging.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/stringutils.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/mru.js" />
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/file/fileDifferTreeView.js" />
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonUtil.js" />
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonDiff.js" />
     <script type="application/x-javascript"
-            src="chrome://visualdiffer/content/fileDiffer.js" />
+            src="chrome://visualdiffer/content/file/fileDiffer.js" />
+
+    <commandset id="allcommands">
+        <command
+            id="cmd_gotoLine"
+            key="key_cmd_gotoLine"
+            oncommand="gFileDiffer.onGotoLine(event)"/>
+        <command
+            id="cmd_copySelection"
+            key="key_cmd_copySelection"
+            oncommand="gFileDiffer.onCopySelection(event)"/>
+        <command
+            id="cmd_movePrev"
+            key="key_cmd_movePrev"
+            oncommand="gFileDiffer.onMoveToDifference(event, false)"/>
+        <command
+            id="cmd_moveNext"
+            key="key_cmd_moveNext"
+            oncommand="gFileDiffer.onMoveToDifference(event, true)"/>
+    </commandset>
+
+    <keyset id="widekeyset">
+        <key id="key_cmd_gotoLine"
+             key="G"
+             modifiers="control"
+             command="cmd_gotoLine"/>
+        <key id="key_cmd_copySelection"
+             key="C"
+             modifiers="control"
+             command="cmd_copySelection"/>
+        <key id="key_cmd_movePrev"
+             key="P"
+             modifiers="control"
+             command="cmd_movePrev"/>
+        <key id="key_cmd_moveNext"
+             key="N"
+             modifiers="control"
+             command="cmd_moveNext"/>
+    </keyset>
 
     <vbox flex="1">
-        <toolbar id="ToolbarDiff" align="stretch">
-            <toolbarbutton id="diffViewerCopy"
-                tooltiptext="Move To Next Difference"
+        <toolbar id="main-toolbar-file-differ" align="stretch">
+            <toolbarbutton id="move-next-difference-button"
+                tooltiptext="&fileDiffer.move.next;"
                 oncommand="gFileDiffer.onMoveToDifference(event, true)"
                 class="movedifference-down"
                 buttonstyle="pictures"/>
-            <toolbarbutton id="diffViewerCopy"
-                tooltiptext="Move To Previous Difference"
+            <toolbarbutton id="move-prev-difference-button"
+                tooltiptext="&fileDiffer.move.prev;"
                 oncommand="gFileDiffer.onMoveToDifference(event, false)"
                 class="movedifference-up"/>
-            <toolbarbutton id="diffViewerCopy"
+            <toolbarbutton id="copy-selection-button"
                 tooltiptext="&diffviewer.copy.tooltiptext;"
                 oncommand="gFileDiffer.onCopySelection(event)"
-                label="&diffviewer.copy.label;"/>
-            <toolbarbutton id="diffViewerGotoLine"
+                class="copy"/>
+            <toolbarbutton id="goto-line-button"
                 tooltiptext="&diffviewer.gotoline.tooltiptext;"
                 oncommand="gFileDiffer.onGotoLine(event)"
-                label="&diffviewer.gotoline.label;"/>
-            <toolbarbutton id="diffViewerSideBySide"
+                class="gotoline"/>
+            <toolbarbutton id="change-layout-button"
                 tooltiptext="&diffviewer.layout.tooltiptext;"
                 oncommand="gFileDiffer.onSideBySide(this)"
                 class="sidebyside"
@@ -88,7 +134,7 @@
                               flex="1"
                               persist="width"/>
                   </treecols>
-                  <treechildren class="diffViewerChildren" ondblclick="gFileDiffer.onDblClick(event);"/>
+                  <treechildren class="fileTreeChildren" ondblclick="gFileDiffer.onDblClick(event);"/>
                 </tree>
             </vbox>
             <splitter id="panel-splitter" class="panelgrip" orient="horizontal"/>
@@ -128,7 +174,7 @@
                               flex="1"
                               persist="width"/>
                   </treecols>
-                  <treechildren class="diffViewerChildren" ondblclick="gFileDiffer.onDblClick(event)"/>
+                  <treechildren class="fileTreeChildren" ondblclick="gFileDiffer.onDblClick(event)"/>
                 </tree>
                 </vbox>
         </box>

@@ -1,15 +1,18 @@
+toolbarbutton {
+  max-width : 24px;
+  max-height: 32px;
+}
 
 .panelgrip[orient=vertical] {
-    background-image: url('chrome://visualdiffer/skin/vertgrip.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    
+  background-image: url('chrome://visualdiffer/skin/vertgrip.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .panelgrip[orient=horizontal] {
-    background-image: url('chrome://visualdiffer/skin/horzgrip.png');
-    background-repeat: no-repeat;
-    background-position: center;
+  background-image: url('chrome://visualdiffer/skin/horzgrip.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .movedifference-up {
@@ -38,4 +41,17 @@
 
 .sidebyside {
   list-style-image: url("chrome://visualdiffer/skin/over_under.png");
+}
+
+.copy {
+  list-style-image: url("chrome://visualdiffer/skin/page_copy.png");
+}
+
+.gotoline {
+  list-style-image: url("chrome://visualdiffer/skin/goto_line.png");
+}
+
+.remove-button {
+  min-width: 0px;
+  list-style-image: url("chrome://visualdiffer/skin/remove.png");
 }

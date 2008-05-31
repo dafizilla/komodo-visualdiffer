@@ -37,20 +37,40 @@
 
 function showCompareDialog() {
     try {
-        var retVal = {isOk: false,
+        var manager = new VisualDifferSessionManager();
+        manager.readSessions();
+        var retVal = {  isOk: false,
+                        hasRemovedSession : false,
                         compareFiles : false,
                         leftPath : null,
-                        rightPath : null};
+                        rightPath : null,
+                        manager : manager,
+                        selectedSessionIndex : -1};
 
         window.openDialog("chrome://visualdiffer/content/chooseCompare.xul",
                           "_blank",
                           "chrome,resizable=yes,dependent=yes,modal=yes",
                             retVal);
         if (retVal.isOk) {
+            if (retVal.hasRemovedSession) {
+                manager.writeSessions();
+            }
             if (retVal.compareFiles) {
                 DiffCommon.openFileDiffer(retVal.leftPath, retVal.rightPath);
             } else {
-                DiffCommon.openFolderDiffer(retVal.leftPath, retVal.rightPath);
+                var session;
+                if (retVal.selectedSessionIndex < 0) {
+                    session = new VisualDifferSession(retVal.leftPath, retVal.rightPath);
+                    // don't add session into array because it is untitled but
+                    // set its session manager
+                    session.manager = manager;
+                } else {
+                    manager.selectedIndex = retVal.selectedSessionIndex;
+                    session = manager.sessions[retVal.selectedSessionIndex];
+                    session.updateLastTimeUsed();
+                    manager.writeSessions();
+                }
+                DiffCommon.openFolderDifferFromSession(session);
             }
         }
     } catch (err) {

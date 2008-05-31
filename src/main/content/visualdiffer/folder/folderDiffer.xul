@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://komodo/skin/autocomplete.css" type="text/css"?>
+<?xml-stylesheet href="chrome://visualdiffer/skin/common.css" type="text/css"?>
+<?xml-stylesheet href="chrome://visualdiffer/skin/folderDiffer.css" type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://visualdiffer/locale/diffviewer.dtd">
+
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    id="folder-differ-dialog"
+    minwidth="600"
+    minheight="400"
+    onload="return gFolderDiffer.onLoad();"
+    title="&folderdiffer.title;"
+    persist="width height screenX screenY">
+
+    <!-- Komodo specific code -->
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/logging.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/stringutils.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/mru.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/dialogs.js" />
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/htmlutils.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/session.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonUtil.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonDiff.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/folderDifferTreeView.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/folderDiffer.js" />
+
+    <commandset id="allcommands">
+        <command
+            id="cmd_copyFileName"
+            key="key_cmd_copySelection"
+            oncommand="gFolderDiffer.onCopyFileName(event);"/>
+    </commandset>
+
+    <keyset id="widekeyset">
+        <key id="key_cmd_copyFileName"
+             key="C"
+             modifiers="control"
+             command="cmd_copyFileName"/>
+    </keyset>
+
+    <vbox flex="1">
+        <toolbar id="main-toolbar-differ" align="stretch">
+            <toolbarbutton id="change-layout-button"
+                tooltiptext="&diffviewer.layout.tooltiptext;"
+                oncommand="gFolderDiffer.onSideBySide(this)"
+                class="sidebyside"
+                type="checkbox" />
+            <toolbarbutton id="open-comparison-button"
+                tooltiptext="&folderdiffer.comparison.tooltiptext;"
+                oncommand="gFolderDiffer.onOpenComparison(event)"
+                class="comparison"/>
+            <toolbarbutton id="open-filter-button"
+                tooltiptext="&folderdiffer.filter.tooltiptext;"
+                oncommand="gFolderDiffer.onOpenFilter(event)"
+                class="filter"/>
+            <toolbarbutton id="disable-filter-button"
+                tooltiptext="&folderdiffer.disable.filter.tooltiptext;"
+                tooltiptextenable="&folderdiffer.enable.filter.tooltiptext;"
+                tooltiptextdisable="&folderdiffer.disable.filter.tooltiptext;"
+                oncommand="gFolderDiffer.onDisableFilter(this)"
+                class="disable-filter"
+                type="checkbox" />
+            <menulist id="session-menulist"
+                    style="min-width: 300px; max-width: 300px">
+              <menupopup id="session-menupopup" oncommand="gFolderDiffer.onSessionMenuSelect()"/>
+            </menulist>
+            <toolbarbutton id="save-session-button"
+                tooltiptext="&folderdiffer.save.session.tooltiptext;"
+                oncommand="gFolderDiffer.onSaveSession(event)"
+                class="save"/>
+        </toolbar>
+        <box id="panel-layout" flex="1" orient="horizontal">
+            <vbox flex="1">
+                <toolbar>
+                    <textbox id="left-folder-textbox"
+                             style="min-height: 20px;"
+                             flex="1"
+                             type="autocomplete"
+                             autocompletepopup="popupTextboxAutoComplete"
+                             autocompletesearch="mru_and_filepath"
+                             autocompletesearchparam="mru: visual_differ_left_folders; maxmru: 10"
+                             maxrows="10"
+                             enablehistory="true"
+                             completeselectedindex="true"
+                             tabscrolling="true"
+                             onkeypress="return gFolderDiffer.onKeyPress(event)"
+                             onfocus="this.setSelectionRange(0, this.value.length);"
+                             ontextentered="gFolderDiffer.onTextEntered(this, true);this.focus();"/>
+                    <toolbarbutton class="browse" oncommand="gFolderDiffer.onBrowseFile(event, 'left-tree')"
+                                    tooltiptext="&folderdiffer.browse.tooltiptext;"/>
+                    <toolbarbutton class="browse-up" oncommand="gFolderDiffer.onBrowseUp(event, 'left-tree')"
+                                    tooltiptext="&folderdiffer.browseup.tooltiptext;"/>
+                </toolbar>
+                <tree id="left-tree"
+                        class="diffViewer"
+                        flex="1"
+                        hidecolumnpicker="true"
+                        seltype="multiple"
+                        onselect="return gFolderDiffer.onSelect(event)"
+                        onkeypress="gFolderDiffer.onTreeKeyPress(event);">
+                  <treecols>
+                    <treecol id="filename"
+                              label="&folderdiffer.treecol.filename.label;"
+                              primary="true"/>
+                    <splitter class="tree-splitter"/>
+                    <treecol id="filesize"
+                              label="&folderdiffer.treecol.filesize.label;"
+                              flex="1"
+                              persist="width"/>
+                    <splitter class="tree-splitter"/>
+                    <treecol id="filetime"
+                              label="&folderdiffer.treecol.filetime.label;"
+                              flex="1"
+                              persist="width"/>
+                  </treecols>
+                  <treechildren class="folderTreeChildren"
+                                contextmenu="tree-popup"
+                                ondblclick="gFolderDiffer.onDblClick(event);"/>
+                </tree>
+            </vbox>
+            <splitter id="panel-splitter" class="panelgrip" orient="horizontal"/>
+            <vbox flex="1">
+                <toolbar>
+                    <textbox id="right-folder-textbox"
+                             style="min-height: 20px;"
+                             flex="1"
+                             type="autocomplete"
+                             autocompletepopup="popupTextboxAutoComplete"
+                             autocompletesearch="mru_and_filepath"
+                             autocompletesearchparam="mru: visual_differ_right_folders; maxmru: 10"
+                             maxrows="10"
+                             enablehistory="true"
+                             completeselectedindex="true"
+                             tabscrolling="true"
+                             onkeypress="return gFolderDiffer.onKeyPress(event)"
+                             onfocus="this.setSelectionRange(0, this.value.length);"
+                             ontextentered="gFolderDiffer.onTextEntered(this, false);this.focus();"/>
+                    <toolbarbutton class="browse" oncommand="gFolderDiffer.onBrowseFile(event, 'right-tree')"
+                                    tooltiptext="&folderdiffer.browse.tooltiptext;"/>
+                    <toolbarbutton class="browse-up" oncommand="gFolderDiffer.onBrowseUp(event, 'right-tree')"
+                                    tooltiptext="&folderdiffer.browseup.tooltiptext;"/>
+                </toolbar>
+                <tree id="right-tree"
+                        class="diffViewer"
+                        flex="1"
+                        hidecolumnpicker="true"
+                        seltype="multiple"
+                        onselect="return gFolderDiffer.onSelect(event)"
+                        onkeypress="gFolderDiffer.onTreeKeyPress(event);">
+                  <treecols>
+                    <treecol id="filename"
+                              label="&folderdiffer.treecol.filename.label;"
+                              primary="true"/>
+                    <splitter class="tree-splitter"/>
+                    <treecol id="filesize"
+                              label="&folderdiffer.treecol.filesize.label;"
+                              style="text-align: right"
+                              flex="1"
+                              persist="width"/>
+                    <splitter class="tree-splitter"/>
+                    <treecol id="filetime"
+                              label="&folderdiffer.treecol.filetime.label;"
+                              flex="1"
+                              persist="width"/>
+                  </treecols>
+                  <treechildren class="folderTreeChildren"
+                                contextmenu="tree-popup"
+                                ondblclick="gFolderDiffer.onDblClick(event)"/>
+                </tree>
+                </vbox>
+        </box>
+    </vbox>
+
+    <!--
+        visualdiffershowforobject       determine if menuitem must be shown
+        visualdifferenableforobject     determine if menuitem must be enabled
+        The attribute format is
+        file_type:selection_type
+        file_type can be set to folder, file or both
+        file_type means "apply to menu when element is of file_type"
+
+        selection_type can be set to singleSelection or multipleSelection, if not
+        set default is multipleSelection
+        selection_type means "apply to menu only when one file is
+        selected or multiple files are selected
+    -->
+    <popup id="tree-popup" onpopupshowing="gFolderDiffer.onPopupShowing(event)">
+        <menuitem label="&folderdiffer.set.base.folder;"
+            oncommand="gFolderDiffer.onSetBaseFolder(event);"
+            visualdiffershowforobject="folder"/>
+        <!--<menuitem id="copy-file-menuitem" label="Copy" oncommand="gFolderDiffer.onCopy(event);"/>-->
+        <menuitem id="copy-filename-menuitem"
+                    label="&folderdiffer.copy.filename;"
+                    command="cmd_copyFileName"
+                    key="key_cmd_copyFileName"
+                    visualdifferenableforobject="both"/>
+        <menuitem id="show-file-manager-menuitem"
+                    label="&folderdiffer.show.file.manager;"
+                    oncommand="gFolderDiffer.onShowInFileManager(event);"
+                    visualdifferenableforobject="both:singleSelection"/>
+    </popup>
+</window>
