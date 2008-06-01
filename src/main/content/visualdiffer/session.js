@@ -35,8 +35,7 @@
 # ***** END LICENSE BLOCK *****
 */
 function VisualDifferSession(leftPath, rightPath) {
-    this.name = "Untitled";
-    this.updateLastTimeUsed();
+    this.name = "";
     this.leftPath = leftPath;
     this.rightPath = rightPath;
     this.comparator = new VisualDifferComparator();
@@ -44,18 +43,10 @@ function VisualDifferSession(leftPath, rightPath) {
 }
 
 VisualDifferSession.prototype = {
-    updateLastTimeUsed : function() {
-        this.lastTimeUsed = new Date().getTime();
-    },
-
     toXml : function() {
         var xml = document.createElement("session");
         var node = document.createElement("session-name");
         node.appendChild(document.createTextNode(this.name));
-        xml.appendChild(node);
-
-        var node = document.createElement("session-last-time-used");
-        node.appendChild(document.createTextNode(this.lastTimeUsed));
         xml.appendChild(node);
 
         node = document.createElement("session-left-path");
@@ -75,7 +66,6 @@ VisualDifferSession.prototype = {
     clone : function() {
         var newSession = new VisualDifferSession();
         newSession.name = this.name;
-        newSession.lastTimeUsed = this.lastTimeUsed;
         newSession.leftPath = this.leftPath;
         newSession.rightPath = this.rightPath;
         newSession.comparator = this.comparator.clone();

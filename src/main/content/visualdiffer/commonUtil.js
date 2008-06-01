@@ -248,3 +248,24 @@ VisualDifferCommon.removeChildren = function(node) {
     }
 }
 
+VisualDifferCommon.compareTo = function(str1, str2) {
+    return str1 == str2 ? 0 : str1 < str2 ? -1 : 1;
+}
+
+
+VisualDifferCommon.fnSplit = function(str) {
+    var pos = str.lastIndexOf(".");
+    var arr = [0, 0];
+    if (pos < 0) {
+        arr[0] = str;
+        arr[1] = "";
+    } else {
+        arr[0] = str.substring(0, pos);
+        arr[1] = str.substring(pos + 1);
+    }
+    return arr;
+}
+
+VisualDifferCommon.trim = function(str) {
+    return str.replace(/^\s+/, "").replace(/\s+$/, "");
+}

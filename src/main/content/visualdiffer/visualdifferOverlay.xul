@@ -5,6 +5,12 @@
 <overlay id="visualdifferOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+    <!-- Komodo specific code -->
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/logging.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/windowManager.js" />
+
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/htmlutils.js" />
     <script type="application/x-javascript"

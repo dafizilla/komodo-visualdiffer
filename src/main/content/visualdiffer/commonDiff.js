@@ -78,19 +78,14 @@ var DiffCommon = {
     openFolderDifferFromSession : function(session) {
         window.openDialog("chrome://visualdiffer/content/folder/folderDiffer.xul",
                           "_blank",
-                          "chrome,resizable=yes,dependent=yes",
+                          "chrome,resizable=yes,dependent=no",
                           session);
-    },
-
-    openFolderDiffer : function(leftFilePath, rightFilePath) {
-        this.openFolderDifferFromSession(
-            VisualDifferSession(leftFilePath, rightFilePath));
     },
 
     openFileDiffer : function(leftFilePath, rightFilePath) {
         window.openDialog("chrome://visualdiffer/content/file/fileDiffer.xul",
                           "_blank",
-                          "chrome,resizable=yes,dependent=yes",
+                          "chrome,resizable=yes,dependent=no",
                             leftFilePath,
                             rightFilePath);
     },
@@ -325,10 +320,6 @@ var DiffCommon = {
         }
     },
 
-    compareTo : function(str1, str2) {
-        return str1 == str2 ? 0 : str1 < str2 ? -1 : 1;
-    },
-
     getDirectoryTree : function(fullPathDir, recursive, fileFilter) {
         var dir = Components.classes["@mozilla.org/file/local;1"]
                .createInstance(Components.interfaces.nsILocalFile);
@@ -385,15 +376,15 @@ var DiffCommon = {
 
     compareFileTo : function(file1, file2) {
         if (file1.isDirectory() && file2.isDirectory()) {
-            return DiffCommon.compareTo(file1.leafName.toLowerCase(),
+            return VisualDifferCommon.compareTo(file1.leafName.toLowerCase(),
                                   file2.leafName.toLowerCase());
         }
         if (file1.isFile() && file2.isFile()) {
-            var fn1 = DiffCommon.fnSplit(file1.leafName.toLowerCase());
-            var fn2 = DiffCommon.fnSplit(file2.leafName.toLowerCase());
-            var cmp = DiffCommon.compareTo(fn1[0], fn2[0]);
+            var fn1 = VisualDifferCommon.fnSplit(file1.leafName.toLowerCase());
+            var fn2 = VisualDifferCommon.fnSplit(file2.leafName.toLowerCase());
+            var cmp = VisualDifferCommon.compareTo(fn1[0], fn2[0]);
             if (cmp == 0) {
-                return DiffCommon.compareTo(fn1[1], fn2[1]);
+                return VisualDifferCommon.compareTo(fn1[1], fn2[1]);
             }
             return cmp;
         }
@@ -407,17 +398,4 @@ var DiffCommon = {
     dirSorter : function(ea, eb) {
         return DiffCommon.compareFileTo(ea.file, eb.file);
     },
-
-    fnSplit : function(str) {
-        var pos = str.lastIndexOf(".");
-        var arr = [0, 0];
-        if (pos < 0) {
-            arr[0] = str;
-            arr[1] = "";
-        } else {
-            arr[0] = str.substring(0, pos);
-            arr[1] = str.substring(pos + 1);
-        }
-        return arr;
-    }
 }

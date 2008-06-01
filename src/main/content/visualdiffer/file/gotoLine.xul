@@ -18,7 +18,8 @@
     <hbox>
         <vbox>
             <label control="line-number-text" value="&line.number.label;"/>
-            <textbox id="line-number-text" value=""/>
+            <textbox id="line-number-text" value=""
+                    invalidnumber="&invalid.number;"/>
         </vbox>
         <vbox>
             <radiogroup id="destination-view">

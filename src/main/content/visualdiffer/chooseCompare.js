@@ -132,8 +132,7 @@ var gChooseCompare = {
                 return true;
             }
         } catch (err) {
-            ko.logging.getLogger("ko.main")
-                .warn("checkDirectory = " + err);
+            VisualDifferCommon.log("checkDirectory = " + err);
         }
         alert("Invalid directory ");
         textBox.setSelectionRange(0, textBox.value.length);
@@ -149,8 +148,7 @@ var gChooseCompare = {
                 return true;
             }
         } catch (err) {
-            ko.logging.getLogger("ko.main")
-                .warn("checkFile = " + err);
+            VisualDifferCommon.log("checkFile = " + err);
         }
         alert("Invalid file");
         textBox.setSelectionRange(0, textBox.value.length);
@@ -188,8 +186,7 @@ var gChooseCompare = {
             VisualDifferCommon.browseDirectory(target.value, null, target);
         } else {
             alert("Invalid pickType = " + pickType);
-            ko.logging.getLogger("ko.main")
-                .warn("Invalid pickType = " + pickType);
+            VisualDifferCommon.log("Invalid pickType = " + pickType);
         }
     },
 
@@ -217,7 +214,7 @@ var gChooseCompare = {
     onRemoveSession : function() {
         var idx = this.sessionList.selectedIndex;
         if (idx >= 0) {
-            this.data.hasRemovedSession = true;
+            this.data.isSessionListChanged = true;
             this.data.manager.removeSession(idx);
             this.sessionList.removeItemAt(idx);
 

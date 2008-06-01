@@ -40,21 +40,25 @@ VisualDifferSessionManager.prototype = {
         var parser = new DOMParser();
         var doc = parser.parseFromString(xml, "text/xml");
         if (doc.firstChild.nodeName != "parsererror") {
-            this.sessions = this.deserializeSessions(doc);
+            this.sessions = this._deserializeSessions(doc);
             this.sortSessions();
+        } else {
+            VisualDifferCommon.log("Error while reading "
+                                + this.configPath
+                                + " "
+                                + doc.firstChild.firstChild.nodeValue);
         }
     },
 
     sortSessions : function() {
-        this.sessions.sort(this.sortByLastTimeUsed);
+        this.sessions.sort(this._nameSorter);
     },
 
-    sortByLastTimeUsed : function(a, b) {
-        return a.lastTimeUsed == b.lastTimeUsed
-            ? 0 : -(a.lastTimeUsed < b.lastTimeUsed ? -1 : 1);
+    _nameSorter : function(a, b) {
+        return VisualDifferCommon.compareTo(a.name.toLowerCase(), b.name.toLowerCase());
     },
 
-    deserializeSessions : function(doc) {
+    _deserializeSessions : function(doc) {
         var nl = doc.getElementsByTagName("visualdiffer-sessions");
         var ar = [];
 
@@ -65,7 +69,7 @@ VisualDifferSessionManager.prototype = {
                 var isValid = curr.nodeType == Node.ELEMENT_NODE;
 
                 if (isValid && curr.localName == "session") {
-                    var item = this.dom2Session(curr);
+                    var item = this._dom2Session(curr);
                     if (item) {
                         item.manager = this;
                         ar.push(item);
@@ -76,9 +80,8 @@ VisualDifferSessionManager.prototype = {
         return ar;
     },
 
-    dom2Session : function(node) {
+    _dom2Session : function(node) {
         var name = "";
-        var lastTimeUsed = 0;
         var leftPath = "";
         var rightPath = "";
         var comparator = null;
@@ -97,16 +100,14 @@ VisualDifferSessionManager.prototype = {
                 }
                 if (curr.nodeName == "session-name") {
                     name = curr.firstChild.nodeValue;
-                } else if (curr.nodeName == "session-last-time-used") {
-                    lastTimeUsed = curr.firstChild.nodeValue;
                 } else if (curr.nodeName == "session-left-path") {
                     leftPath = curr.firstChild.nodeValue;
                 } else if (curr.nodeName == "session-right-path") {
                     rightPath = curr.firstChild.nodeValue;
                 } else if (curr.nodeName == "comparator") {
-                    comparator = this.dom2Comparator(curr);
+                    comparator = this._dom2Comparator(curr);
                 } else if (curr.nodeName == "file-filter") {
-                    fileFilter = this.dom2FileFilter(curr);
+                    fileFilter = this._dom2FileFilter(curr);
                 }
             }
         }
@@ -116,14 +117,13 @@ VisualDifferSessionManager.prototype = {
         }
         var data = new VisualDifferSession(leftPath, rightPath);
         data.name = name;
-        data.lastTimeUsed = lastTimeUsed == null ? new Date().getTime : parseInt(lastTimeUsed);
         data.comparator = comparator;
         data.fileFilter = fileFilter;
 
         return data;
     },
 
-    dom2Comparator : function(node) {
+    _dom2Comparator : function(node) {
         var useTimestamp = false;
         var useSize = false;
         var useContent = false;
@@ -158,7 +158,7 @@ VisualDifferSessionManager.prototype = {
         return data;
     },
 
-    dom2FileFilter : function(node) {
+    _dom2FileFilter : function(node) {
         var includeFilesArray = null;
         var includeFoldersArray = null;
         var excludeFilesArray = null;
@@ -195,27 +195,6 @@ VisualDifferSessionManager.prototype = {
         data.excludeFoldersArray = excludeFoldersArray;
 
         return data;
-    },
-
-    buildSessions: function(doc) {
-        var nl = doc.getElementsByTagName("session");
-        var ar = [];
-
-        if (nl && nl.item(0) && nl.item(0).hasChildNodes()) {
-            nl = nl.item(0).childNodes;
-            for (var i = 0; i < nl.length; i++) {
-                var curr = nl.item(i);
-                var isValid = curr.nodeType == Node.ELEMENT_NODE;
-
-                if (isValid && curr.localName == "url-mapper") {
-                    var item = this.createUrlMapperData(curr);
-                    if (item) {
-                        ar.push(item);
-                    }
-                }
-            }
-        }
-        return ar;
     },
 
     writeSessions : function() {

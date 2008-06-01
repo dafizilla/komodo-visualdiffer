@@ -63,7 +63,7 @@ var gDiffSelectLine = {
     onOk : function() {
         var isValid = /^[0-9]+$/.test(this.lineNumber.value);
         if (!isValid) {
-            alert("Invalid number");
+            alert(this.lineNumber.getAttribute("invalidnumber"));
             this.lineNumber.focus();
             return false;
         }

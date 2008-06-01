@@ -111,13 +111,17 @@ var gFolderDiffer = {
         } else {
             this.session = window.arguments[0];
         }
-        this.fillSessionMenu();
+        this.fillSessionMenu(false);
 
         this.useFileFilter = true;
         this.makeDiff(this.session.leftPath, this.session.rightPath, true);
     },
 
-    fillSessionMenu : function() {
+    fillSessionMenu : function(removeAllItems) {
+        if (removeAllItems) {
+            VisualDifferCommon.removeChildren(this.sessionMenuPopup);
+        }
+
         var sessions = this.session.manager.sessions;
         for (var i = 0; i < sessions.length; i++) {
             var node = document.createElement("menuitem")
@@ -576,50 +580,51 @@ var gFolderDiffer = {
     },
 
     onSaveSession : function(event) {
-try { // toremove
         var newName = ko.dialogs.prompt(null,
                     VisualDifferCommon.getLocalizedMessage("session.name"),
                     this.session.name,
                     VisualDifferCommon.getLocalizedMessage("session.saveas"));
-        if (newName) {
-            var idx = this.session.manager.findSessionIndexByName(newName);
-            if (idx < 0) {
-                var newSession = this.session.clone();
-                newSession.name = newName;
-                newSession.leftPath = this.leftFolderTextBox.value;
-                newSession.rightPath = this.rightFolderTextBox.value;
-                newSession.updateLastTimeUsed();
+        if (newName == null) {
+            return;
+        }
 
-                this.session.manager.addSession(newSession);
+        if (VisualDifferCommon.trim(newName).length == 0) {
+            alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
+            return;
+        }
+        
+        var idx = this.session.manager.findSessionIndexByName(newName);
+        if (idx < 0) {
+            var newSession = this.session.clone();
+            newSession.name = newName;
+            newSession.leftPath = this.leftFolderTextBox.value;
+            newSession.rightPath = this.rightFolderTextBox.value;
+
+            this.session.manager.addSession(newSession);
+            this.session.manager.writeSessions();
+            this.session.manager.sortSessions();
+            this.session.manager.selectedIndex = this.session.manager
+                    .findSessionIndexByName(newName);
+            this.fillSessionMenu(true);
+            this.session = newSession;
+        } else {
+            var confirmMsg = VisualDifferCommon
+                .getFormattedMessage("session.confirm.overwrite", [newName])
+            if (newName == this.session.name) {
+                this.session.manager.writeSessions();
+            } else if (confirm(confirmMsg)) {
+                this.session.name = newName;
+                this.session.leftPath = this.leftFolderTextBox.value;
+                this.session.rightPath = this.rightFolderTextBox.value;
+
+                this.session.manager.removeSession(idx);
                 this.session.manager.writeSessions();
                 this.session.manager.sortSessions();
-                this.session.manager.selectedIndex = 0;
-                VisualDifferCommon.removeChildren(this.sessionMenuPopup);
-                this.fillSessionMenu();
-                this.session = newSession;
-            } else {
-                var confirmMsg = VisualDifferCommon
-                    .getFormattedMessage("session.confirm.overwrite", [newName])
-                if (newName == this.session.name) {
-                    this.session.manager.writeSessions();
-                } else if (confirm(confirmMsg)) {
-                    this.session.name = newName;
-                    this.session.leftPath = this.leftFolderTextBox.value;
-                    this.session.rightPath = this.rightFolderTextBox.value;
-                    this.session.updateLastTimeUsed();
-
-                    this.session.manager.removeSession(idx);
-                    this.session.manager.writeSessions();
-                    this.session.manager.sortSessions();
-                    this.session.manager.selectedIndex = 0;
-                    VisualDifferCommon.removeChildren(this.sessionMenuPopup);
-                    this.fillSessionMenu();
-                }
+                this.session.manager.selectedIndex = this.session.manager
+                        .findSessionIndexByName(newName);
+                this.fillSessionMenu(true);
             }
         }
-} catch (err) {
-    alert(err);
-}
     },
 
     onShowInFileManager : function(event) {
@@ -631,7 +636,6 @@ try { // toremove
 
     onSessionMenuSelect : function() {
         this.session = this.session.manager.sessions[this.sessionMenuList.selectedIndex];
-        this.session.updateLastTimeUsed();
         this.makeDiff(this.session.leftPath, this.session.rightPath, false);
     }
 }
