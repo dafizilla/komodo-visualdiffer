@@ -10,6 +10,7 @@
 <!ENTITY fileDiffer.treecol.number.label "#">
 <!ENTITY fileDiffer.move.next "Move To Next Difference">
 <!ENTITY fileDiffer.move.prev "Move To Previous Difference">
+<!ENTITY filediffer.browse.tooltiptext "Browse File">
 
 <!ENTITY folderdiffer.title "Folder Differ">
 <!ENTITY folderdiffer.treecol.filename.label "Name">

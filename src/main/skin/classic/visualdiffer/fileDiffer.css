@@ -20,11 +20,7 @@
 }
 
 .fileTreeChildren::-moz-tree-cell(missingLine) {
-    background-color: #C0C0C0;
-}
-
-.fileTreeChildren::-moz-tree-cell-text(missingLine) {
-    color: #000000;
+    background-image: url("chrome://visualdiffer/skin/empty.png");
 }
 
 .fileTreeChildren::-moz-tree-cell(selected) {
@@ -42,3 +38,5 @@
 .fileTreeChildren::-moz-tree-row(selected) {
   border: 1px dotted #000000;
 }
+
+

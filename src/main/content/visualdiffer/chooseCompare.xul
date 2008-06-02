@@ -3,7 +3,12 @@
 <?xml-stylesheet href="chrome://visualdiffer/skin/common.css" type="text/css"?>
 <?xml-stylesheet href="chrome://komodo/skin/autocomplete.css" type="text/css"?>
 
-<!DOCTYPE dialog SYSTEM "chrome://visualdiffer/locale/chooseCompare.dtd" >
+<!DOCTYPE dialog SYSTEM "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" [
+  <!ENTITY % chooseCompareDTD SYSTEM "chrome://visualdiffer/locale/chooseCompare.dtd">
+  <!ENTITY % diffviewerDTD SYSTEM "chrome://visualdiffer/locale/diffviewer.dtd">
+  %chooseCompareDTD;
+  %diffviewerDTD;
+]>
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     id="choose-compare-dialog"
@@ -23,6 +28,8 @@
             src="chrome://komodo/content/library/stringutils.js" />
     <script type="application/x-javascript"
             src="chrome://komodo/content/library/mru.js" />
+    <script type="application/x-javascript"
+            src="chrome://komodo/content/library/dialogs.js" />
 
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonUtil.js" />
@@ -52,8 +59,10 @@
                              enablehistory="true"
                              completeselectedindex="true"
                              tabscrolling="true"/>
-                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'left-folder-textbox', 'folder')"/>
-                    </hbox>
+                    <button class="browse"
+                        tooltiptext="&folderdiffer.browse.tooltiptext;"
+                        oncommand="gChooseCompare.onBrowse(event, 'left-folder-textbox', 'folder')"/>
+                </hbox>
             </vbox>
 
             <vbox>
@@ -70,8 +79,10 @@
                              enablehistory="true"
                              completeselectedindex="true"
                              tabscrolling="true"/>
-                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'right-folder-textbox', 'folder')"/>
-                    </hbox>
+                    <button class="browse"
+                        tooltiptext="&folderdiffer.browse.tooltiptext;"
+                        oncommand="gChooseCompare.onBrowse(event, 'right-folder-textbox', 'folder')"/>
+                </hbox>
             </vbox>
         </vbox>
 
@@ -90,8 +101,10 @@
                              enablehistory="true"
                              completeselectedindex="true"
                              tabscrolling="true"/>
-                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'left-file-textbox', 'file')"/>
-                    </hbox>
+                    <button class="browse"
+                        tooltiptext="&filediffer.browse.tooltiptext;"
+                        oncommand="gChooseCompare.onBrowse(event, 'left-file-textbox', 'file')"/>
+                </hbox>
             </vbox>
 
             <vbox>
@@ -108,14 +121,16 @@
                              enablehistory="true"
                              completeselectedindex="true"
                              tabscrolling="true"/>
-                    <button class="browse" oncommand="gChooseCompare.onBrowse(event, 'right-file-textbox', 'file')"/>
-                    </hbox>
+                    <button class="browse"
+                        tooltiptext="&filediffer.browse.tooltiptext;"
+                        oncommand="gChooseCompare.onBrowse(event, 'right-file-textbox', 'file')"/>
+                </hbox>
             </vbox>
         </vbox>
     </hbox>
-    <groupbox>
+    <groupbox flex="1">
         <caption label="&sessions.label;" />
-        <hbox>
+        <hbox flex="1">
             <listbox id="session-list"
                     flex="1"
                     onclick="gChooseCompare.onSelectSession()"
@@ -123,6 +138,8 @@
             <vbox>
                 <button class="remove-button" label="&remove.label;"
                         onclick="gChooseCompare.onRemoveSession()"/>
+                <button class="rename-button" label="&rename.label;"
+                        onclick="gChooseCompare.onRenameSession()"/>
             </vbox>
         </hbox>
     </groupbox>

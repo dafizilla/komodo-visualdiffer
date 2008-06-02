@@ -55,3 +55,8 @@ toolbarbutton {
   min-width: 0px;
   list-style-image: url("chrome://visualdiffer/skin/remove.png");
 }
+
+.rename-button {
+  min-width: 0px;
+  list-style-image: url("chrome://visualdiffer/skin/rename.png");
+}

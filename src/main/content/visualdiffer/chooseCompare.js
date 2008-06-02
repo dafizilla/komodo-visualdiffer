@@ -64,17 +64,22 @@ var gChooseCompare = {
     initValues : function() {
         this.radioGroup.selectedIndex = 0;
 
-        var sessions = this.data.manager.sessions;
-        for (var i = 0; i < sessions.length; i++) {
-            var node = document.createElement("listitem");
-            node.setAttribute("label", sessions[i].name);
-            this.sessionList.appendChild(node);
-        }
-
+        this.fillSessionList(false);
         // listener doesn't receive immediately notification so use a timeout
         //window.setTimeout(function() {
         //    document.getElementById("fileobject-radiogroup").selectedIndex = 1;
         //    }, 100);
+    },
+
+    fillSessionList : function(removeAllItems) {
+        if (removeAllItems) {
+            this.sessionList.removeAllItems();
+        }
+
+        var sessions = this.data.manager.sessions;
+        for (var i = 0; i < sessions.length; i++) {
+            this.sessionList.appendItem(sessions[i].name);
+        }
     },
 
     onAccept : function() {
@@ -108,7 +113,8 @@ var gChooseCompare = {
             }
         }
         } catch (err) {
-            alert(err);
+            VisualDifferCommon.log("chooseCompare.onAccept " + err);
+            alert("onAccept " + err);
         }
         retVal.isOk = true;
         return true;
@@ -134,7 +140,7 @@ var gChooseCompare = {
         } catch (err) {
             VisualDifferCommon.log("checkDirectory = " + err);
         }
-        alert("Invalid directory ");
+        alert(VisualDifferCommon.getLocalizedMessage("invalid.folder"));
         textBox.setSelectionRange(0, textBox.value.length);
         textBox.focus();
 
@@ -150,7 +156,7 @@ var gChooseCompare = {
         } catch (err) {
             VisualDifferCommon.log("checkFile = " + err);
         }
-        alert("Invalid file");
+        alert(VisualDifferCommon.getLocalizedMessage("invalid.file"));
         textBox.setSelectionRange(0, textBox.value.length);
         return false;
     },
@@ -231,5 +237,45 @@ var gChooseCompare = {
 
             this.onSelectSession();
         }
+    },
+    
+    onRenameSession : function() {
+        var idx = this.sessionList.selectedIndex;
+        if (idx >= 0) {
+            var newName = ko.dialogs.prompt(null,
+                        VisualDifferCommon.getLocalizedMessage("session.name"),
+                        this.data.manager.sessions[idx].name,
+                        VisualDifferCommon.getLocalizedMessage("session.rename"));
+            if (newName == null || this.data.manager.sessions[idx].name == newName) {
+                return;
+            }
+    
+            if (VisualDifferCommon.trim(newName).length == 0) {
+                alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
+                return;
+            }
+
+            if (this.data.manager.findSessionIndexByName(newName) < 0) {
+                this.data.isSessionListChanged = true;
+                this.data.manager.sessions[idx].name = newName;
+                this.data.manager.sortSessions();
+                var newPos = this.data.manager.findSessionIndexByName(newName);
+                
+                this.sessionList.removeItemAt(idx);
+
+                // Check position due to a bug in insertItemAt that
+                // crashes when insert at end
+                if (newPos == this.sessionList.getRowCount()) {
+                    this.sessionList.appendItem(newName);
+                } else {
+                    this.sessionList.insertItemAt(newPos, newName);
+                }
+                this.sessionList.selectedIndex = newPos;
+                this.onSelectSession();
+            } else {
+                alert(VisualDifferCommon.getLocalizedMessage("session.name.already.in.use"));
+            }
+        }
     }
+    
 };

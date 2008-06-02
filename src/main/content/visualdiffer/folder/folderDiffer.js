@@ -119,14 +119,12 @@ var gFolderDiffer = {
 
     fillSessionMenu : function(removeAllItems) {
         if (removeAllItems) {
-            VisualDifferCommon.removeChildren(this.sessionMenuPopup);
+            this.sessionMenuList.removeAllItems();
         }
 
         var sessions = this.session.manager.sessions;
         for (var i = 0; i < sessions.length; i++) {
-            var node = document.createElement("menuitem")
-            node.setAttribute("label", sessions[i].name);
-            this.sessionMenuPopup.appendChild(node);
+            this.sessionMenuList.appendItem(sessions[i].name);
         }
         this.sessionMenuList.selectedIndex = this.session.manager.selectedIndex;
     },

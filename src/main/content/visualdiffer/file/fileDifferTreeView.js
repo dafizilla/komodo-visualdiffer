@@ -121,6 +121,8 @@ FileDifferTreeView.prototype = {
 
     selectAndEnsureVisible : function(index) {
         this.selection.select(index);
+        // try to center line on screen
+        //this.treebox.scrollByLines(this.treebox.getPageLength() / 2);
         this.treebox.ensureRowIsVisible(index);
     },
 
@@ -200,7 +202,13 @@ FileDifferTreeView.prototype = {
     },
 
     getCellProperties: function(row, column, props) {
-        var prop = gFileTreeProperties[this.items[row].status];
+        var prop = null;
+
+        switch (column.id || column) {
+            case "line":
+                prop = gFileTreeProperties[this.items[row].status];
+                break;
+        }
 
         if (prop) {
             props.AppendElement(prop);

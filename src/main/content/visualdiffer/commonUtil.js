@@ -240,18 +240,9 @@ VisualDifferCommon.getPrefDir = function(dir) {
     return dirService.get(dir, Components.interfaces.nsILocalFile);
 }
 
-VisualDifferCommon.removeChildren = function(node) {
-    var children = node.childNodes;
-
-    for (var i = children.length - 1; i >= 0; i--) {
-        node.removeChild(children[i]);
-    }
-}
-
 VisualDifferCommon.compareTo = function(str1, str2) {
     return str1 == str2 ? 0 : str1 < str2 ? -1 : 1;
 }
-
 
 VisualDifferCommon.fnSplit = function(str) {
     var pos = str.lastIndexOf(".");

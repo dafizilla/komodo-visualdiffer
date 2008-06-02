@@ -24,11 +24,21 @@
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/visualdifferOverlay.js" />
 
+    <broadcasterset id="broadcasterset_global">
+      <broadcaster
+        id="cmd_visualdiffer_main_dialog"
+        key="key_cmd_visualdiffer_main_dialog"
+        desc="&visualdiffer.main.dialog.desc;"
+        oncommand="showCompareDialog();"/>
+    </broadcasterset>
+
     <menupopup id="popup_tools">
         <menuitem id="visualdiffer-cutappend"
                     class="menuitem-iconic-wide"
                     label="&visual.compare.menuitem.label;"
-                    oncommand="showCompareDialog();"
+                    accesskey="&visual.compare.accesskey;"
+                    command="cmd_visualdiffer_main_dialog"
+                    key="key_cmd_visualdiffer_main_dialog"
                     insertafter="menu_compareFiles"/>
     </menupopup>
 
