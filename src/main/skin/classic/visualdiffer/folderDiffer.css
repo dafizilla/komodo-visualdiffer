@@ -1,6 +1,6 @@
 .diffViewer {
-    /*font-family: "Bitstream Vera Sans Mono", courier;*/
-    font-family: "Sans";
+  /*font-family: "Bitstream Vera Sans Mono", courier;*/
+  font-family: "Sans";
 }
 
 #filename {
@@ -15,17 +15,18 @@
 }
 
 .folderTreeChildren::-moz-tree-cell-text(changedFile) {
-    color: #FF0000;
+  color: #FF0000;
 }
 
 .folderTreeChildren::-moz-tree-cell-text(addedFile) {
-    color: #0000FF;
+  color: #0000FF;
 }
 
 .folderTreeChildren::-moz-tree-cell-text(olderFile) {
-    color: #808080;
+  color: #808080;
 }
 
+/* little hack to hide the twisty */
 .folderTreeChildren::-moz-tree-twisty {
   margin-left: -2px;
   list-style-image: none;
@@ -33,7 +34,7 @@
 }
 
 .folderTreeChildren::-moz-tree-row(odd) {
-    background-color: #F0F8F0;
+  background-color: #F0F8F0;
 }
 
 .folderTreeChildren::-moz-tree-row(odd, focus, selected),
@@ -48,10 +49,6 @@
 
 .folderTreeChildren::-moz-tree-line(FileIsNull) {
   visibility: hidden;
-}
-
-.browse-up {
-  list-style-image: url("chrome://visualdiffer/skin/folder/up_level.png");
 }
 
 .filter {

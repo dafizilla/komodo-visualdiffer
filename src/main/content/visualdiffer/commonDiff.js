@@ -326,11 +326,11 @@ var DiffCommon = {
         dir.initWithPath(fullPathDir);
 
         var tree = [];
+        var root = new FolderStatus(dir, null, -1);
+        tree.push(root);
 
-        if (dir.isDirectory() && (fileFilter == null || fileFilter.includes(dir))) {
-            var root = new FolderStatus(dir, null, -1);
+        if (dir.isDirectory()) {
             root.subfolders = this.readDirectory(dir, recursive, 0, root, fileFilter);
-            tree.push(root);
 
             //this.traverseTree(tree, function(el) {el.subfolders.sort(DiffCommon.dirSorter); });
         }

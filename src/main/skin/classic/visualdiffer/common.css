@@ -31,10 +31,6 @@ toolbarbutton {
   list-style-image: url("chrome://visualdiffer/skin/arrow_down_dis.png");
 }
 
-.browse {
-  list-style-image: url("chrome://visualdiffer/skin/folder/folder-000.png");
-}               
-
 .sidebyside[checked="true"] {
   list-style-image: url("chrome://visualdiffer/skin/side_by_side.png");
 }
@@ -59,4 +55,20 @@ toolbarbutton {
 .rename-button {
   min-width: 0px;
   list-style-image: url("chrome://visualdiffer/skin/rename.png");
+}
+
+pickertoolbar {
+  -moz-binding: url('chrome://visualdiffer/content/xbl/pickertoolbar.xml#pickertoolbar')
+}
+
+.browse-button {
+  min-width: 0;
+  margin: 0;
+  list-style-image: url("chrome://visualdiffer/skin/folder/folder-000.png");
+}               
+
+.browse-up-button {
+  min-width: 0;
+  margin: 0;
+  list-style-image: url("chrome://visualdiffer/skin/folder/up_level.png");
 }

@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+
+    <!--
+        onbrowse the code to run when a folder/file is selected, receive the nsIFile containing the fullPath
+        onbrowseup the code to run after a browse up, receive the nsIFile containing the parent fullPath
+        ontextentered
+    -->
+    <!--<pickertoolbar-->
+    <!--                flex="1"-->
+    <!--                autocompletesearchparam="mru: visual_differ_right_folders; maxmru: 10"-->
+    <!--                maxrows="10"-->
+    <!--               -->
+    <!--                onbrowse="alert('browse ' + fullPath.path)"-->
+    <!--                onbrowseup="alert('up' + fullPath.path)"-->
+    <!--                ontextentered="alert('entered');gFolderDiffer.onTextEntered(this, true);this.focus();"-->
+    <!--                -->
+    <!--                browsetype="file" folder or file in not specified or invalid default is folder-->
+    <!--                -->
+    <!--                browseclass="browse-button"-->
+    <!--                browsetooltiptext="browse"-->
+    <!--               -->
+    <!--                browseupclass="browse-up-button"-->
+    <!--                browseuptooltiptext="up one level"-->
+    <!--                -->
+    <!--                browseuphidden="false"-->
+    <!--               />-->
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:xbl="http://www.mozilla.org/xbl">
+  <binding id="pickertoolbar">
+
+    <content>
+  <!--
+  <pickertoolbar id=""
+      autocompletesearchparam="mru: visual_differ_right_folders; maxmru: 10"
+      maxrows="10"
+      browsetype="folder"
+      browseclass=""
+      browsetooltiptext=""
+      browseupclass=""
+      browseuptooltiptext=""
+      browseuphidden="" />
+  -->
+
+      <xul:hbox xbl:inherits="flex">
+          <xul:textbox
+                xbl:inherits="style,flex,class=textclass,autocompletesearchparam,maxrow,ontextentered"
+                anonid="textbox"
+                style="min-height: 20px;"
+                type="autocomplete"
+                autocompletepopup="popupTextboxAutoComplete"
+                autocompletesearch="mru_and_filepath"
+                autocompletesearchparam=""
+                enablehistory="true"
+                completeselectedindex="true"
+                tabscrolling="true"
+                onkeypress="return handleKeyPress(event);"
+                onfocus="this.setSelectionRange(0, this.value.length);"/>
+          <xul:button
+                xbl:inherits="style=browsestyle,class=browseclass,tooltiptext=browsetooltiptext"
+                oncommand="onBrowseFolderOrFile(event)"/>
+          <xul:button
+                xbl:inherits="style=browseupstyle,class=browseupclass,tooltiptext=browseuptooltiptext,hidden=browseuphidden"
+                hidden="true"
+                oncommand="onBrowseUp(event)"/>
+      </xul:hbox>
+
+    </content>
+
+    <implementation>
+      <constructor><![CDATA[
+        if (this.getAttribute("browsetype") == "file") {
+          this._browserFolder = false;
+          this._browseFunction = VisualDifferCommon.browseFile;
+        } else {
+          this._browserFolder = true;
+          this._browseFunction = VisualDifferCommon.browseDirectory;
+        }
+        this._textbox = document.getAnonymousElementByAttribute(this, "anonid", "textbox");
+        this._onBrowseCallback = this.hasAttribute("onbrowse")
+                ? new Function("fullPath", this.getAttribute("onbrowse")) : null;
+        this._onBrowseUpCallback = this.hasAttribute("onbrowseup")
+                ? new Function("fullPath", this.getAttribute("onbrowseup")) : null;
+      ]]></constructor>
+
+      <property name="textbox" onget="return this._textbox;" readonly="true" />
+
+      <property name="value"
+        onget="return this._textbox.value;"
+        onset="this._textbox.value = val;" />
+
+      <method name="onBrowseFolderOrFile">
+        <body><![CDATA[
+        var filePath = this._browseFunction(this.value);
+        if (filePath) {
+          this.value = filePath.path;
+          if (this._onBrowseCallback) {
+            this._onBrowseCallback(filePath);
+          }
+        }
+        ]]></body>
+      </method>
+
+      <method name="onBrowseUp">
+        <body><![CDATA[
+        var filePath = VisualDifferCommon.makeLocalFile(this.value);
+        
+        if (filePath.exists() && filePath.parent) {
+          this.value = filePath.parent.path;
+          if (this._onBrowseUpCallback) {
+            this._onBrowseUpCallback(filePath.parent);
+          }
+        }
+        ]]></body>
+      </method>
+
+      <!-- BUG?? If method name is onKeyPress is never called -->
+      <method name="handleKeyPress">
+        <parameter name="event"/>
+        <body><![CDATA[
+          if (event.keyCode == KeyEvent.DOM_VK_RETURN) {
+              // do not close dialog
+              return false;
+          }
+          return true;
+        ]]></body>
+      </method>
+
+      <method name="addToMRU">
+        <body><![CDATA[
+          ko.mru.addFromACTextbox(this._textbox);
+        ]]></body>
+      </method>
+
+
+      <method name="isFileValid">
+        <parameter name="errorMessage"/>
+        <body><![CDATA[
+          var path = this.value;
+          try {
+              if (path) {
+                var file = VisualDifferCommon.makeLocalFile(path);
+                if (this._browserFolder) {
+                  if (file.exists() && file.isDirectory()) {
+                      return true;
+                  }
+                } else {
+                  if (file.exists() && file.isFile()) {
+                      return true;
+                  }
+                }
+              }
+          } catch (err) {
+              VisualDifferCommon.log("pickertoolbar.isFileValid = " + err);
+          }
+          if (errorMessage) {
+            alert(errorMessage);
+          }
+  
+          return false;
+        ]]></body>
+      </method>
+
+    </implementation>
+
+  </binding>
+</bindings>

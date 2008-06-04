@@ -1,38 +1,38 @@
 .diffViewer {
-    /*font-family: "Bitstream Vera Sans Mono", courier;*/
-    font-family: "Sans";
+  font-family: "monospace";
+  font-size: 12px;
 }
 
 .fileTreeChildren::-moz-tree-cell(deletedLine) {
-    background-color: #FFF0F0;
+  background-color: #FFF0F0;
 }
 
 .fileTreeChildren::-moz-tree-cell-text(deletedLine) {
-    color: #FF0000;
+  color: #FF0000;
 }
 
 .fileTreeChildren::-moz-tree-cell-text(changedLine) {
-    color: #0000FF;
+  color: #0000FF;
 }
 
 .fileTreeChildren::-moz-tree-cell(changedLine) {
-    background-color: #F0F0FF;
+  background-color: #F0F0FF;
 }
 
 .fileTreeChildren::-moz-tree-cell(missingLine) {
-    background-image: url("chrome://visualdiffer/skin/empty.png");
+  background-image: url("chrome://visualdiffer/skin/empty.png");
 }
 
 .fileTreeChildren::-moz-tree-cell(selected) {
-    background-color: #CCFFCC;
+  background-color: #CCFFCC;
 }
 
 .fileTreeChildren::-moz-tree-cell(addedLine) {
-    background-color: #FFF0F0;
+  background-color: #FFF0F0;
 }
 
 .fileTreeChildren::-moz-tree-cell-text(addedLine) {
-    color: #FF0000;
+  color: #FF0000;
 }
 
 .fileTreeChildren::-moz-tree-row(selected) {

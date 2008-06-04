@@ -106,12 +106,12 @@ var gFileDiffer = {
     updateInputBoxes : function(leftFilePath, rightFilePath) {
         if (leftFilePath != null && this._fileExists(leftFilePath)) {
             this.leftFileTextBox.value = leftFilePath;
-            ko.mru.addFromACTextbox(this.leftFileTextBox);
+            this.leftFileTextBox.addToMRU();
         }
 
         if (rightFilePath != null && this._fileExists(rightFilePath)) {
             this.rightFileTextBox.value = rightFilePath;
-            ko.mru.addFromACTextbox(this.rightFileTextBox);
+            this.rightFileTextBox.addToMRU();
         }
     },
 
@@ -195,14 +195,6 @@ var gFileDiffer = {
         }
     },
 
-    onKeyPress : function(event) {
-        if (event.keyCode == KeyEvent.DOM_VK_RETURN) {
-            // do not close dialog
-            return false;
-        }
-        return true;
-    },
-
     onTextEntered : function(textbox, isLeftTextBox) {
         if (this._fileExists(textbox.value)) {
             var leftPath;
@@ -219,15 +211,11 @@ var gFileDiffer = {
         }
     },
 
-    onBrowseFile : function(event, targetId) {
-        var arr = this.getTreeViewSortedById(targetId);
-        var filePath = VisualDifferCommon.browseFile(arr[0].filePath);
-        if (filePath) {
-            if (arr[0] == this.leftTreeView) {
-                this.makeDiff(filePath.path, arr[1].filePath);
-            } else {
-                this.makeDiff(arr[1].filePath, filePath.path);
-            }
+    onFileChanged : function(fullPath, isLeftTextBox) {
+        if (isLeftTextBox) {
+            this.makeDiff(fullPath.path, this.rightTreeView.filePath);
+        } else {
+            this.makeDiff(this.leftTreeView.filePath, fullPath.path);
         }
     },
 

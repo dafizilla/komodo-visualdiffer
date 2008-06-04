@@ -74,6 +74,11 @@
 
     <vbox flex="1">
         <toolbar id="main-toolbar-file-differ" align="stretch">
+            <toolbarbutton id="change-layout-button"
+                tooltiptext="&diffviewer.layout.tooltiptext;"
+                oncommand="gFileDiffer.onSideBySide(this)"
+                class="sidebyside"
+                type="checkbox" />
             <toolbarbutton id="move-next-difference-button"
                 tooltiptext="&fileDiffer.move.next;"
                 oncommand="gFileDiffer.onMoveToDifference(event, true)"
@@ -91,31 +96,22 @@
                 tooltiptext="&diffviewer.gotoline.tooltiptext;"
                 oncommand="gFileDiffer.onGotoLine(event)"
                 class="gotoline"/>
-            <toolbarbutton id="change-layout-button"
-                tooltiptext="&diffviewer.layout.tooltiptext;"
-                oncommand="gFileDiffer.onSideBySide(this)"
-                class="sidebyside"
-                type="checkbox" />
         </toolbar>
         <box id="panel-layout" flex="1" orient="horizontal">
             <vbox flex="1">
                 <hbox>
-                    <textbox id="left-file-textbox"
-                             style="min-height: 20px;"
-                             flex="1"
-                             type="autocomplete"
-                             autocompletepopup="popupTextboxAutoComplete"
-                             autocompletesearch="mru_and_filepath"
-                             autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
-                             maxrows="10"
-                             enablehistory="true"
-                             completeselectedindex="true"
-                             tabscrolling="true"
-                             onkeypress="return gFileDiffer.onKeyPress(event)"
-                             onfocus="this.setSelectionRange(0, this.value.length);"
-                             ontextentered="gFileDiffer.onTextEntered(this, true);this.focus();"/>
-                    <button class="browse" oncommand="gFileDiffer.onBrowseFile(event, 'left-tree')"/>
-                    </hbox>
+                    <pickertoolbar
+                        id="left-file-textbox"
+                        flex="1"
+                        autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
+                        maxrows="10"
+                        browsetype="file"
+                        onbrowse="gFileDiffer.onFileChanged(fullPath, true)"
+                        ontextentered="gFileDiffer.onTextEntered(this, true);this.focus();"
+                        browseclass="browse-button"
+                        browsetooltiptext="&filediffer.browse.tooltiptext;"/>
+                </hbox>
+
                 <tree id="left-tree"
                         class="diffViewer"
                         flex="1"
@@ -140,22 +136,17 @@
             <splitter id="panel-splitter" class="panelgrip" orient="horizontal"/>
             <vbox flex="1">
                 <hbox>
-                    <textbox id="right-file-textbox"
-                             style="min-height: 20px;"
-                             flex="1"
-                             type="autocomplete"
-                             autocompletepopup="popupTextboxAutoComplete"
-                             autocompletesearch="mru_and_filepath"
-                             autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
-                             maxrows="10"
-                             enablehistory="true"
-                             completeselectedindex="true"
-                             tabscrolling="true"
-                             onkeypress="return gFileDiffer.onKeyPress(event)"
-                             onfocus="this.setSelectionRange(0, this.value.length);"
-                             ontextentered="gFileDiffer.onTextEntered(this, false);this.focus();"/>
-                    <button class="browse" oncommand="gFileDiffer.onBrowseFile(event, 'right-tree')"/>
-                    </hbox>
+                    <pickertoolbar
+                        id="right-file-textbox"
+                        flex="1"
+                        autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
+                        maxrows="10"
+                        browsetype="file"
+                        onbrowse="gFileDiffer.onFileChanged(fullPath, false)"
+                        ontextentered="gFileDiffer.onTextEntered(this, false);this.focus();"
+                        browseclass="browse-button"
+                        browsetooltiptext="&filediffer.browse.tooltiptext;"/>
+                </hbox>
                 <tree id="right-tree"
                         class="diffViewer"
                         flex="1"
@@ -178,7 +169,7 @@
                 </tree>
                 </vbox>
         </box>
-        <textbox id="left-selected-line" value="" />
-        <textbox id="right-selected-line" value="" />
+        <textbox class="diffViewer" id="left-selected-line" value="" />
+        <textbox class="diffViewer" id="right-selected-line" value="" />
     </vbox>
 </dialog>

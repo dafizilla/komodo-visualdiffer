@@ -47,41 +47,27 @@
         <vbox id="folders-box" flex="1">
             <vbox>
                 <label value="&left.folders.label;" />
-                <hbox>
-                    <textbox id="left-folder-textbox"
-                             style="min-height: 20px;"
-                             flex="1"
-                             type="autocomplete"
-                             autocompletepopup="popupTextboxAutoComplete"
-                             autocompletesearch="mru_and_filepath"
-                             autocompletesearchparam="mru: visual_differ_left_folders; maxmru: 10"
-                             maxrows="10"
-                             enablehistory="true"
-                             completeselectedindex="true"
-                             tabscrolling="true"/>
-                    <button class="browse"
-                        tooltiptext="&folderdiffer.browse.tooltiptext;"
-                        oncommand="gChooseCompare.onBrowse(event, 'left-folder-textbox', 'folder')"/>
-                </hbox>
+                <pickertoolbar
+                    id="left-folder-textbox"
+                    flex="1"
+                    autocompletesearchparam="mru: visual_differ_left_folders; maxmru: 10"
+                    maxrows="10"
+                    browsetype="folder"
+                    browseclass="browse-button"
+                    browsetooltiptext="&folderdiffer.browse.tooltiptext;"/>
             </vbox>
 
             <vbox>
                 <label value="&right.folders.label;" />
                 <hbox>
-                    <textbox id="right-folder-textbox"
-                             style="min-height: 20px;"
-                             flex="1"
-                             type="autocomplete"
-                             autocompletepopup="popupTextboxAutoComplete"
-                             autocompletesearch="mru_and_filepath"
-                             autocompletesearchparam="mru: visual_differ_right_folders; maxmru: 10"
-                             maxrows="10"
-                             enablehistory="true"
-                             completeselectedindex="true"
-                             tabscrolling="true"/>
-                    <button class="browse"
-                        tooltiptext="&folderdiffer.browse.tooltiptext;"
-                        oncommand="gChooseCompare.onBrowse(event, 'right-folder-textbox', 'folder')"/>
+                    <pickertoolbar
+                        id="right-folder-textbox"
+                        flex="1"
+                        autocompletesearchparam="mru: visual_differ_right_folders; maxmru: 10"
+                        maxrows="10"
+                        browsetype="folder"
+                        browseclass="browse-button"
+                        browsetooltiptext="&folderdiffer.browse.tooltiptext;"/>
                 </hbox>
             </vbox>
         </vbox>
@@ -90,40 +76,28 @@
             <vbox>
                 <label value="&left.file.label;" />
                 <hbox>
-                    <textbox id="left-file-textbox"
-                             style="min-height: 20px;"
-                             flex="1"
-                             type="autocomplete"
-                             autocompletepopup="popupTextboxAutoComplete"
-                             autocompletesearch="mru_and_filepath"
-                             autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
-                             maxrows="10"
-                             enablehistory="true"
-                             completeselectedindex="true"
-                             tabscrolling="true"/>
-                    <button class="browse"
-                        tooltiptext="&filediffer.browse.tooltiptext;"
-                        oncommand="gChooseCompare.onBrowse(event, 'left-file-textbox', 'file')"/>
+                    <pickertoolbar
+                        id="left-file-textbox"
+                        flex="1"
+                        autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
+                        maxrows="10"
+                        browsetype="file"
+                        browseclass="browse-button"
+                        browsetooltiptext="&filediffer.browse.tooltiptext;"/>
                 </hbox>
             </vbox>
 
             <vbox>
                 <label value="&right.file.label;" />
                 <hbox>
-                    <textbox id="right-file-textbox"
-                             style="min-height: 20px;"
-                             flex="1"
-                             type="autocomplete"
-                             autocompletepopup="popupTextboxAutoComplete"
-                             autocompletesearch="mru_and_filepath"
-                             autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
-                             maxrows="10"
-                             enablehistory="true"
-                             completeselectedindex="true"
-                             tabscrolling="true"/>
-                    <button class="browse"
-                        tooltiptext="&filediffer.browse.tooltiptext;"
-                        oncommand="gChooseCompare.onBrowse(event, 'right-file-textbox', 'file')"/>
+                    <pickertoolbar
+                        id="right-file-textbox"
+                        flex="1"
+                        autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
+                        maxrows="10"
+                        browsetype="file"
+                        browseclass="browse-button"
+                        browsetooltiptext="&filediffer.browse.tooltiptext;"/>
                 </hbox>
             </vbox>
         </vbox>

@@ -88,26 +88,28 @@ var gChooseCompare = {
 
         if (this.radioGroup.selectedItem.id == "folders-radio") {
             retVal.compareFiles = false;
-            if (this.checkDirectory(this.leftFolderTextBox)
-                && this.checkDirectory(this.rightFolderTextBox)) {
+            var errorMessage = VisualDifferCommon.getLocalizedMessage("invalid.folder");
+            if (this.leftFolderTextBox.isFileValid(errorMessage)
+                && this.rightFolderTextBox.isFileValid(errorMessage)) {
                 retVal.leftPath = this.leftFolderTextBox.value;
                 retVal.rightPath = this.rightFolderTextBox.value;
 
-                ko.mru.addFromACTextbox(this.leftFolderTextBox);
-                ko.mru.addFromACTextbox(this.rightFolderTextBox);
+                this.leftFolderTextBox.addToMRU();
+                this.rightFolderTextBox.addToMRU();
                 this.setupFolderSessionSelected();
             } else {
                 return false;
             }
         } else {
             retVal.compareFiles = true;
-            if (this.checkFile(this.leftFileTextBox)
-                && this.checkFile(this.rightFileTextBox)) {
+            var errorMessage = VisualDifferCommon.getLocalizedMessage("invalid.file");
+            if (this.leftFileTextBox.isFileValid(errorMessage)
+                && this.rightFileTextBox.isFileValid(errorMessage)) {
                 retVal.leftPath = this.leftFileTextBox.value;
                 retVal.rightPath = this.rightFileTextBox.value;
 
-                ko.mru.addFromACTextbox(this.leftFileTextBox);
-                ko.mru.addFromACTextbox(this.rightFileTextBox);
+                this.leftFileTextBox.addToMRU();
+                this.rightFileTextBox.addToMRU();
             } else {
                 return false;
             }
@@ -131,36 +133,6 @@ var gChooseCompare = {
         }
     },
 
-    checkDirectory : function(textBox) {
-        try {
-            var file = VisualDifferCommon.makeLocalFile(textBox.value);
-            if (file.exists() && file.isDirectory()) {
-                return true;
-            }
-        } catch (err) {
-            VisualDifferCommon.log("checkDirectory = " + err);
-        }
-        alert(VisualDifferCommon.getLocalizedMessage("invalid.folder"));
-        textBox.setSelectionRange(0, textBox.value.length);
-        textBox.focus();
-
-        return false;
-    },
-
-    checkFile : function(textBox) {
-        try {
-            var file = VisualDifferCommon.makeLocalFile(textBox.value);
-            if (file.exists() && file.isFile()) {
-                return true;
-            }
-        } catch (err) {
-            VisualDifferCommon.log("checkFile = " + err);
-        }
-        alert(VisualDifferCommon.getLocalizedMessage("invalid.file"));
-        textBox.setSelectionRange(0, textBox.value.length);
-        return false;
-    },
-
     onCancel : function() {
         var retVal = window.arguments[0];
         retVal.isOk = false;
@@ -180,19 +152,6 @@ var gChooseCompare = {
         if (showItem) {
             document.getElementById(showItem).removeAttribute("collapsed");
             document.getElementById(hideItem).setAttribute("collapsed", "true");
-        }
-    },
-
-    onBrowse : function(event, targetId, pickType) {
-        var target = document.getElementById(targetId);
-
-        if (pickType == "file") {
-            VisualDifferCommon.browseFile(target.value, null, target);
-        } else if (pickType == "folder") {
-            VisualDifferCommon.browseDirectory(target.value, null, target);
-        } else {
-            alert("Invalid pickType = " + pickType);
-            VisualDifferCommon.log("Invalid pickType = " + pickType);
         }
     },
 
@@ -277,5 +236,4 @@ var gChooseCompare = {
             }
         }
     }
-    
 };

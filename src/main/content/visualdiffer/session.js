@@ -40,6 +40,7 @@ function VisualDifferSession(leftPath, rightPath) {
     this.rightPath = rightPath;
     this.comparator = new VisualDifferComparator();
     this.fileFilter = new VisualDifferFileFilter();
+    this.manager = null;
 }
 
 VisualDifferSession.prototype = {
@@ -70,6 +71,7 @@ VisualDifferSession.prototype = {
         newSession.rightPath = this.rightPath;
         newSession.comparator = this.comparator.clone();
         newSession.fileFilter = this.fileFilter.clone();
+        newSession.manager = this.manager;
 
         return newSession;
     }
@@ -311,10 +313,10 @@ VisualDifferFileFilter.prototype = {
 
     clone : function() {
         var newFileFilter = new VisualDifferFileFilter();
-        newFileFilter.includeFilesArray = this.includeFilesArray;
-        newFileFilter.includeFoldersArray = this.includeFoldersArray;
-        newFileFilter.excludeFilesArray = this.excludeFilesArray;
-        newFileFilter.excludeFoldersArray = this.excludeFoldersArray;
+        newFileFilter.includeFilesArray = this.includeFilesArray.slice(0);
+        newFileFilter.includeFoldersArray = this.includeFoldersArray.slice(0);
+        newFileFilter.excludeFilesArray = this.excludeFilesArray.slice(0);
+        newFileFilter.excludeFoldersArray = this.excludeFoldersArray.slice(0);
 
         return newFileFilter;
     }

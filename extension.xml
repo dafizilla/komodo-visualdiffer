@@ -1,5 +1,5 @@
 <!DOCTYPE extension [
-<!ENTITY extension.version "0.9.1">
+<!ENTITY extension.version "1.0">
 ]>
 
 <extension name="visualdiffer">
@@ -57,12 +57,12 @@
             <maxVersion>4.*</maxVersion>
         </application>
     
-        <application>
-            <description>OpenKomodo Snapdragon</description>
-            <id>{2cb9d397-8ec9-4211-bd89-7fea34120af6}</id>
-            <minVersion>0</minVersion>
-            <maxVersion>1.*</maxVersion>
-        </application>
+        <!--<application>-->
+        <!--    <description>OpenKomodo Snapdragon</description>-->
+        <!--    <id>{2cb9d397-8ec9-4211-bd89-7fea34120af6}</id>-->
+        <!--    <minVersion>0</minVersion>-->
+        <!--    <maxVersion>1.*</maxVersion>-->
+        <!--</application>-->
     </compatibility>
 
     <contributors>
