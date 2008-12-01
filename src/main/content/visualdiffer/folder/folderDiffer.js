@@ -49,31 +49,31 @@ var gFolderDiffer = {
         try {
             var leftFolder = VisualDifferCommon.makeLocalFile(leftPath);
             var rightFolder = VisualDifferCommon.makeLocalFile(rightPath);
-    
+
             if (leftFolder.isDirectory() && rightFolder.isDirectory()) {
                 window.setCursor("wait");
-    
+
                 var fileFilter = this.useFileFilter ? this.session.fileFilter : null;
                 var leftTree = DiffCommon.getDirectoryTree(leftPath, true, fileFilter);
                 var rightTree = DiffCommon.getDirectoryTree(rightPath, true, fileFilter);
                 // Ensure comparator is ready to compare
                 this.session.comparator.prepare();
-    
+
                 DiffCommon.alignFolderDiff(leftTree[0].subfolders,
                                            rightTree[0].subfolders,
                                            this.session.comparator);
-    
+
                 this.leftTreeView = new FolderDifferTreeView(leftTree[0],
                             document.getElementById("left-tree"));
                 this.rightTreeView = new FolderDifferTreeView(rightTree[0],
                             document.getElementById("right-tree"));
-    
+
                 this.leftTreeView.otherView = this.rightTreeView;
                 this.rightTreeView.otherView = this.leftTreeView;
-    
+
                 this.safeSelectIndex(this.leftTreeView, 0);
                 this.leftTreeView.refresh();
-    
+
                 this.updateInputBoxes(leftPath, rightPath, saveMRU);
                 window.setCursor("auto");
             }
@@ -129,7 +129,7 @@ var gFolderDiffer = {
         this.makeDiff(this.session.leftPath, this.session.rightPath, true);
         this.leftTreeView.treeElement.focus();
     },
-    
+
     fillSessionMenu : function(removeAllItems) {
         if (removeAllItems) {
             this.sessionMenuList.removeAllItems();
@@ -578,7 +578,7 @@ var gFolderDiffer = {
             alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
             return;
         }
-        
+
         var idx = this.session.manager.findSessionIndexByName(newName);
         if (idx < 0) {
             var newSession = this.createSessionFromCurrent(newName);
@@ -610,10 +610,10 @@ var gFolderDiffer = {
         newSession.name = newName;
         newSession.leftPath = this.leftFolderTextBox.value;
         newSession.rightPath = this.rightFolderTextBox.value;
-        
+
         return newSession;
     },
-    
+
     onShowInFileManager : function(event) {
         var arr = this.getTreeViewSortedById(
                     document.commandDispatcher.focusedElement.id);

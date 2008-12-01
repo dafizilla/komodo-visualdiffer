@@ -197,7 +197,7 @@ var gChooseCompare = {
             this.onSelectSession();
         }
     },
-    
+
     onRenameSession : function() {
         var idx = this.sessionList.selectedIndex;
         if (idx >= 0) {
@@ -208,7 +208,7 @@ var gChooseCompare = {
             if (newName == null || this.data.manager.sessions[idx].name == newName) {
                 return;
             }
-    
+
             if (VisualDifferCommon.trim(newName).length == 0) {
                 alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
                 return;
@@ -219,7 +219,7 @@ var gChooseCompare = {
                 this.data.manager.sessions[idx].name = newName;
                 this.data.manager.sortSessions();
                 var newPos = this.data.manager.findSessionIndexByName(newName);
-                
+
                 this.sessionList.removeItemAt(idx);
 
                 // Check position due to a bug in insertItemAt that

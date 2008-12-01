@@ -105,7 +105,7 @@
       <method name="onBrowseUp">
         <body><![CDATA[
         var filePath = VisualDifferCommon.makeLocalFile(this.value);
-        
+
         if (filePath.exists() && filePath.parent) {
           this.value = filePath.parent.path;
           if (this._onBrowseUpCallback) {
@@ -157,7 +157,7 @@
           if (errorMessage) {
             alert(errorMessage);
           }
-  
+
           return false;
         ]]></body>
       </method>

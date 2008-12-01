@@ -35,44 +35,119 @@
 # ***** END LICENSE BLOCK *****
 */
 
-function showCompareDialog() {
-    try {
-        var manager = new VisualDifferSessionManager();
-        manager.readSessions();
-        var retVal = {  isOk: false,
-                        isSessionListChanged : false,
-                        compareFiles : false,
-                        leftPath : null,
-                        rightPath : null,
-                        manager : manager,
-                        selectedSessionIndex : -1};
+var visualDiffer = {
+    _leftFile : null,
+    _controller : null,
 
-        window.openDialog("chrome://visualdiffer/content/chooseCompare.xul",
-                          "_blank",
-                          "chrome,resizable=yes,dependent=yes,modal=yes",
-                            retVal);
-        if (retVal.isOk) {
-            if (retVal.isSessionListChanged) {
-                manager.writeSessions();
-            }
-            if (retVal.compareFiles) {
-                DiffCommon.openFileDiffer(retVal.leftPath, retVal.rightPath);
-            } else {
-                var session;
-                if (retVal.selectedSessionIndex < 0) {
-                    session = new VisualDifferSession(retVal.leftPath, retVal.rightPath);
-                    // don't add session into array because it is untitled
-                    // but set its session manager
-                    session.manager = manager;
-                } else {
-                    manager.selectedIndex = retVal.selectedSessionIndex;
-                    session = manager.sessions[retVal.selectedSessionIndex];
+    onLoad : function(event) {
+        this._controller = new VisualDifferController(this);
+        window.controllers.appendController(this._controller);
+        this.addListeners();
+    },
+
+    goUpdateFileMenuItems : function() {
+        this._controller.goUpdateFileMenuItems();
+    },
+
+    onUnLoad : function(event) {
+        this.removeListeners();
+        window.controllers.removeController(this._controller);
+    },
+
+    addListeners : function() {
+        var self = this;
+
+        this.handlePopupShowingTabContextMenuSetup = function(event) {
+            self.onTabContextMenu(event);
+        };
+
+        var tabContextMenu = document.getElementById("tabContextMenu");
+        if (tabContextMenu) {
+            tabContextMenu.addEventListener("popupshowing", this.handlePopupShowingTabContextMenuSetup, false);
+        }
+    },
+
+    removeListeners : function() {
+        window.removeEventListener("popupshowing",
+                                this.onTabContextMenu, false);
+    },
+
+    onTabContextMenu : function(event) {
+        var menuitem = document.getElementById("visualdiffer-compare-to");
+        goUpdateCommand("cmd_visualdiffer_compare_to");
+        if (this._controller.isCommandEnabled("cmd_visualdiffer_compare_to")) {
+            menuitem.removeAttribute("hidden");
+
+            var msg = VisualDifferCommon
+                .getFormattedMessage("compare.to", [this._leftFile.baseName]);
+
+            menuitem.setAttribute("label", msg);
+        } else {
+            menuitem.setAttribute("hidden", "true");
+        }
+    },
+
+    onSelectLeftFile : function() {
+        var currView = ko.views.manager.currentView;
+        var viewDoc = currView.document;
+
+        this._leftFile = viewDoc.file;
+    },
+
+    onCompareFiles : function() {
+        var currView = ko.views.manager.currentView;
+        var viewDoc = currView.document;
+
+        leftFileName = this._leftFile.displayPath;
+        rightFileName = viewDoc.file.displayPath;
+
+        this._leftFile = null;
+        DiffCommon.openFileDiffer(leftFileName, rightFileName);
+    },
+
+    onShowCompareDialog : function() {
+        try {
+            var manager = new VisualDifferSessionManager();
+            manager.readSessions();
+            var retVal = {  isOk: false,
+                            isSessionListChanged : false,
+                            compareFiles : false,
+                            leftPath : null,
+                            rightPath : null,
+                            manager : manager,
+                            selectedSessionIndex : -1};
+    
+            window.openDialog("chrome://visualdiffer/content/chooseCompare.xul",
+                              "_blank",
+                              "chrome,resizable=yes,dependent=yes,modal=yes",
+                                retVal);
+            if (retVal.isOk) {
+                if (retVal.isSessionListChanged) {
                     manager.writeSessions();
                 }
-                DiffCommon.openFolderDifferFromSession(session);
+                if (retVal.compareFiles) {
+                    DiffCommon.openFileDiffer(retVal.leftPath, retVal.rightPath);
+                } else {
+                    var session;
+                    if (retVal.selectedSessionIndex < 0) {
+                        session = new VisualDifferSession(retVal.leftPath, retVal.rightPath);
+                        // don't add session into array because it is untitled
+                        // but set its session manager
+                        session.manager = manager;
+                    } else {
+                        manager.selectedIndex = retVal.selectedSessionIndex;
+                        session = manager.sessions[retVal.selectedSessionIndex];
+                        manager.writeSessions();
+                    }
+                    DiffCommon.openFolderDifferFromSession(session);
+                }
             }
+        } catch (err) {
+            alert(err);
         }
-    } catch (err) {
-        alert(err);
     }
+
 }
+
+window.addEventListener("load", function(event) { visualDiffer.onLoad(event); }, false);
+window.addEventListener("unload", function(event) { visualDiffer.onUnLoad(event); }, false);

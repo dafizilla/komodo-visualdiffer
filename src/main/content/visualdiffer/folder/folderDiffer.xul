@@ -92,16 +92,16 @@
                         maxrows="10"
                         ontextentered="gFolderDiffer.onTextEntered(this, true);this.focus();"
                         browsetype="folder"
-            
+
                         onbrowse="gFolderDiffer.onFolderChanged(fullPath, true)"
                         onbrowseup="gFolderDiffer.onFolderChanged(fullPath, true)"
-            
+
                         browseclass="browse-button"
                         browsetooltiptext="&folderdiffer.browse.tooltiptext;"
-                       
+
                         browseupclass="browse-up-button"
                         browseuptooltiptext="&folderdiffer.browseup.tooltiptext;"
-                        
+
                         browseuphidden="false"/>
                 </hbox>
 
@@ -142,16 +142,16 @@
                         maxrows="10"
                         ontextentered="gFolderDiffer.onTextEntered(this, false);this.focus();"
                         browsetype="folder"
-            
+
                         onbrowse="gFolderDiffer.onFolderChanged(fullPath, false)"
                         onbrowseup="gFolderDiffer.onFolderChanged(fullPath, false)"
-            
+
                         browseclass="browse-button"
                         browsetooltiptext="&folderdiffer.browse.tooltiptext;"
-                       
+
                         browseupclass="browse-up-button"
                         browseuptooltiptext="&folderdiffer.browseup.tooltiptext;"
-                        
+
                         browseuphidden="false"/>
                 </hbox>
 

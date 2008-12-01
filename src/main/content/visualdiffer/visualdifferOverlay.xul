@@ -22,14 +22,35 @@
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonDiff.js" />
     <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/controller.js" />
+    <script type="application/x-javascript"
             src="chrome://visualdiffer/content/visualdifferOverlay.js" />
+
+    <commandset id="allcommands">
+        <commandset id="visualdiffer_filecommand"
+            oncommandupdate="visualDiffer.goUpdateFileMenuItems()"
+            commandupdater="true"
+            events="focus"/>
+    </commandset>
 
     <broadcasterset id="broadcasterset_global">
       <broadcaster
-        id="cmd_visualdiffer_main_dialog"
-        key="key_cmd_visualdiffer_main_dialog"
-        desc="&visualdiffer.main.dialog.desc;"
-        oncommand="showCompareDialog();"/>
+          id="cmd_visualdiffer_main_dialog"
+          key="key_cmd_visualdiffer_main_dialog"
+          desc="&visualdiffer.main.dialog.desc;"
+          oncommand="goDoCommand('cmd_visualdiffer_main_dialog')"/>
+
+      <broadcaster
+          id="cmd_visualdiffer_select_left_file"
+          key="key_cmd_visualdiffer_select_left_file"
+          desc="&visualdiffer.select.left.file.desc;"
+          oncommand="goDoCommand('cmd_visualdiffer_select_left_file')"/>
+
+      <broadcaster
+          id="cmd_visualdiffer_compare_to"
+          key="key_cmd_visualdiffer_compare_to"
+          desc="&visualdiffer.compare.to.desc;"
+          oncommand="goDoCommand('cmd_visualdiffer_compare_to')"/>
     </broadcasterset>
 
     <menupopup id="popup_tools">
@@ -42,5 +63,20 @@
                     insertafter="menu_compareFiles"/>
     </menupopup>
 
+    <menupopup id="tabContextMenu">
+        <menuseparator insertbefore="menu_save2"/>
+        <menuitem id="visualdiffer-compare-to"
+                  hidden="true"
+                    class="menuitem-iconic-wide"
+                    label=""
+                    observes="cmd_visualdiffer_compare_to"
+                    insertbefore="menu_save2"/>
+        <menuitem id="visualdiffer-select-left-file"
+                    class="menuitem-iconic-wide"
+                    label="&visualdiffer.select.left.file.label;"
+                    observes="cmd_visualdiffer_select_left_file"
+                    insertbefore="menu_save2"/>
+        <menuseparator insertbefore="menu_save2"/>
+    </menupopup>
 </overlay>
 
