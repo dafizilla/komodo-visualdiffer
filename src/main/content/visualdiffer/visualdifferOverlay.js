@@ -92,6 +92,7 @@ var visualDiffer = {
         var viewDoc = currView.document;
 
         this._leftFile = viewDoc.file;
+        currView.setFocus();
     },
 
     onCompareFiles : function() {
