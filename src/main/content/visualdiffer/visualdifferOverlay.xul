@@ -64,7 +64,6 @@
     </menupopup>
 
     <menupopup id="tabContextMenu">
-        <menuseparator insertbefore="menu_save2"/>
         <menuitem id="visualdiffer-compare-to"
                   hidden="true"
                     class="menuitem-iconic-wide"

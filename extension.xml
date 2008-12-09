@@ -1,5 +1,5 @@
 <!DOCTYPE extension [
-<!ENTITY extension.version "1.0.1">
+<!ENTITY extension.version "1.0.2">
 ]>
 
 <extension name="visualdiffer">

@@ -3,6 +3,6 @@
 <!ENTITY visualdiffer.main.dialog.desc "VisualDiffer: Main Dialog...">
 
 
-<!ENTITY visualdiffer.select.left.file.label "Select Left File">
-<!ENTITY visualdiffer.select.left.file.desc "VisualDiffer: Select Left File To Compare">
+<!ENTITY visualdiffer.select.left.file.label "Select Left File For Compare">
+<!ENTITY visualdiffer.select.left.file.desc "VisualDiffer: Select Left File For Compare">
 <!ENTITY visualdiffer.compare.to.desc "VisualDiffer: Compare selected file to current...">
