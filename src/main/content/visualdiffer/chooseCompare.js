@@ -157,9 +157,10 @@ var gChooseCompare = {
 
     onSelectSession : function() {
         var idx = this.sessionList.selectedIndex;
+        // If no session is selected the data index is correctly updated
+        this.data.selectedSessionIndex = idx;
         if (idx >= 0) {
             var session = this.data.manager.sessions[idx];
-            this.data.selectedSessionIndex = idx;
 
             this.leftFolderTextBox.value = session.leftPath;
             this.rightFolderTextBox.value = session.rightPath;

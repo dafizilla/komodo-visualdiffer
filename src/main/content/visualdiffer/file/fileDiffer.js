@@ -139,7 +139,7 @@ var gFileDiffer = {
         leftPath = VisualDifferCommon.makeLocalFile(window.arguments[0]).leafName;
         rightPath = VisualDifferCommon.makeLocalFile(window.arguments[1]).leafName;
             
-        title = this.bundle.getFormattedString(
+        document.title = this.bundle.getFormattedString(
                     "file.compare.title", [leftPath, rightPath]);
 
         this.makeDiff(window.arguments[0], window.arguments[1]);
