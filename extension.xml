@@ -12,6 +12,7 @@
     <iconurl-path>skin/appicon.png</iconurl-path>
     <optionurl-path/>
     <author>Davide Ficano</author>
+    <ohloh-project-name>visualdiffer</ohloh-project-name>
     
     <!-- Point to directory containing content, locales and skins. -->
     <!-- If present must start with / (slash) -->
