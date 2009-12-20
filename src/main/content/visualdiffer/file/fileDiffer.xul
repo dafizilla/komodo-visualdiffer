@@ -37,7 +37,7 @@
     <stringbundleset>
         <stringbundle id="strings" src="chrome://visualdiffer/locale/diffviewer.properties" />
     </stringbundleset>
-    
+
     <commandset id="allcommands">
         <command
             id="cmd_gotoLine"
