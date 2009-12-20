@@ -347,7 +347,7 @@ var DiffCommon = {
 
                 if (rightTree[r].parent) {
                     ++rightTree[r].parent.addedFiles;
-                    leftTree[l].parent.adjustStatus();
+                    rightTree[r].parent.adjustStatus();
                 }
 
                 r++;
