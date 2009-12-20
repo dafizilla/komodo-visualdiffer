@@ -42,7 +42,7 @@ var gComparison = {
         } catch (err) {
             alert(err);
         }
-        sizeToContent();
+        window.sizeToContent();
     },
 
     initControls : function() {

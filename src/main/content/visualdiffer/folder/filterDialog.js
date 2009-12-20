@@ -42,7 +42,7 @@ var gFilter = {
         } catch (err) {
             alert(err);
         }
-        sizeToContent();
+        window.sizeToContent();
     },
 
     initControls : function() {

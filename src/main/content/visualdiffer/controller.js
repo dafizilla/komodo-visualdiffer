@@ -77,6 +77,7 @@ VisualDifferController.prototype = {
                 break;
             case "cmd_visualdiffer_main_dialog":
                 this.visualDiffer.onShowCompareDialog();
+                break;
         }
     },
 

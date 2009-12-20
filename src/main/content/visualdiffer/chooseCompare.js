@@ -42,7 +42,7 @@ var gChooseCompare = {
         } catch (err) {
             alert(err);
         }
-        sizeToContent();
+        window.sizeToContent();
     },
 
     initControls : function() {
