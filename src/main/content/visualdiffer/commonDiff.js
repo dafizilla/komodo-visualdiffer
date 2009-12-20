@@ -45,6 +45,16 @@ function VisualLineStatus(status, number, text) {
 }
 
 /*
+ * FolderStatus contains info about a folder or file object relative to the
+ * corresponding object on the other side.
+ * The status value for folders is set with latest assigned value.
+ * If it necessary to distinguish between 'A', 'C' and 'O' the corresponding
+ * property (addedFiles, changedFiles, olderFiles) must be checked, too
+ * @param file the nsIFile object, should be null if the corresponding FolderStatus
+ * on the other side is orphan.
+ * @param subfolders array containing FolderStatus elements
+ * @param level the folder structure level
+ * @param parent the parent FolderStatus (default null)
  * status : { A = Added, S = Same, C = Changed, O = Older }
  */
 function FolderStatus(file, subfolders, level, parent) {
@@ -59,10 +69,29 @@ function FolderStatus(file, subfolders, level, parent) {
     this.changedFiles = 0;
     this.addedFiles = 0;
 
-    this.isFileObject = file && file.isFile();
-    this.isFolderObject = file && file.isDirectory();
+    this.isFileObject = file != null && file.isFile();
+    this.isFolderObject = file != null && file.isDirectory();
 }
 
+FolderStatus.prototype = {
+    /**
+     * set the status based on olderFiles, changedFiles and addedFiles properties
+     * this is mainly used for folders
+     */
+    adjustStatus : function() {
+        if (this.olderFiles == 0
+            && this.changedFiles == 0
+            && this.addedFiles == 0) {
+            this.status = "S";
+        } else if (this.changedFiles != 0) {
+            this.status = "C";
+        } else if (this.addedFiles != 0) {
+            this.status = "A";
+        } else if (this.olderFiles != 0) {
+            this.status = "O";
+        }
+    }
+}
 // Code partially inspired by Colored Diffs
 // https://addons.mozilla.org/en-US/thunderbird/addon/4268
 
@@ -223,6 +252,8 @@ var DiffCommon = {
             newLastWrittenLine = chunks[i].startNewChunkLine + chunks[i].endNewChunkLine;
         }
 
+        var lineOffset;
+
         if (chunks.length == 0) {
             oldLastWrittenLine = -1;
             newLastWrittenLine = -1;
@@ -292,11 +323,13 @@ var DiffCommon = {
                     leftTree[l].parent.olderFiles += leftTree[l].olderFiles;
                     leftTree[l].parent.changedFiles += leftTree[l].changedFiles;
                     leftTree[l].parent.addedFiles += leftTree[l].addedFiles;
+                    leftTree[l].parent.adjustStatus();
                 }
                 if (rightTree[r].parent) {
                     rightTree[r].parent.olderFiles += rightTree[r].olderFiles;
                     rightTree[r].parent.changedFiles += rightTree[r].changedFiles;
                     rightTree[r].parent.addedFiles += rightTree[r].addedFiles;
+                    rightTree[r].parent.adjustStatus();
                 }
                 l++;
                 r++;
@@ -305,6 +338,7 @@ var DiffCommon = {
 
                 if (leftTree[l].parent) {
                     ++leftTree[l].parent.addedFiles;
+                    leftTree[l].parent.adjustStatus();
                 }
 
                 l++;
@@ -313,6 +347,7 @@ var DiffCommon = {
 
                 if (rightTree[r].parent) {
                     ++rightTree[r].parent.addedFiles;
+                    leftTree[l].parent.adjustStatus();
                 }
 
                 r++;
@@ -397,5 +432,5 @@ var DiffCommon = {
 
     dirSorter : function(ea, eb) {
         return DiffCommon.compareFileTo(ea.file, eb.file);
-    },
+    }
 }

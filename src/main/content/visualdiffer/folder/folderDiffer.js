@@ -34,7 +34,6 @@
 #
 # ***** END LICENSE BLOCK *****
 */
-
 var gFolderDiffer = {
     onLoad : function() {
         try {
@@ -59,9 +58,18 @@ var gFolderDiffer = {
                 // Ensure comparator is ready to compare
                 this.session.comparator.prepare();
 
+                // get subfolders because the base folders (eg xxxTree[0]) can be different
                 DiffCommon.alignFolderDiff(leftTree[0].subfolders,
                                            rightTree[0].subfolders,
                                            this.session.comparator);
+
+                // apply display filters and reattach the results to base folders
+                leftTree[0].subfolders = this.applyDisplayFilters(
+                                        leftTree[0].subfolders,
+                                        this.session.displayFilters);
+                rightTree[0].subfolders = this.applyDisplayFilters(
+                                        rightTree[0].subfolders,
+                                        this.session.displayFilters);
 
                 this.leftTreeView = new FolderDifferTreeView(leftTree[0],
                             document.getElementById("left-tree"));
@@ -72,6 +80,12 @@ var gFolderDiffer = {
                 this.rightTreeView.otherView = this.leftTreeView;
 
                 this.safeSelectIndex(this.leftTreeView, 0);
+
+                if (this.session.expandAll) {
+                    this.onExpandAllFolders();
+                } else {
+                    this.onCollapseAllFolders();
+                }
                 this.leftTreeView.refresh();
 
                 this.updateInputBoxes(leftPath, rightPath, saveMRU);
@@ -117,6 +131,7 @@ var gFolderDiffer = {
             this.session = window.arguments[0].clone();
         }
         this.fillSessionMenu(false);
+        document.getElementById("displayfilter-menulist").value = this.session.displayFilters.filter;
 
         this.useFileFilter = true;
         // To be sure to give user feedback with wait cursor makeDiff
@@ -623,6 +638,54 @@ var gFolderDiffer = {
 
     onSessionMenuSelect : function() {
         this.session = this.session.manager.sessions[this.sessionMenuList.selectedIndex];
+        document.getElementById("displayfilter-menulist").value = this.session.displayFilters.filter;
         this.makeDiff(this.session.leftPath, this.session.rightPath, false);
+    },
+
+    onExpandAllFolders : function() {
+        this.leftTreeView.expandAllFolders();
+        this.rightTreeView.expandAllFolders();
+        this.session.expandAll = true;
+    },
+
+    onCollapseAllFolders : function() {
+        this.leftTreeView.collapseAllFolders();
+        this.rightTreeView.collapseAllFolders();
+        this.session.expandAll = false;
+    },
+
+    onChangeDisplayFolder : function(filterValue) {
+        // parseInt() otherwise isDisplayable doesn't match value
+        this.session.displayFilters.filter = parseInt(filterValue);
+        this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
+    },
+
+    applyDisplayFilters : function(folderStatusTree, displayFilters) {
+        var arr = [];
+
+        for (var i in folderStatusTree) {
+            var folderStatus = folderStatusTree[i];
+            if (this.isDisplayable(folderStatus, displayFilters)) {
+                if (folderStatus.isFolderObject) {
+                    folderStatus.subfolders = this.applyDisplayFilters(
+                                            folderStatus.subfolders,
+                                            displayFilters);
+                }
+                arr.push(folderStatus);
+            }
+        }
+        return arr;
+    },
+
+    isDisplayable : function(folderStatus, displayFilters) {
+        if (folderStatus && displayFilters) {
+            switch (displayFilters.filter) {
+                case DISPLAY_FILTER_SHOW_ALL:
+                    return true;
+                case DISPLAY_FILTER_ONLY_MISMATCHES:
+                    return folderStatus.status != "S";
+            }
+        }
+        return true;
     }
 }

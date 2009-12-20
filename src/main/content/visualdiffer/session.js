@@ -34,12 +34,25 @@
 #
 # ***** END LICENSE BLOCK *****
 */
+const DISPLAY_FILTER_SHOW_ALL = 1;
+const DISPLAY_FILTER_ONLY_MISMATCHES = 2;
+const DISPLAY_FILTER_ONLY_MATCHES = 3;
+const DISPLAY_FILTER_NO_ORPHAN = 4;
+const DISPLAY_FILTER_MISMATCHES_BUT_NO_ORPHANS = 5;
+const DISPLAY_FILTER_ONLY_ORPHANS = 6;
+const DISPLAY_FILTER_ONLY_LEFT_SIDE_NEWER = 7;
+const DISPLAY_FILTER_ONLY_RIGHT_SIDE_NEWER = 8;
+const DISPLAY_FILTER_LEFT_NEWER_AND_LEFT_ORPHANS = 9;
+const DISPLAY_FILTER_RIGHT_NEWER_AND_RIGHT_ORPHANS = 10;
+
 function VisualDifferSession(leftPath, rightPath) {
     this.name = "";
     this.leftPath = leftPath;
     this.rightPath = rightPath;
     this.comparator = new VisualDifferComparator();
     this.fileFilter = new VisualDifferFileFilter();
+    this.displayFilters = {filter : DISPLAY_FILTER_SHOW_ALL};
+    this.expandAll = false;
     this.manager = null;
 }
 
@@ -58,6 +71,14 @@ VisualDifferSession.prototype = {
         node.appendChild(document.createTextNode(this.rightPath));
         xml.appendChild(node);
 
+        node = document.createElement("session-display-filter");
+        node.appendChild(document.createTextNode(this.displayFilters.filter));
+        xml.appendChild(node);
+
+        node = document.createElement("session-expand-all");
+        node.appendChild(document.createTextNode(this.expandAll));
+        xml.appendChild(node);
+
         xml.appendChild(this.comparator.toXml());
         xml.appendChild(this.fileFilter.toXml());
 
@@ -71,6 +92,8 @@ VisualDifferSession.prototype = {
         newSession.rightPath = this.rightPath;
         newSession.comparator = this.comparator.clone();
         newSession.fileFilter = this.fileFilter.clone();
+        newSession.displayFilters.filter = this.displayFilters.filter;
+        newSession.expandAll = this.expandAll;
         newSession.manager = this.manager;
 
         return newSession;
@@ -321,5 +344,3 @@ VisualDifferFileFilter.prototype = {
         return newFileFilter;
     }
 }
-
-

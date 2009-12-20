@@ -26,6 +26,14 @@
   color: #808080;
 }
 
+.folderTreeChildren::-moz-tree-cell-text(sameFile) {
+  color: #000;
+}
+
+.folderTreeChildren::-moz-tree-cell-text(folder) {
+  color: #000;
+}
+
 /* little hack to hide the twisty */
 .folderTreeChildren::-moz-tree-twisty {
   margin-left: -2px;
@@ -69,4 +77,12 @@
 
 .save {
   list-style-image: url("chrome://visualdiffer/skin/save.png");
+}
+
+.collapseallfolders {
+  list-style-image: url("chrome://visualdiffer/skin/collapse-folders.png");
+}
+
+.expandallfolders {
+  list-style-image: url("chrome://visualdiffer/skin/expand-folders.png");
 }

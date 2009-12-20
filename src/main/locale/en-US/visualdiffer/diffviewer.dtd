@@ -26,3 +26,16 @@
 <!ENTITY folderdiffer.show.file.manager "Show in File Manager">
 <!ENTITY folderdiffer.set.base.folder "Set as Base Folder">
 <!ENTITY folderdiffer.save.session.tooltiptext "Save Session">
+<!ENTITY folderdiffer.expandallfolders.tooltiptext "Expand all Folders">
+<!ENTITY folderdiffer.collapseallfolders.tooltiptext "Collapse all Folders">
+
+<!ENTITY folderdiffer.display.filter.show.all.label "Show All">
+<!ENTITY folderdiffer.display.filter.only.mismatches.label "Only Mismatches">
+<!ENTITY folderdiffer.display.filter.only.matches.label "Only Matches">
+<!ENTITY folderdiffer.display.filter.no.orphan.label "No orphan">
+<!ENTITY folderdiffer.display.filter.mismatches.but.no.orphans.label "Mismatches but no Orphans">
+<!ENTITY folderdiffer.display.filter.only.orphans.label "Only Orphans">
+<!ENTITY folderdiffer.display.filter.only.left.side.newer.label "Only Left Side Newer">
+<!ENTITY folderdiffer.display.filter.only.right.side.newer.label "Only Right Side Newer">
+<!ENTITY folderdiffer.display.filter.left.newer.and.left.orphans.label "Left Newer and Left Orphans">
+<!ENTITY folderdiffer.display.filter.right.newer.and.right.orphans.label "Right newer and Right Orphans">

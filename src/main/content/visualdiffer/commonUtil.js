@@ -215,9 +215,7 @@ VisualDifferCommon.read = function(file) {
 }
 
 VisualDifferCommon.showFileInFileManager = function(path) {
-    Components.classes["@activestate.com/koSysUtils;1"]
-                .getService(Components.interfaces.koISysUtils)
-                .ShowFileInFileManager(path);
+    VisualDifferCommon.makeLocalFile(path).reveal();
 }
 
 VisualDifferCommon.getLocalizedMessage = function(msg) {
@@ -244,6 +242,11 @@ VisualDifferCommon.compareTo = function(str1, str2) {
     return str1 == str2 ? 0 : str1 < str2 ? -1 : 1;
 }
 
+/*
+ * Split a filename in name and extension components
+ * @param str the filename
+ * @returns a two elements array index 0 => name index 1 => extension
+ */
 VisualDifferCommon.fnSplit = function(str) {
     var pos = str.lastIndexOf(".");
     var arr = [0, 0];
@@ -259,4 +262,10 @@ VisualDifferCommon.fnSplit = function(str) {
 
 VisualDifferCommon.trim = function(str) {
     return str.replace(/^\s+/, "").replace(/\s+$/, "");
+}
+
+VisualDifferCommon.debug = function(message) {
+    Components.classes["@mozilla.org/consoleservice;1"]
+        .getService(Components.interfaces.nsIConsoleService)
+            .logStringMessage(message);
 }

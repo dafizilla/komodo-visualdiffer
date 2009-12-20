@@ -53,6 +53,20 @@
 
     <vbox flex="1">
         <toolbar id="main-toolbar-differ" align="stretch">
+            <menulist id="displayfilter-menulist" oncommand="gFolderDiffer.onChangeDisplayFolder(this.value)">
+              <menupopup id="displayfilter-menupopup">
+                <menuitem label="&folderdiffer.display.filter.show.all.label;" value="1" />
+                <menuitem label="&folderdiffer.display.filter.only.mismatches.label;" value="2" />
+                <menuitem label="&folderdiffer.display.filter.only.matches.label;" value="3" />
+                <menuitem label="&folderdiffer.display.filter.no.orphan.label;" value="4" />
+                <menuitem label="&folderdiffer.display.filter.mismatches.but.no.orphans.label;" value="5" />
+                <menuitem label="&folderdiffer.display.filter.only.orphans.label;" value="6" />
+                <menuitem label="&folderdiffer.display.filter.only.left.side.newer.label;" value="7" />
+                <menuitem label="&folderdiffer.display.filter.only.right.side.newer.label;" value="8" />
+                <menuitem label="&folderdiffer.display.filter.left.newer.and.left.orphans.label;" value="9" />
+                <menuitem label="&folderdiffer.display.filter.right.newer.and.right.orphans.label;" value="10" />
+              </menupopup>
+            </menulist>
             <toolbarbutton id="change-layout-button"
                 tooltiptext="&diffviewer.layout.tooltiptext;"
                 oncommand="gFolderDiffer.onSideBySide(this)"
@@ -73,6 +87,14 @@
                 oncommand="gFolderDiffer.onDisableFilter(this)"
                 class="disable-filter"
                 type="checkbox" />
+            <toolbarbutton id="expandallfolders-button"
+                tooltiptext="&folderdiffer.expandallfolders.tooltiptext;"
+                oncommand="gFolderDiffer.onExpandAllFolders()"
+                class="expandallfolders"/>
+            <toolbarbutton id="collapseallfolders-button"
+                tooltiptext="&folderdiffer.collapseallfolders.tooltiptext;"
+                oncommand="gFolderDiffer.onCollapseAllFolders()"
+                class="collapseallfolders"/>
             <menulist id="session-menulist"
                     style="min-width: 300px; max-width: 300px">
               <menupopup id="session-menupopup" oncommand="gFolderDiffer.onSessionMenuSelect()"/>

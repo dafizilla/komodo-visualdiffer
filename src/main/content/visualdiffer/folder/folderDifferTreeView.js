@@ -48,6 +48,14 @@ gFolderTreeProperties["O"] = Components.classes["@mozilla.org/atom-service;1"]
             .getService(Components.interfaces.nsIAtomService)
             .getAtom("olderFile");
 
+gFolderTreeProperties["S"] = Components.classes["@mozilla.org/atom-service;1"]
+            .getService(Components.interfaces.nsIAtomService)
+            .getAtom("sameFile");
+
+gFolderTreeProperties["folder"] = Components.classes["@mozilla.org/atom-service;1"]
+            .getService(Components.interfaces.nsIAtomService)
+            .getAtom("folder");
+
 gFolderTreeProperties["FileIsNull"] = Components.classes["@mozilla.org/atom-service;1"]
             .getService(Components.interfaces.nsIAtomService)
             .getAtom("FileIsNull");
@@ -70,6 +78,34 @@ function FolderDifferTreeView(baseFolder, treeElement) {
 }
 
 FolderDifferTreeView.prototype = {
+    expandAllFolders : function() {
+        var arr = [];
+        // make an array from the recursive folder structure
+        // the array elements are ordered as expected by treeview
+        var self = this;
+        DiffCommon.traverseTree(this._folderEntry, function(folderStatus) {
+            folderStatus._open = folderStatus.isFolderObject;
+            arr.push(folderStatus);
+        });
+
+        var count = this.rowCount;
+        this._visibleFolder = arr;
+        this.treebox.rowCountChanged(0, arr.length - count);
+        this.refresh();
+    },
+
+    collapseAllFolders : function() {
+        DiffCommon.traverseTree(this._folderEntry, function(folderStatus) {
+            folderStatus._open = false;
+        });
+
+        var count = this.rowCount;
+        // shallow clone the array
+        this._visibleFolder = this._folderEntry.slice(0);
+        this.treebox.rowCountChanged(0, this._visibleFolder.length - count);
+        this.refresh();
+    },
+
     invalidate : function() {
         this.treebox.invalidate();
     },
@@ -130,7 +166,7 @@ FolderDifferTreeView.prototype = {
                 + (folderStatus.olderFiles == 0 ? "0" : "1");
     },
 
-    getCellText : function(row, column){
+    getCellText : function(row, column) {
         if (this._visibleFolder[row].file) {
             switch (column.id || column) {
                 case "filename":
@@ -138,6 +174,7 @@ FolderDifferTreeView.prototype = {
                     //    + "[A" + this._visibleFolder[row].addedFiles + "]"
                     //    + "[C" + this._visibleFolder[row].changedFiles + "]"
                     //    + "[O" + this._visibleFolder[row].olderFiles + "]"
+                    //    + "[S" + this._visibleFolder[row].status + "]"
                     //    + this._visibleFolder[row].file.leafName;
                     return this._visibleFolder[row].file.leafName;
                 case "filesize":
@@ -193,7 +230,9 @@ FolderDifferTreeView.prototype = {
         var item = this._visibleFolder[row];
 
         if (item.isFileObject) {
-            prop = gFolderTreeProperties[this._visibleFolder[row].status];
+            prop = gFolderTreeProperties[item.status];
+        } else if (item.isFolderObject) {
+            prop = gFolderTreeProperties["folder"];
         } else if (!item.file) {
             prop = gFolderTreeProperties["FileIsNull"];
         }

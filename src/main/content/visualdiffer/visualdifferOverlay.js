@@ -46,7 +46,7 @@ var visualDiffer = {
     },
 
     goUpdateFileMenuItems : function() {
-        this._controller.goUpdateFileMenuItems();
+        if (this._controller) this._controller.goUpdateFileMenuItems();
     },
 
     onUnLoad : function(event) {
@@ -117,7 +117,7 @@ var visualDiffer = {
                             rightPath : null,
                             manager : manager,
                             selectedSessionIndex : -1};
-    
+
             window.openDialog("chrome://visualdiffer/content/chooseCompare.xul",
                               "_blank",
                               "chrome,resizable=yes,dependent=yes,modal=yes",

@@ -86,6 +86,8 @@ VisualDifferSessionManager.prototype = {
         var rightPath = "";
         var comparator = null;
         var fileFilter = null;
+        var displayFiltersFilter = null;
+        var expandAll = null;
 
         if (node.hasChildNodes()) {
             var nl = node.childNodes;
@@ -104,6 +106,10 @@ VisualDifferSessionManager.prototype = {
                     leftPath = curr.firstChild.nodeValue;
                 } else if (curr.nodeName == "session-right-path") {
                     rightPath = curr.firstChild.nodeValue;
+                } else if (curr.nodeName == "session-display-filter") {
+                    displayFiltersFilter = parseInt(curr.firstChild.nodeValue);
+                } else if (curr.nodeName == "session-expand-all") {
+                    expandAll = curr.firstChild.nodeValue == "true";
                 } else if (curr.nodeName == "comparator") {
                     comparator = this._dom2Comparator(curr);
                 } else if (curr.nodeName == "file-filter") {
@@ -119,6 +125,12 @@ VisualDifferSessionManager.prototype = {
         data.name = name;
         data.comparator = comparator;
         data.fileFilter = fileFilter;
+        if (displayFiltersFilter) {
+            data.displayFilters.filter = displayFiltersFilter;
+        }
+        if (expandAll) {
+            data.expandAll = expandAll;
+        }
 
         return data;
     },
