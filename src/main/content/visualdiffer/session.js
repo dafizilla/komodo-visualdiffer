@@ -249,26 +249,12 @@ VisualDifferFileFilter.prototype = {
         }
     },
 
-    //get isCaseInsensitiveSearch() {
-    //    return this._isCaseInsensitiveSearch;
-    //},
-    //
-    //set isCaseInsensitiveSearch(val) {
-    //    if (val != this._isCaseInsensitiveSearch) {
-    //        this._isCaseInsensitiveSearch = val;
-    //        this._reIncludeFilesArray = this._createREArray(this._includeFilesArray);
-    //        this._reExcludeFilesArray = this._createREArray(this._excludeFilesArray);
-    //        this._reIncludeFoldersArray = this._createREArray(this._includeFoldersArray);
-    //        this._reExcludeFoldersArray = this._createREArray(this._excludeFoldersArray);
-    //    }
-    //},
-
     _createREArray : function(arr) {
         var reArr = [];
 
         for (var i = 0; i < arr.length; i++) {
-            reArr.push(new PatternMatcher.strategies.globCase(arr[i],
-                            false/*this._isCaseInsensitiveSearch*/));
+            reArr.push(new extensions.dafizilla.visualdiffer.stringUtils.PatternMatcher.strategies.globCase(arr[i],
+                            false));
         }
 
         return reArr;
