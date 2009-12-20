@@ -66,7 +66,7 @@ var gFileDiffer = {
 
         this.updateInputBoxes(leftFilePath, rightFilePath);
         } catch (err) {
-            VisualDifferCommon.log("file makeDiff " + err);
+            VisualDifferCommon.logException(err, "file makeDiff");
             alert(err);
         }
     },

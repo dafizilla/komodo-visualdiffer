@@ -94,7 +94,7 @@ var gFolderDiffer = {
         } catch (err) {
             window.setCursor("auto");
             alert(err);
-            VisualDifferCommon.log("makeDiff : " + err);
+            VisualDifferCommon.logException(err, "makeDiff");
         }
     },
 

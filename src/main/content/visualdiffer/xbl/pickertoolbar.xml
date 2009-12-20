@@ -152,7 +152,7 @@
                 }
               }
           } catch (err) {
-              VisualDifferCommon.log("pickertoolbar.isFileValid = " + err);
+              VisualDifferCommon.logException(err, "pickertoolbar.isFileValid");
           }
           if (errorMessage) {
             alert(errorMessage);

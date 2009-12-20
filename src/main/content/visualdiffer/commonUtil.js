@@ -269,3 +269,18 @@ VisualDifferCommon.debug = function(message) {
         .getService(Components.interfaces.nsIConsoleService)
             .logStringMessage(message);
 }
+
+VisualDifferCommon.logException = function(ex, msg) {
+    var exMsg = ex;
+
+    if ("fileName" in ex) {
+        exMsg = ex.fileName + "(" + ex.lineNumber + ") : "
+            + ex.name + " - " + ex.message + "\n\n"
+            + ex.stack;
+    }
+    if (msg) {
+        exMsg = msg + "\n" + exMsg;
+    }
+    VisualDifferCommon.log(exMsg);
+    VisualDifferCommon.debug(exMsg);
+}

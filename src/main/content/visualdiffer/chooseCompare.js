@@ -115,7 +115,7 @@ var gChooseCompare = {
             }
         }
         } catch (err) {
-            VisualDifferCommon.log("chooseCompare.onAccept " + err);
+            VisualDifferCommon.logException(err, "chooseCompare.onAccept");
             alert("onAccept " + err);
         }
         retVal.isOk = true;
