@@ -63,13 +63,12 @@ var gFolderDiffer = {
                                            rightTree[0].subfolders,
                                            this.session.comparator);
 
-                // apply display filters and reattach the results to base folders
-                leftTree[0].subfolders = this.applyDisplayFilters(
+                var displayFiltered = this.applyDisplayFilters(
                                         leftTree[0].subfolders,
-                                        this.session.displayFilters);
-                rightTree[0].subfolders = this.applyDisplayFilters(
                                         rightTree[0].subfolders,
-                                        this.session.displayFilters);
+                                        this.session.displayFilters)
+                leftTree[0].subfolders = displayFiltered.left;
+                rightTree[0].subfolders = displayFiltered.right;
 
                 this.leftTreeView = new FolderDifferTreeView(leftTree[0],
                             document.getElementById("left-tree"));
@@ -161,7 +160,7 @@ var gFolderDiffer = {
         if (event.attrName == "curpos") {
             var arr = this.getTreeViewSortedById(event.target.id);
 
-            if (arr[0] && arr[1]) {
+            if (arr[0] && arr[1] && arr[0].treebox && arr[1].treebox) {
                 arr[1].treebox.scrollToRow(arr[0].treebox.getFirstVisibleRow());
             }
         }
@@ -660,30 +659,38 @@ var gFolderDiffer = {
         this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
     },
 
-    applyDisplayFilters : function(folderStatusTree, displayFilters) {
-        var arr = [];
+    applyDisplayFilters : function(leftTree, rightTree, displayFilters) {
+        var ret = { left : [], right : []};
 
-        for (var i in folderStatusTree) {
-            var folderStatus = folderStatusTree[i];
-            if (this.isDisplayable(folderStatus, displayFilters)) {
-                if (folderStatus.isFolderObject) {
-                    folderStatus.subfolders = this.applyDisplayFilters(
-                                            folderStatus.subfolders,
+        for (var i = 0; i < leftTree.length; i++) {
+            var leftFolderStatus = leftTree[i];
+            var rightFolderStatus = rightTree[i];
+
+            if (this.isDisplayable(leftFolderStatus, rightFolderStatus, displayFilters)) {
+                if (leftFolderStatus.isFolderObject || rightFolderStatus.isFolderObject) {
+                    var subs = this.applyDisplayFilters(
+                                            leftFolderStatus.subfolders,
+                                            rightFolderStatus.subfolders,
                                             displayFilters);
+                    leftFolderStatus.subfolders = subs.left;
+                    rightFolderStatus.subfolders = subs.right;
                 }
-                arr.push(folderStatus);
+                ret.left.push(leftFolderStatus);
+                ret.right.push(rightFolderStatus);
             }
         }
-        return arr;
+        return ret;
     },
 
-    isDisplayable : function(folderStatus, displayFilters) {
-        if (folderStatus && displayFilters) {
+    isDisplayable : function(leftFolderStatus, rightFolderStatus, displayFilters) {
+        if (leftFolderStatus && rightFolderStatus && displayFilters) {
             switch (displayFilters.filter) {
                 case DISPLAY_FILTER_SHOW_ALL:
                     return true;
                 case DISPLAY_FILTER_ONLY_MISMATCHES:
-                    return folderStatus.status != "S";
+                    return !(leftFolderStatus.status == "S" && rightFolderStatus.status == "S");
+                case DISPLAY_FILTER_ONLY_MATCHES:
+                    return leftFolderStatus.matchedFiles > 0;
             }
         }
         return true;

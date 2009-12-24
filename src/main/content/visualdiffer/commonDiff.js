@@ -68,6 +68,7 @@ function FolderStatus(file, subfolders, level, parent) {
     this.olderFiles = 0;
     this.changedFiles = 0;
     this.addedFiles = 0;
+    this.matchedFiles = 0;
 
     this.isFileObject = file != null && file.isFile();
     this.isFolderObject = file != null && file.isDirectory();
@@ -90,6 +91,15 @@ FolderStatus.prototype = {
         } else if (this.olderFiles != 0) {
             this.status = "O";
         }
+    },
+
+    toString : function() {
+        return "A" + this.addedFiles
+                + " C" + this.changedFiles
+                + " O" + this.olderFiles
+                + " M" + this.matchedFiles
+                + " S" + this.status
+                + (this.file ? " " + this.file.leafName : "");
     }
 }
 // Code partially inspired by Colored Diffs
@@ -274,6 +284,18 @@ var DiffCommon = {
         return [oldVisualLineStatus, newVisualLineStatus, sections];
     },
 
+    /**
+     * Align left and right FolderStatus using the specified comparator.
+     * Both left and right arrays are filled with elements representing non-file
+     * FolderStatus when necessary. If a folder is orphan on left/right side
+     * its structure (with all subfolders) is added with non-file FolderStatus
+     * on the other side.
+     * All FolderStatus properties are updated (addedFiles, status, ...),
+     * the parent properties are recomputed to reflect their descendant subfolders.
+     * @param leftTree the left FolderStatus array
+     * @param rightTree the right FolderStatus array
+     * @param comparator the comparator to use to match elements
+     */
     alignFolderDiff : function(leftTree, rightTree, comparator) {
         var l = 0;
         var r = 0;
@@ -314,6 +336,8 @@ var DiffCommon = {
                     } else {
                         leftTree[l].status = "S";
                         rightTree[r].status = "S";
+                        ++leftTree[l].matchedFiles;
+                        ++rightTree[r].matchedFiles;
                     }
                 } else {
                     this.alignFolderDiff(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
@@ -323,18 +347,24 @@ var DiffCommon = {
                     leftTree[l].parent.olderFiles += leftTree[l].olderFiles;
                     leftTree[l].parent.changedFiles += leftTree[l].changedFiles;
                     leftTree[l].parent.addedFiles += leftTree[l].addedFiles;
+                    leftTree[l].parent.matchedFiles += leftTree[l].matchedFiles;
                     leftTree[l].parent.adjustStatus();
                 }
                 if (rightTree[r].parent) {
                     rightTree[r].parent.olderFiles += rightTree[r].olderFiles;
                     rightTree[r].parent.changedFiles += rightTree[r].changedFiles;
                     rightTree[r].parent.addedFiles += rightTree[r].addedFiles;
+                    rightTree[r].parent.matchedFiles += rightTree[r].matchedFiles;
                     rightTree[r].parent.adjustStatus();
                 }
                 l++;
                 r++;
             } else if (pos < 0) {
-                rightTree.splice(r++, 0, new FolderStatus(null, null, leftTree[l].level));
+                rightTree.splice(r, 0, new FolderStatus(null, null, leftTree[l].level, rightTree[r]));
+
+                // align adding empty slots for files present only on left side
+                this.alignFolderDiff(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
+                ++r;
 
                 if (leftTree[l].parent) {
                     ++leftTree[l].parent.addedFiles;
@@ -343,7 +373,11 @@ var DiffCommon = {
 
                 l++;
             } else {
-                leftTree.splice(l++, 0, new FolderStatus(null,  null, rightTree[r].level));
+                leftTree.splice(l, 0, new FolderStatus(null,  null, rightTree[r].level, leftTree[l]));
+
+                // align adding empty slots for files present only on right side
+                this.alignFolderDiff(rightTree[r].subfolders, leftTree[l].subfolders, comparator);
+                ++l;
 
                 if (rightTree[r].parent) {
                     ++rightTree[r].parent.addedFiles;

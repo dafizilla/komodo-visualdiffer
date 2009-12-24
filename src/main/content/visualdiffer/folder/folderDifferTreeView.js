@@ -170,12 +170,7 @@ FolderDifferTreeView.prototype = {
         if (this._visibleFolder[row].file) {
             switch (column.id || column) {
                 case "filename":
-                    //return row + "---"
-                    //    + "[A" + this._visibleFolder[row].addedFiles + "]"
-                    //    + "[C" + this._visibleFolder[row].changedFiles + "]"
-                    //    + "[O" + this._visibleFolder[row].olderFiles + "]"
-                    //    + "[S" + this._visibleFolder[row].status + "]"
-                    //    + this._visibleFolder[row].file.leafName;
+                    //return this._visibleFolder[row];
                     return this._visibleFolder[row].file.leafName;
                 case "filesize":
                     if (this._visibleFolder[row].file.isFile()) {
@@ -189,7 +184,7 @@ FolderDifferTreeView.prototype = {
         //} else {
         //    switch (column.id || column) {
         //        case "filename":
-        //            return row + "--- nof";
+        //            return row + "---" + this._visibleFolder[row];
         //    }
         }
 
@@ -312,25 +307,38 @@ try {
     },
 
     toggleOpenState: function(row) {
+        this.openRowSideBySide(row, this._visibleFolder[row]._open);
+    },
+
+    /**
+     * Open or close a row and its corresponding on the other side
+     * @row the row number
+     * @param open if true open the row, otherwise close it
+     */
+    openRowSideBySide: function(row, open) {
 try {
         if (this.lockOperation) {
             return;
         }
         var item = this._visibleFolder[row];
 
-        //if (item.subfolders && !item.subfolders.length) return;
-
         this.lockOperation = true;
-        this.otherView.toggleOpenState(row);
+        // we can't simply call toggleOpenState on the other side because it can
+        // contain a non existent file object without a valid _open attribute
+        this.otherView.openRowSideBySide(row, open);
         this.lockOperation = false;
-        if (item._open) {
+        if (open) {
             item._open = false;
 
             var thisLevel = this.getLevel(row);
             var deletecount = 0;
             for (var t = row + 1; t < this._visibleFolder.length; t++) {
-                if (this.getLevel(t) > thisLevel) deletecount++;
-                else break;
+                if (this.getLevel(t) > thisLevel) {
+                    deletecount++;
+                }
+                else {
+                    break;
+                }
             }
             if (deletecount) {
                 this._visibleFolder.splice(row + 1, deletecount);
@@ -356,11 +364,9 @@ try {
         }
         this.treebox.invalidateRow(row);
 } catch (err) {
-    alert("toggleOpenState " + err);
+    alert("openRowSideBySide " + err);
 }
-
       },
-
 
     cycleCell: function(row, column) {},
     cycleHeader: function(col, elem) {},
