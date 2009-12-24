@@ -111,6 +111,16 @@ VisualDifferComparator.prototype = {
         }
     },
 
+    /**
+     * Compare two FolderStatus and modify their state properties
+     * (.status, .olderFiles, ...) based on comparison result.
+     * All defined comparators are called but at first compare that doesn't match
+     * return immediately
+     * @param leftFolderStatus left
+     * @param rightFolderStatus right
+     * @returns 0 if comparison matches, < 0 if left is "less" than right,
+     * > 0 if left is "greater" that right
+     */
     compare : function(leftFolderStatus, rightFolderStatus) {
         for (var i in this._arrFunctions) {
             var result = this._arrFunctions[i](leftFolderStatus, rightFolderStatus);
@@ -123,14 +133,48 @@ VisualDifferComparator.prototype = {
 
     _compareTimestamp : function(leftFolderStatus, rightFolderStatus) {
         if (leftFolderStatus.file && rightFolderStatus.file) {
-            return leftFolderStatus.file.lastModifiedTime - rightFolderStatus.file.lastModifiedTime;
+            var sign = leftFolderStatus.file.lastModifiedTime - rightFolderStatus.file.lastModifiedTime;
+            if (sign < 0) {
+                leftFolderStatus.status = "O";
+                rightFolderStatus.status = "C";
+                ++leftFolderStatus.olderFiles;
+                ++rightFolderStatus.changedFiles;
+            } else if (sign > 0) {
+                leftFolderStatus.status = "C";
+                rightFolderStatus.status = "O";
+                ++leftFolderStatus.changedFiles;
+                ++rightFolderStatus.olderFiles;
+            } else {
+                leftFolderStatus.status = "S";
+                rightFolderStatus.status = "S";
+                ++leftFolderStatus.matchedFiles;
+                ++rightFolderStatus.matchedFiles;
+            }
+            return sign;
         }
         return 0;
     },
 
     _compareSize : function(leftFolderStatus, rightFolderStatus) {
         if (leftFolderStatus.file && rightFolderStatus.file) {
-            return leftFolderStatus.file.fileSize - rightFolderStatus.file.fileSize;
+            var sign = leftFolderStatus.file.fileSize - rightFolderStatus.file.fileSize;
+            if (sign < 0) {
+                leftFolderStatus.status = "C";
+                rightFolderStatus.status = "C";
+                ++leftFolderStatus.changedFiles;
+                ++rightFolderStatus.changedFiles;
+            } else if (sign > 0) {
+                leftFolderStatus.status = "C";
+                rightFolderStatus.status = "C";
+                ++leftFolderStatus.changedFiles;
+                ++rightFolderStatus.changedFiles;
+            } else {
+                leftFolderStatus.status = "S";
+                rightFolderStatus.status = "S";
+                ++leftFolderStatus.matchedFiles;
+                ++rightFolderStatus.matchedFiles;
+            }
+            return sign;
         }
         return 0;
     },

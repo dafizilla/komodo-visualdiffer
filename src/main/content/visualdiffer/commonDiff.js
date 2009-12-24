@@ -331,25 +331,7 @@ var DiffCommon = {
             }
             if (pos == 0) {
                 if (leftTree[l].isFileObject && rightTree[r].isFileObject) {
-                    var diffResult = comparator.compare(leftTree[l], rightTree[r]);
-                    if (diffResult < 0) {
-                        leftTree[l].status = "O";
-                        rightTree[r].status = "C";
-
-                        ++leftTree[l].olderFiles;
-                        ++rightTree[r].changedFiles;
-                    } else if (diffResult > 0) {
-                        leftTree[l].status = "C";
-                        rightTree[r].status = "O";
-
-                        ++leftTree[l].changedFiles;
-                        ++rightTree[r].olderFiles;
-                    } else {
-                        leftTree[l].status = "S";
-                        rightTree[r].status = "S";
-                        ++leftTree[l].matchedFiles;
-                        ++rightTree[r].matchedFiles;
-                    }
+                    comparator.compare(leftTree[l], rightTree[r]);
                 } else {
                     this.alignFolderDiff(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
                 }
