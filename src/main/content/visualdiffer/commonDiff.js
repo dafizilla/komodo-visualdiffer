@@ -35,6 +35,17 @@
 # ***** END LICENSE BLOCK *****
 */
 
+const DISPLAY_FILTER_SHOW_ALL = 1;
+const DISPLAY_FILTER_ONLY_MISMATCHES = 2;
+const DISPLAY_FILTER_ONLY_MATCHES = 3;
+const DISPLAY_FILTER_NO_ORPHAN = 4;
+const DISPLAY_FILTER_MISMATCHES_BUT_NO_ORPHANS = 5;
+const DISPLAY_FILTER_ONLY_ORPHANS = 6;
+const DISPLAY_FILTER_ONLY_LEFT_SIDE_NEWER = 7;
+const DISPLAY_FILTER_ONLY_RIGHT_SIDE_NEWER = 8;
+const DISPLAY_FILTER_LEFT_NEWER_AND_LEFT_ORPHANS = 9;
+const DISPLAY_FILTER_RIGHT_NEWER_AND_RIGHT_ORPHANS = 10;
+
 /**
  * status : { A = Added, D = Deleted, S = Same, C = Changed, M = Missing }
  */
@@ -360,6 +371,7 @@ var DiffCommon = {
                 l++;
                 r++;
             } else if (pos < 0) {
+                ++leftTree[l].addedFiles;
                 rightTree.splice(r, 0, new FolderStatus(null, null, leftTree[l].level, rightTree[r]));
 
                 // align adding empty slots for files present only on left side
@@ -373,6 +385,7 @@ var DiffCommon = {
 
                 l++;
             } else {
+                ++rightTree[r].addedFiles;
                 leftTree.splice(l, 0, new FolderStatus(null,  null, rightTree[r].level, leftTree[l]));
 
                 // align adding empty slots for files present only on right side
@@ -466,5 +479,61 @@ var DiffCommon = {
 
     dirSorter : function(ea, eb) {
         return DiffCommon.compareFileTo(ea.file, eb.file);
+    },
+
+    /**
+     * Apply display filters to FolderStatus trees
+     * @param leftTree array containing folderStatus elements
+     * @param rightTree array containing folderStatus elements
+     * @param displayFilters the display filter value
+     * @returns object with properties {left, right}, the properties are arrays
+     * containing folderStatus elements matching displayFilters
+     */
+    applyDisplayFilters : function(leftTree, rightTree, displayFilters) {
+        var ret = { left : [], right : []};
+
+        for (var i = 0; i < leftTree.length; i++) {
+            var left = leftTree[i];
+            var right = rightTree[i];
+
+            if (DiffCommon.isDisplayable(left, right, displayFilters)) {
+                if (left.isFolderObject || right.isFolderObject) {
+                    var subs = DiffCommon.applyDisplayFilters(
+                                            left.subfolders,
+                                            right.subfolders,
+                                            displayFilters);
+                    left.subfolders = subs.left;
+                    right.subfolders = subs.right;
+                }
+                ret.left.push(left);
+                ret.right.push(right);
+            }
+        }
+        return ret;
+    },
+
+    /**
+     * Determine if left and right can be displayed based on displayFilters
+     * @param left FolderStatus
+     * @param right FolderStatus
+     * @param displayFilters the display filter value
+     * @returns true if displayable, false otherwise
+     */
+    isDisplayable : function(left, right, displayFilters) {
+        if (left && right && displayFilters) {
+            switch (displayFilters.filter) {
+                case DISPLAY_FILTER_SHOW_ALL:
+                    return true;
+                case DISPLAY_FILTER_ONLY_MISMATCHES:
+                    return !(left.status == "S" && right.status == "S");
+                case DISPLAY_FILTER_ONLY_MATCHES:
+                    return left.matchedFiles > 0;
+                case DISPLAY_FILTER_NO_ORPHAN:
+                    return left.addedFiles == 0 && right.addedFiles == 0;
+                case DISPLAY_FILTER_ONLY_ORPHANS:
+                    return left.addedFiles > 0 || right.addedFiles > 0;
+            }
+        }
+        return true;
     }
 }

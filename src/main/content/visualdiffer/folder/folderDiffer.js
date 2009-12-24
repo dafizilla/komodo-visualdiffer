@@ -63,7 +63,7 @@ var gFolderDiffer = {
                                            rightTree[0].subfolders,
                                            this.session.comparator);
 
-                var displayFiltered = this.applyDisplayFilters(
+                var displayFiltered = DiffCommon.applyDisplayFilters(
                                         leftTree[0].subfolders,
                                         rightTree[0].subfolders,
                                         this.session.displayFilters)
@@ -657,42 +657,5 @@ var gFolderDiffer = {
         // parseInt() otherwise isDisplayable doesn't match value
         this.session.displayFilters.filter = parseInt(filterValue);
         this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
-    },
-
-    applyDisplayFilters : function(leftTree, rightTree, displayFilters) {
-        var ret = { left : [], right : []};
-
-        for (var i = 0; i < leftTree.length; i++) {
-            var leftFolderStatus = leftTree[i];
-            var rightFolderStatus = rightTree[i];
-
-            if (this.isDisplayable(leftFolderStatus, rightFolderStatus, displayFilters)) {
-                if (leftFolderStatus.isFolderObject || rightFolderStatus.isFolderObject) {
-                    var subs = this.applyDisplayFilters(
-                                            leftFolderStatus.subfolders,
-                                            rightFolderStatus.subfolders,
-                                            displayFilters);
-                    leftFolderStatus.subfolders = subs.left;
-                    rightFolderStatus.subfolders = subs.right;
-                }
-                ret.left.push(leftFolderStatus);
-                ret.right.push(rightFolderStatus);
-            }
-        }
-        return ret;
-    },
-
-    isDisplayable : function(leftFolderStatus, rightFolderStatus, displayFilters) {
-        if (leftFolderStatus && rightFolderStatus && displayFilters) {
-            switch (displayFilters.filter) {
-                case DISPLAY_FILTER_SHOW_ALL:
-                    return true;
-                case DISPLAY_FILTER_ONLY_MISMATCHES:
-                    return !(leftFolderStatus.status == "S" && rightFolderStatus.status == "S");
-                case DISPLAY_FILTER_ONLY_MATCHES:
-                    return leftFolderStatus.matchedFiles > 0;
-            }
-        }
-        return true;
     }
 }
