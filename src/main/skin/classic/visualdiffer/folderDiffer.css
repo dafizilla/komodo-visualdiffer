@@ -34,6 +34,10 @@
   color: #000;
 }
 
+.folderTreeChildren::-moz-tree-cell-text(subfoldersSize) {
+  color: #AAA;
+}
+
 /* little hack to hide the twisty */
 .folderTreeChildren::-moz-tree-twisty {
   margin-left: -2px;

@@ -59,12 +59,12 @@
                 <menuitem label="&folderdiffer.display.filter.only.mismatches.label;" value="2" />
                 <menuitem label="&folderdiffer.display.filter.only.matches.label;" value="3" />
                 <menuitem label="&folderdiffer.display.filter.no.orphan.label;" value="4" />
-                <menuitem label="&folderdiffer.display.filter.mismatches.but.no.orphans.label;" value="5" />
-                <menuitem label="&folderdiffer.display.filter.only.orphans.label;" value="6" />
-                <menuitem label="&folderdiffer.display.filter.only.left.side.newer.label;" value="7" />
-                <menuitem label="&folderdiffer.display.filter.only.right.side.newer.label;" value="8" />
-                <menuitem label="&folderdiffer.display.filter.left.newer.and.left.orphans.label;" value="9" />
-                <menuitem label="&folderdiffer.display.filter.right.newer.and.right.orphans.label;" value="10" />
+                <menuitem label="&folderdiffer.display.filter.mismatches.but.no.orphans.label;" value="5" disabled="true" />
+                <menuitem label="&folderdiffer.display.filter.only.orphans.label;" value="6" disabled="true" />
+                <menuitem label="&folderdiffer.display.filter.only.left.side.newer.label;" value="7" disabled="true" />
+                <menuitem label="&folderdiffer.display.filter.only.right.side.newer.label;" value="8" disabled="true" />
+                <menuitem label="&folderdiffer.display.filter.left.newer.and.left.orphans.label;" value="9" disabled="true" />
+                <menuitem label="&folderdiffer.display.filter.right.newer.and.right.orphans.label;" value="10" disabled="true" />
               </menupopup>
             </menulist>
             <toolbarbutton id="change-layout-button"

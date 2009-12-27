@@ -80,32 +80,16 @@ function FolderStatus(file, subfolders, level, parent) {
     this.changedFiles = 0;
     this.addedFiles = 0;
     this.matchedFiles = 0;
+    this.subfoldersSize = 0;
 
     this.isFileObject = file != null && file.isFile();
     this.isFolderObject = file != null && file.isDirectory();
 }
 
 FolderStatus.prototype = {
-    /**
-     * set the status based on olderFiles, changedFiles and addedFiles properties
-     * this is mainly used for folders
-     */
-    adjustStatus : function() {
-        if (this.olderFiles == 0
-            && this.changedFiles == 0
-            && this.addedFiles == 0) {
-            this.status = "S";
-        } else if (this.changedFiles != 0) {
-            this.status = "C";
-        } else if (this.addedFiles != 0) {
-            this.status = "A";
-        } else if (this.olderFiles != 0) {
-            this.status = "O";
-        }
-    },
-
     toString : function() {
-        return "A" + this.addedFiles
+        return  this.subfoldersSize
+                + "A" + this.addedFiles
                 + " C" + this.changedFiles
                 + " O" + this.olderFiles
                 + " M" + this.matchedFiles
@@ -113,18 +97,8 @@ FolderStatus.prototype = {
                 + (this.file ? " " + this.file.leafName : "");
     }
 }
-// Code partially inspired by Colored Diffs
-// https://addons.mozilla.org/en-US/thunderbird/addon/4268
 
 var DiffCommon = {
-    getUnifiedDiffContent : function(leftFilePath, rightFilePath) {
-        var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
-                      .createInstance(Components.interfaces.koIDiff);
-        unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);
-
-        return unifiedDiff.diff;
-    },
-
     openFolderDifferFromSession : function(session) {
         window.openDialog("chrome://visualdiffer/content/folder/folderDiffer.xul",
                           "_blank",
@@ -132,167 +106,17 @@ var DiffCommon = {
                           session);
     },
 
+    /**
+     * Open the file differ window
+     * @param leftFilePath the path file to show on left side, can be null
+     * @param rightFilePath the path file to show on right side, can be null
+     */
     openFileDiffer : function(leftFilePath, rightFilePath) {
         window.openDialog("chrome://visualdiffer/content/file/fileDiffer.xul",
                           "_blank",
                           "chrome,resizable=yes,dependent=no",
                             leftFilePath,
                             rightFilePath);
-    },
-
-    createVisualDiffInfo : function (lines, oldFileContent, newFileContent) {
-        var currLine = 0;
-        var chunks = [];
-
-        while (currLine < lines.length) {
-            var line = lines[currLine];
-            var regExpRes = line.match(/^@@\s+\-(\d+),(\d+)\s+\+(\d+),(\d+)\s+@@/);
-            if (!regExpRes) {
-                ++currLine;
-                continue;
-            }
-            var oldChunkLine = Number(regExpRes[1]);
-            var newChunkLine = Number(regExpRes[3]);
-
-            var alignInfo = { lineStatus : [], oldLineCount : 0, newLineCount : 0};
-
-            while (++currLine < lines.length) {
-                line = lines[currLine];
-
-                if (/^\-(.*)$/.test(line)) {
-                    alignInfo.lineStatus[alignInfo.oldLineCount] = "C";
-                    ++oldChunkLine;
-                    ++alignInfo.oldLineCount;
-                } else if (/^\+(.*)$/.test(line)) {
-                    alignInfo.lineStatus[alignInfo.newLineCount] = "C";
-                    ++newChunkLine;
-                    ++alignInfo.newLineCount;
-                } else if (/^ (.*)$/.test(line)) {
-                    this._alignLines(alignInfo);
-                    ++oldChunkLine;
-                    ++alignInfo.oldLineCount;
-                    ++newChunkLine;
-                    ++alignInfo.newLineCount;
-                    alignInfo.lineStatus.push("S");
-                } else {
-                    break;
-                }
-            }
-            this._alignLines(alignInfo);
-
-            chunks.push({
-                        startOldChunkLine : Number(regExpRes[1]),
-                        endOldChunkLine : Number(regExpRes[2]),
-                        startNewChunkLine : Number(regExpRes[3]),
-                        endNewChunkLine : Number(regExpRes[4]),
-                        lineStatus : alignInfo.lineStatus});
-        }
-
-        var arr = this._prepareArraysLine(chunks, oldFileContent, newFileContent);
-        return {
-            oldVisualLineStatus : arr[0],
-            newVisualLineStatus : arr[1],
-            sections : arr[2],
-            oldRealLines : oldFileContent,
-            newRealLines : newFileContent,
-            chunks : chunks
-        };
-    },
-
-    _alignLines : function(alignInfo) {
-        while (alignInfo.oldLineCount < alignInfo.newLineCount) {
-            alignInfo.lineStatus[alignInfo.oldLineCount++] = "A";
-        }
-        while (alignInfo.oldLineCount > alignInfo.newLineCount) {
-            alignInfo.lineStatus[alignInfo.newLineCount++] = "D";
-        }
-    },
-
-    _prepareArraysLine : function (chunks, oldFileContent, newFileContent) {
-        var oldLastWrittenLine = 1;
-        var newLastWrittenLine = 1;
-        var oldVisualLineStatus = [];
-        var newVisualLineStatus = [];
-        var sections = [];
-
-        for (var i = 0; i < chunks.length; i++) {
-            var lineStatus = chunks[i].lineStatus;
-
-            // add all preceding same lines on old
-            for (var ii = oldLastWrittenLine; ii < chunks[i].startOldChunkLine; ii++) {
-                oldVisualLineStatus.push(new VisualLineStatus("S", ii, oldFileContent[ii - 1]));
-            }
-
-            // add all preceding same lines on new
-            for (var ii = newLastWrittenLine; ii < chunks[i].startNewChunkLine; ii++) {
-                newVisualLineStatus.push(new VisualLineStatus("S", ii, newFileContent[ii - 1]));
-            }
-
-            oldLastWrittenLine = chunks[i].startOldChunkLine - 1;
-            newLastWrittenLine = chunks[i].startNewChunkLine - 1;
-            var sectionFound = false;
-
-            for (var j = 0; j < lineStatus.length; j++) {
-                if (lineStatus[j] == "S" || lineStatus[j] == "C") {
-                    oldVisualLineStatus.push(new VisualLineStatus(
-                            lineStatus[j],
-                            oldLastWrittenLine + 1,
-                            oldFileContent[oldLastWrittenLine++]));
-                    newVisualLineStatus.push(new VisualLineStatus(
-                            lineStatus[j],
-                            newLastWrittenLine + 1,
-                            newFileContent[newLastWrittenLine++]));
-                } else {
-                    if (lineStatus[j] == "D") {
-                        oldVisualLineStatus.push(new VisualLineStatus(
-                            "D",
-                            oldLastWrittenLine + 1,
-                            oldFileContent[oldLastWrittenLine++]));
-                        newVisualLineStatus.push(new VisualLineStatus("M", -1, ""));
-                    } else if (lineStatus[j] == "A") {
-                        oldVisualLineStatus.push(new VisualLineStatus("M", -1, ""));
-                        newVisualLineStatus.push(new VisualLineStatus(
-                            "A",
-                            newLastWrittenLine + 1,
-                            newFileContent[newLastWrittenLine++]));
-                    }
-                }
-                if (lineStatus[j] == "S") {
-                    sectionFound = false;
-                } else {
-                    if (sectionFound == false) {
-                        sectionFound = true;
-                        sections.push({start: oldVisualLineStatus.length,
-                                      end: oldVisualLineStatus.length});
-                    } else {
-                        ++sections[sections.length - 1].end;
-                    }
-                }
-            }
-            oldLastWrittenLine = chunks[i].startOldChunkLine + chunks[i].endOldChunkLine;
-            newLastWrittenLine = chunks[i].startNewChunkLine + chunks[i].endNewChunkLine;
-        }
-
-        var lineOffset;
-
-        if (chunks.length == 0) {
-            oldLastWrittenLine = -1;
-            newLastWrittenLine = -1;
-            lineOffset = 1;
-        } else {
-            lineOffset = 0;
-        }
-
-        // add all following same lines on old
-        for (var ii = oldLastWrittenLine + 1; ii < oldFileContent.length; ii++) {
-            oldVisualLineStatus.push(new VisualLineStatus("S", lineOffset + ii, oldFileContent[ii]));
-        }
-
-        // add all following same lines on new
-        for (var ii = newLastWrittenLine + 1; ii < newFileContent.length; ii++) {
-            newVisualLineStatus.push(new VisualLineStatus("S", lineOffset + ii, newFileContent[ii]));
-        }
-        return [oldVisualLineStatus, newVisualLineStatus, sections];
     },
 
     /**
@@ -307,7 +131,7 @@ var DiffCommon = {
      * @param rightTree the right FolderStatus array
      * @param comparator the comparator to use to match elements
      */
-    alignFolderDiff : function(leftTree, rightTree, comparator) {
+    alignFolderStatus : function(leftTree, rightTree, comparator) {
         var l = 0;
         var r = 0;
 
@@ -333,7 +157,7 @@ var DiffCommon = {
                 if (leftTree[l].isFileObject && rightTree[r].isFileObject) {
                     comparator.compare(leftTree[l], rightTree[r]);
                 } else {
-                    this.alignFolderDiff(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
+                    this.alignFolderStatus(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
                 }
 
                 if (leftTree[l].parent) {
@@ -341,14 +165,16 @@ var DiffCommon = {
                     leftTree[l].parent.changedFiles += leftTree[l].changedFiles;
                     leftTree[l].parent.addedFiles += leftTree[l].addedFiles;
                     leftTree[l].parent.matchedFiles += leftTree[l].matchedFiles;
-                    leftTree[l].parent.adjustStatus();
+                    leftTree[l].parent.subfoldersSize += leftTree[l].file.fileSize
+                            + leftTree[l].subfoldersSize;
                 }
                 if (rightTree[r].parent) {
                     rightTree[r].parent.olderFiles += rightTree[r].olderFiles;
                     rightTree[r].parent.changedFiles += rightTree[r].changedFiles;
                     rightTree[r].parent.addedFiles += rightTree[r].addedFiles;
                     rightTree[r].parent.matchedFiles += rightTree[r].matchedFiles;
-                    rightTree[r].parent.adjustStatus();
+                    rightTree[r].parent.subfoldersSize += rightTree[r].file.fileSize
+                        + rightTree[r].subfoldersSize;
                 }
                 l++;
                 r++;
@@ -357,12 +183,13 @@ var DiffCommon = {
                 rightTree.splice(r, 0, new FolderStatus(null, null, leftTree[l].level, rightTree[r]));
 
                 // align adding empty slots for files present only on left side
-                this.alignFolderDiff(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
+                this.alignFolderStatus(leftTree[l].subfolders, rightTree[r].subfolders, comparator);
                 ++r;
 
                 if (leftTree[l].parent) {
                     ++leftTree[l].parent.addedFiles;
-                    leftTree[l].parent.adjustStatus();
+                    leftTree[l].parent.subfoldersSize += leftTree[l].file.fileSize
+                        + leftTree[l].subfoldersSize;
                 }
 
                 l++;
@@ -371,12 +198,13 @@ var DiffCommon = {
                 leftTree.splice(l, 0, new FolderStatus(null,  null, rightTree[r].level, leftTree[l]));
 
                 // align adding empty slots for files present only on right side
-                this.alignFolderDiff(rightTree[r].subfolders, leftTree[l].subfolders, comparator);
+                this.alignFolderStatus(rightTree[r].subfolders, leftTree[l].subfolders, comparator);
                 ++l;
 
                 if (rightTree[r].parent) {
                     ++rightTree[r].parent.addedFiles;
-                    rightTree[r].parent.adjustStatus();
+                    rightTree[r].parent.subfoldersSize += rightTree[r].file.fileSize
+                        + rightTree[r].subfoldersSize;
                 }
 
                 r++;

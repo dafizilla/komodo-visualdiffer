@@ -60,6 +60,10 @@ gFolderTreeProperties["FileIsNull"] = Components.classes["@mozilla.org/atom-serv
             .getService(Components.interfaces.nsIAtomService)
             .getAtom("FileIsNull");
 
+gFolderTreeProperties["subfoldersSize"] = Components.classes["@mozilla.org/atom-service;1"]
+            .getService(Components.interfaces.nsIAtomService)
+            .getAtom("subfoldersSize");
+
 function FolderDifferTreeView(baseFolder, treeElement) {
     this.baseFolder = baseFolder;
     this._folderEntry = baseFolder.subfolders;
@@ -175,6 +179,8 @@ FolderDifferTreeView.prototype = {
                 case "filesize":
                     if (this._visibleFolder[row].file.isFile()) {
                         return this._visibleFolder[row].file.fileSize;
+                    } else {
+                        return this._visibleFolder[row].subfoldersSize;
                     }
                     break;
                 case "filetime":
@@ -227,7 +233,11 @@ FolderDifferTreeView.prototype = {
         if (item.isFileObject) {
             prop = gFolderTreeProperties[item.status];
         } else if (item.isFolderObject) {
-            prop = gFolderTreeProperties["folder"];
+            if (column.id == "filesize") {
+                prop = gFolderTreeProperties["subfoldersSize"];
+            } else {
+                prop = gFolderTreeProperties["folder"];
+            }
         } else if (!item.file) {
             prop = gFolderTreeProperties["FileIsNull"];
         }
