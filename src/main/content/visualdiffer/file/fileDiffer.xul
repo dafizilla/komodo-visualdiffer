@@ -26,11 +26,13 @@
             src="chrome://komodo/content/library/mru.js" />
 
     <script type="application/x-javascript"
-            src="chrome://visualdiffer/content/file/fileDifferTreeView.js" />
-    <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonUtil.js" />
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonDiff.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/diff/unifiedDiff.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/file/fileDifferTreeView.js" />
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/file/fileDiffer.js" />
 
@@ -82,6 +84,7 @@
                 tooltiptext="&diffviewer.layout.tooltiptext;"
                 oncommand="gFileDiffer.onSideBySide(this)"
                 class="sidebyside"
+                checked="true"
                 type="checkbox" />
             <toolbarbutton id="move-next-difference-button"
                 tooltiptext="&fileDiffer.move.next;"

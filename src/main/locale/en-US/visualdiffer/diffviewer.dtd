@@ -12,7 +12,7 @@
 <!ENTITY fileDiffer.move.prev "Move To Previous Difference">
 <!ENTITY filediffer.browse.tooltiptext "Browse File">
 
-<!ENTITY folderdiffer.title "Folder Differ">
+<!ENTITY folderdiffer.title "Folder Differ - VisualDiffer">
 <!ENTITY folderdiffer.treecol.filename.label "Name">
 <!ENTITY folderdiffer.treecol.filesize.label "Size">
 <!ENTITY folderdiffer.treecol.filetime.label "Modified">

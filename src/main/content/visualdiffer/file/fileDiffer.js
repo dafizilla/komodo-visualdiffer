@@ -96,8 +96,8 @@ var gFileDiffer = {
             return null;
         }
 
-        return DiffCommon.createVisualDiffInfo(
-                DiffCommon.getUnifiedDiffContent(leftFilePath, rightFilePath)
+        return UnifiedDiffUtil.parseUnifiedDiff(
+                UnifiedDiffUtil.getUnifiedDiffContent(leftFilePath, rightFilePath)
                     .split(/\r\n|\n|\r/),
                 leftLines,
                 rightLines);
@@ -136,13 +136,28 @@ var gFileDiffer = {
     },
 
     initValues : function() {
-        var leftPath = VisualDifferCommon.makeLocalFile(window.arguments[0]).leafName;
-        var rightPath = VisualDifferCommon.makeLocalFile(window.arguments[1]).leafName;
+        var leftPath = window.arguments[0];
+        var rightPath = window.arguments[1];
+        var leftFileName;
+        var rightFileName;
 
-        document.title = this.bundle.getFormattedString(
-                    "file.compare.title", [leftPath, rightPath]);
+        if (leftPath) {
+            leftFileName = VisualDifferCommon.makeLocalFile(leftPath).leafName;
+        }
+        if (rightPath) {
+            rightFileName = VisualDifferCommon.makeLocalFile(rightPath).leafName;
+        }
 
-        this.makeDiff(window.arguments[0], window.arguments[1]);
+        var title;
+        if (leftFileName == rightFileName || !leftFileName || !rightFileName) {
+            title = leftFileName || rightFileName;
+        } else {
+            title = this.bundle.getFormattedString(
+                        "file.compare.title", [leftFileName, rightFileName]);
+        }
+        document.title = title + " - VisualDiffer";
+
+        this.makeDiff(leftPath, rightPath);
     },
 
     onCancel : function() {
