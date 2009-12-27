@@ -59,7 +59,7 @@ var gFolderDiffer = {
                 this.session.comparator.prepare();
 
                 // get subfolders because the base folders (eg xxxTree[0]) can be different
-                DiffCommon.alignFolderDiff(leftTree[0].subfolders,
+                DiffCommon.alignFolderStatus(leftTree[0].subfolders,
                                            rightTree[0].subfolders,
                                            this.session.comparator);
 
@@ -175,6 +175,15 @@ var gFolderDiffer = {
     },
 
     onDblClick : function(event) {
+        // if click on null file and the other side is folder toggles its state
+        var arr = this.getTreeViewSortedById(
+                            document.commandDispatcher.focusedElement.id);
+        if (arr[0].currentSelectedItem.file == null
+            && arr[1].currentSelectedItem.isFolderObject) {
+            arr[1].toggleOpenState(arr[1].currentSelectedIndex);
+            return;
+        }
+
         var leftItem = this.leftTreeView.currentSelectedItem;
         var rightItem = this.rightTreeView.currentSelectedItem;
 
@@ -517,7 +526,7 @@ var gFolderDiffer = {
                 fromAlignStartFolder = toAlignStartFolder;
                 toAlignStartFolder = temp;
             }
-            DiffCommon.alignFolderDiff(fromAlignStartFolder.subfolders,
+            DiffCommon.alignFolderStatus(fromAlignStartFolder.subfolders,
                                        toAlignStartFolder.subfolders,
                                        comparator,
                                        true);
