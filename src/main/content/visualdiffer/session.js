@@ -40,7 +40,7 @@ function VisualDifferSession(leftPath, rightPath) {
     this.rightPath = rightPath;
     this.comparator = new VisualDifferComparator();
     this.fileFilter = new VisualDifferFileFilter();
-    this.displayFilters = {filter : DISPLAY_FILTER_SHOW_ALL};
+    this.displayFilters = DISPLAY_FILTER_SHOW_ALL;
     this.expandAll = false;
     this.manager = null;
 }
@@ -61,7 +61,7 @@ VisualDifferSession.prototype = {
         xml.appendChild(node);
 
         node = document.createElement("session-display-filter");
-        node.appendChild(document.createTextNode(this.displayFilters.filter));
+        node.appendChild(document.createTextNode(this.displayFilters));
         xml.appendChild(node);
 
         node = document.createElement("session-expand-all");
@@ -81,7 +81,7 @@ VisualDifferSession.prototype = {
         newSession.rightPath = this.rightPath;
         newSession.comparator = this.comparator.clone();
         newSession.fileFilter = this.fileFilter.clone();
-        newSession.displayFilters.filter = this.displayFilters.filter;
+        newSession.displayFilters = this.displayFilters;
         newSession.expandAll = this.expandAll;
         newSession.manager = this.manager;
 

@@ -45,7 +45,6 @@ const DISPLAY_FILTER_ONLY_LEFT_SIDE_NEWER = 7;
 const DISPLAY_FILTER_ONLY_RIGHT_SIDE_NEWER = 8;
 const DISPLAY_FILTER_LEFT_NEWER_AND_LEFT_ORPHANS = 9;
 const DISPLAY_FILTER_RIGHT_NEWER_AND_RIGHT_ORPHANS = 10;
-
 /**
  * status : { A = Added, D = Deleted, S = Same, C = Changed, M = Missing }
  */
@@ -330,16 +329,20 @@ var DiffCommon = {
      * @returns true if displayable, false otherwise
      */
     isDisplayable : function(left, right, displayFilters) {
-        if (left && right && displayFilters) {
-            switch (displayFilters.filter) {
+        if (left && right) {
+            switch (displayFilters) {
                 case DISPLAY_FILTER_SHOW_ALL:
                     return true;
                 case DISPLAY_FILTER_ONLY_MISMATCHES:
-                    return !(left.status == "S" && right.status == "S");
+                    return (left.addedFiles > 0 || left.olderFiles > 0 || left.changedFiles > 0)
+                    || (right.addedFiles > 0 || right.olderFiles > 0 || right.changedFiles > 0);
                 case DISPLAY_FILTER_ONLY_MATCHES:
+                    // no need to check also the right side
+                    // because it has the same informations
                     return left.matchedFiles > 0;
                 case DISPLAY_FILTER_NO_ORPHAN:
-                    return left.addedFiles == 0 && right.addedFiles == 0;
+                    return (left.olderFiles > 0 || left.changedFiles > 0 || left.matchedFiles > 0)
+                            && (right.olderFiles > 0 || right.changedFiles > 0 || right.matchedFiles > 0);
                 case DISPLAY_FILTER_ONLY_ORPHANS:
                     return left.addedFiles > 0 || right.addedFiles > 0;
             }

@@ -86,7 +86,7 @@ VisualDifferSessionManager.prototype = {
         var rightPath = "";
         var comparator = null;
         var fileFilter = null;
-        var displayFiltersFilter = null;
+        var displayFilters = null;
         var expandAll = null;
 
         if (node.hasChildNodes()) {
@@ -107,7 +107,7 @@ VisualDifferSessionManager.prototype = {
                 } else if (curr.nodeName == "session-right-path") {
                     rightPath = curr.firstChild.nodeValue;
                 } else if (curr.nodeName == "session-display-filter") {
-                    displayFiltersFilter = parseInt(curr.firstChild.nodeValue);
+                    displayFilters = parseInt(curr.firstChild.nodeValue);
                 } else if (curr.nodeName == "session-expand-all") {
                     expandAll = curr.firstChild.nodeValue == "true";
                 } else if (curr.nodeName == "comparator") {
@@ -125,8 +125,8 @@ VisualDifferSessionManager.prototype = {
         data.name = name;
         data.comparator = comparator;
         data.fileFilter = fileFilter;
-        if (displayFiltersFilter) {
-            data.displayFilters.filter = displayFiltersFilter;
+        if (displayFilters) {
+            data.displayFilters = displayFilters;
         }
         if (expandAll) {
             data.expandAll = expandAll;

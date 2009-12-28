@@ -133,7 +133,7 @@ var gFolderDiffer = {
             this.session = window.arguments[0].clone();
         }
         this.fillSessionMenu(false);
-        document.getElementById("displayfilter-menulist").value = this.session.displayFilters.filter;
+        document.getElementById("displayfilter-menulist").value = this.session.displayFilters;
 
         this.useFileFilter = true;
         // To be sure to give user feedback with wait cursor makeDiff
@@ -649,7 +649,7 @@ var gFolderDiffer = {
 
     onSessionMenuSelect : function() {
         this.session = this.session.manager.sessions[this.sessionMenuList.selectedIndex];
-        document.getElementById("displayfilter-menulist").value = this.session.displayFilters.filter;
+        document.getElementById("displayfilter-menulist").value = this.session.displayFilters;
         this.makeDiff(this.session.leftPath, this.session.rightPath, false);
     },
 
@@ -667,7 +667,7 @@ var gFolderDiffer = {
 
     onChangeDisplayFolder : function(filterValue) {
         // parseInt() otherwise isDisplayable doesn't match value
-        this.session.displayFilters.filter = parseInt(filterValue);
+        this.session.displayFilters = parseInt(filterValue);
         this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
     }
 }

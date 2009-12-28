@@ -297,7 +297,7 @@ VisualDifferCommon.simpleFormatIntNumber = function(intNumber, thousandsSep) {
         remainder = 3;
     }
     ret += intStr.substring(0, remainder);
-    
+
     while (remainder < intStr.length) {
         ret += thousandsSep + intStr.substring(remainder, remainder + 3);
         remainder += 3;
