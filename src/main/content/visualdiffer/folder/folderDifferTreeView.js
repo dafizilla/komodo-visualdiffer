@@ -178,9 +178,11 @@ FolderDifferTreeView.prototype = {
                     return this._visibleFolder[row].file.leafName;
                 case "filesize":
                     if (this._visibleFolder[row].file.isFile()) {
-                        return this._visibleFolder[row].file.fileSize;
+                        return VisualDifferCommon
+                            .simpleFormatIntNumber(this._visibleFolder[row].file.fileSize);
                     } else {
-                        return this._visibleFolder[row].subfoldersSize;
+                        return VisualDifferCommon
+                            .simpleFormatIntNumber(this._visibleFolder[row].subfoldersSize);
                     }
                     break;
                 case "filetime":

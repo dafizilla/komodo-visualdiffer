@@ -284,3 +284,23 @@ VisualDifferCommon.logException = function(ex, msg) {
     VisualDifferCommon.log(exMsg);
     VisualDifferCommon.debug(exMsg);
 }
+
+VisualDifferCommon.simpleFormatIntNumber = function(intNumber, thousandsSep) {
+    thousandsSep = typeof(thousandsSep) == "undefined" || thousandsSep == null
+        ? "." : thousandsSep;
+    var ret = intNumber < 0 ? "-" : "";
+    intNumber = Math.abs(intNumber);
+    var intStr = intNumber.toString();
+    var remainder = intStr.length % 3;
+
+    if (remainder == 0) {
+        remainder = 3;
+    }
+    ret += intStr.substring(0, remainder);
+    
+    while (remainder < intStr.length) {
+        ret += thousandsSep + intStr.substring(remainder, remainder + 3);
+        remainder += 3;
+    }
+    return ret;
+}

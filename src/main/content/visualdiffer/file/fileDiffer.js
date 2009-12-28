@@ -148,14 +148,13 @@ var gFileDiffer = {
             rightFileName = VisualDifferCommon.makeLocalFile(rightPath).leafName;
         }
 
-        var title;
         if (leftFileName == rightFileName || !leftFileName || !rightFileName) {
-            title = leftFileName || rightFileName;
+            document.title = this.bundle.getFormattedString(
+                    "file.same.name.compare.title", [leftFileName || rightFileName]);
         } else {
-            title = this.bundle.getFormattedString(
-                        "file.compare.title", [leftFileName, rightFileName]);
+            document.title = this.bundle.getFormattedString(
+                    "file.compare.title", [leftFileName, rightFileName]);
         }
-        document.title = title + " - VisualDiffer";
 
         this.makeDiff(leftPath, rightPath);
     },

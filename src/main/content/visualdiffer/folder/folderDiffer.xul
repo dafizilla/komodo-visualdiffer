@@ -37,6 +37,10 @@
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/folder/folderDiffer.js" />
 
+    <stringbundleset>
+        <stringbundle id="strings" src="chrome://visualdiffer/locale/diffviewer.properties" />
+    </stringbundleset>
+
     <commandset id="allcommands">
         <command
             id="cmd_copyFileName"
@@ -70,6 +74,7 @@
             <toolbarbutton id="change-layout-button"
                 tooltiptext="&diffviewer.layout.tooltiptext;"
                 oncommand="gFolderDiffer.onSideBySide(this)"
+                checked="true"
                 class="sidebyside"
                 type="checkbox" />
             <toolbarbutton id="open-comparison-button"

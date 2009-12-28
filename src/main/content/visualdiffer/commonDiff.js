@@ -89,7 +89,7 @@ function FolderStatus(file, subfolders, level, parent) {
 FolderStatus.prototype = {
     toString : function() {
         return  this.subfoldersSize
-                + "A" + this.addedFiles
+                + " A" + this.addedFiles
                 + " C" + this.changedFiles
                 + " O" + this.olderFiles
                 + " M" + this.matchedFiles

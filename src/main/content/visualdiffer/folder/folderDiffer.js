@@ -88,6 +88,8 @@ var gFolderDiffer = {
                 this.leftTreeView.refresh();
 
                 this.updateInputBoxes(leftPath, rightPath, saveMRU);
+                document.title = this.bundle.getFormattedString(
+                        "file.compare.title", [leftFolder.leafName, rightFolder.leafName]);
                 window.setCursor("auto");
             }
         } catch (err) {
@@ -119,6 +121,7 @@ var gFolderDiffer = {
                         function(event) { gFolderDiffer.onScroll(event);}, false);
         document.getElementById("right-tree").addEventListener("DOMAttrModified",
                         function(event) { gFolderDiffer.onScroll(event);}, false);
+        this.bundle = document.getElementById("strings");
         this.initValues();
     },
 
