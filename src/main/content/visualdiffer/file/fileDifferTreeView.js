@@ -52,6 +52,14 @@ gFileTreeProperties["A"] = Components.classes["@mozilla.org/atom-service;1"]
             .getService(Components.interfaces.nsIAtomService)
             .getAtom("addedLine");
 
+gFileTreeProperties["S"] = Components.classes["@mozilla.org/atom-service;1"]
+            .getService(Components.interfaces.nsIAtomService)
+            .getAtom("sameLine");
+
+gFileTreeProperties["lineNumber"] = Components.classes["@mozilla.org/atom-service;1"]
+            .getService(Components.interfaces.nsIAtomService)
+            .getAtom("lineNumber");
+
 function FileDifferTreeView(treeElement) {
     this.treeElement = treeElement;
 
@@ -207,6 +215,9 @@ FileDifferTreeView.prototype = {
         switch (column.id || column) {
             case "line":
                 prop = gFileTreeProperties[this.items[row].status];
+                break;
+            case "number":
+                prop = gFileTreeProperties["lineNumber"];
                 break;
         }
 

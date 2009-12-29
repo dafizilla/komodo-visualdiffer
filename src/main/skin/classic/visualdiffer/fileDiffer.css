@@ -39,4 +39,10 @@
   border: 1px dotted #000000;
 }
 
+.fileTreeChildren::-moz-tree-cell-text(sameLine) {
+  color: #000;
+}
 
+.fileTreeChildren::-moz-tree-cell-text(lineNumber) {
+  color: #000;
+}
