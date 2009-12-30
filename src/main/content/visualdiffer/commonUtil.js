@@ -304,3 +304,31 @@ VisualDifferCommon.simpleFormatIntNumber = function(intNumber, thousandsSep) {
     }
     return ret;
 }
+
+/**
+ * the DOMKeyData is used by event handlers that don't have any info about
+ * keyboard on their event objects (eg onSelect tree handler)
+ * @param event mouse or key event
+ */
+VisualDifferCommon.DOMKeyData = function(event) {
+    this.keyCode = undefined
+    this.ctrlKey = false;
+    this.shiftKey = false;
+    this.metaKey = false;
+}
+
+VisualDifferCommon.DOMKeyData.prototype = {
+    fillByEvent : function(event) {
+        this.keyCode = event.keyCode; // will be undefined for mouse events
+        this.ctrlKey = event.ctrlKey;
+        this.shiftKey = event.shiftKey;
+        this.metaKey = event.metaKey;
+    },
+    
+    reset : function() {
+        this.keyCode = undefined
+        this.ctrlKey = false;
+        this.shiftKey = false;
+        this.metaKey = false;
+    }
+}

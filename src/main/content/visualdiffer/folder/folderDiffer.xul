@@ -12,7 +12,9 @@
     minheight="400"
     onload="return gFolderDiffer.onLoad();"
     title="&folderdiffer.title;"
-    persist="width height screenX screenY">
+    persist="width height screenX screenY"
+    onkeydown="gFolderDiffer.onWindowKeyPress(event)"
+    onmousedown="gFolderDiffer.onWindowKeyPress(event)">
 
     <!-- Komodo specific code -->
     <script type="application/x-javascript"

@@ -135,6 +135,9 @@ var gFolderDiffer = {
         this.fillSessionMenu(false);
         document.getElementById("displayfilter-menulist").value = this.session.displayFilters;
 
+        // used by onSelect event handler
+        this.domKeyData = new VisualDifferCommon.DOMKeyData();
+
         this.useFileFilter = true;
         // To be sure to give user feedback with wait cursor makeDiff
         // is called only after window is visibile
@@ -173,8 +176,14 @@ var gFolderDiffer = {
         if (this.selectionInProgress) {
             return;
         }
+
         var arr = this.getTreeViewSortedById(event.target.id);
-        this.safeSelectIndex(arr[1], arr[0].selection.currentIndex);
+        // do not sync current index if ctrl/meta key is down
+        if (!this.domKeyData.ctrlKey && !this.domKeyData.metaKey) {
+            arr[1].selection.currentIndex = arr[0].selection.currentIndex;
+            this.safeSelectIndex(arr[1], -1);
+        }
+        this.domKeyData.reset();
     },
 
     onDblClick : function(event) {
@@ -206,16 +215,34 @@ var gFolderDiffer = {
         DiffCommon.openFileDiffer(leftFile, rightFile);
     },
 
+    onWindowKeyPress : function(event) {
+        this.domKeyData.fillByEvent(event);
+    },
+    
     onTreeKeyPress : function(event) {
         var targetId = document.commandDispatcher.focusedElement.id;
 
-        if (event.ctrlKey) {
+        if (event.ctrlKey || event.metaKey) {
             var key = String.fromCharCode(event.which).toLowerCase();
             if (key == 'a') {
                 var view = event.target.view;
                 var selection = view.selection;
 
                 selection.rangedSelect(0, view.rowCount - 1, true);
+            } else {
+                // syncronize the current element
+                // note that the current element may be different from the focused element
+                // the keydown is handled before XUL moves the currentIndex so
+                // we determine the direction based on pressed key and adjust the
+                // currentIndex
+                var offset = event.keyCode == KeyEvent.DOM_VK_UP ? -1 :
+                    event.keyCode == KeyEvent.DOM_VK_DOWN ? 1 : 0;
+                
+                if (offset != 0) {
+                    var targetId = document.commandDispatcher.focusedElement.id;
+                    var arr = this.getTreeViewSortedById(targetId);
+                    arr[1].selection.currentIndex = arr[0].selection.currentIndex + offset;
+                }
             }
         } else {
             if (event.keyCode == KeyEvent.DOM_VK_RETURN) {
@@ -267,11 +294,17 @@ var gFolderDiffer = {
 
      /**
      * Select tree index only if no selection event is pending
+     * @param treeView the tree view where to set selection
+     * @param index the index to select, if less that zero the selection is cleared
      */
     safeSelectIndex : function(treeView, index) {
         if (!this.selectionInProgress) {
             this.selectionInProgress = true;
-            treeView.selection.select(index);
+            if (index < 0) {
+                treeView.selection.clearSelection();
+            } else {
+                treeView.selection.select(index);
+            }
             this.selectionInProgress = false;
         }
     },

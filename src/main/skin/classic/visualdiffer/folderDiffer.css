@@ -49,14 +49,16 @@
   background-color: #F0F8F0;
 }
 
-.folderTreeChildren::-moz-tree-row(odd, focus, selected),
-.folderTreeChildren::-moz-tree-row(even, focus, selected) {
+.folderTreeChildren::-moz-tree-row(even) {
+  background-color: #FFF;
+}
+
+.folderTreeChildren::-moz-tree-row(selected) {
   background-color: #CCFFCC;
 }
 
-.folderTreeChildren::-moz-tree-row(odd, selected),
-.folderTreeChildren::-moz-tree-row(even, selected) {
-  border: 1px dotted #000000;
+.folderTreeChildren::-moz-tree-row(current) {
+  border: 1px dotted #000;
 }
 
 .folderTreeChildren::-moz-tree-line(FileIsNull) {
