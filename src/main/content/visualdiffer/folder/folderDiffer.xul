@@ -35,6 +35,8 @@
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/commonDiff.js" />
     <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/menuBuilder.js" />
+    <script type="application/x-javascript"
             src="chrome://visualdiffer/content/folder/folderDifferTreeView.js" />
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/folder/folderDiffer.js" />
@@ -215,32 +217,28 @@
         </box>
     </vbox>
 
-    <!--
-        visualdiffershowforobject       determine if menuitem must be shown
-        visualdifferenableforobject     determine if menuitem must be enabled
-        The attribute format is
-        file_type:selection_type
-        file_type can be set to folder, file or both
-        file_type means "apply to menu when element is of file_type"
-
-        selection_type can be set to singleSelection or multipleSelection, if not
-        set default is multipleSelection
-        selection_type means "apply to menu only when one file is
-        selected or multiple files are selected
-    -->
     <popup id="tree-popup" onpopupshowing="gFolderDiffer.onPopupShowing(event)">
-        <menuitem label="&folderdiffer.set.base.folder;"
-            oncommand="gFolderDiffer.onSetBaseFolder(event);"
-            visualdiffershowforobject="folder"/>
+        <menuitem id="ctx-menuitem-compare"
+            label="&folderdiffer.compare.label;"
+            accesskey="&folderdiffer.compare.accesskey;"
+            oncommand="gFolderDiffer.compareFiles();"/>
+        <menuitem id="ctx-menuitem-set-base-folder"
+            label="&folderdiffer.set.base.folder.label;"
+            accesskey="&folderdiffer.set.base.folder.accesskey;"
+            oncommand="gFolderDiffer.onSetBaseFolder(event);"/>
+        <menuitem id="ctx-menuitem-set-base-folder-both-side"
+            label="&folderdiffer.set.base.folder.both.sides.label;"
+            accesskey="&folderdiffer.set.base.folder.both.sides.accesskey;"
+            oncommand="gFolderDiffer.onSetBaseFolderBothSide(event);"/>
         <!--<menuitem id="copy-file-menuitem" label="Copy" oncommand="gFolderDiffer.onCopy(event);"/>-->
-        <menuitem id="copy-filename-menuitem"
-                    label="&folderdiffer.copy.filename;"
+        <menuitem id="ctx-menuitem-copy-filename"
+                    label="&folderdiffer.copy.filename.label;"
+                    accesskey="&folderdiffer.copy.filename.accesskey;"
                     command="cmd_copyFileName"
-                    key="key_cmd_copyFileName"
-                    visualdifferenableforobject="both"/>
-        <menuitem id="show-file-manager-menuitem"
-                    label="&folderdiffer.show.file.manager;"
-                    oncommand="gFolderDiffer.onShowInFileManager(event);"
-                    visualdifferenableforobject="both:singleSelection"/>
+                    key="key_cmd_copyFileName"/>
+        <menuitem id="ctx-menuitem-show-file-manager"
+                    label="&folderdiffer.show.file.manager.label;"
+                    accesskey="&folderdiffer.show.file.manager.accesskey;"
+                    oncommand="gFolderDiffer.onShowInFileManager(event);"/>
     </popup>
 </window>

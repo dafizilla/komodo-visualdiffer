@@ -22,9 +22,21 @@
 <!ENTITY folderdiffer.comparison.tooltiptext "Choose Comparison Method">
 <!ENTITY folderdiffer.enable.filter.tooltiptext "Enable File Filters">
 <!ENTITY folderdiffer.disable.filter.tooltiptext "Disable File Filters">
-<!ENTITY folderdiffer.copy.filename "Copy File Name(s)">
-<!ENTITY folderdiffer.show.file.manager "Show in File Manager">
-<!ENTITY folderdiffer.set.base.folder "Set as Base Folder">
+<!ENTITY folderdiffer.copy.filename.label "Copy File Name(s)">
+<!ENTITY folderdiffer.copy.filename.accesskey "N">
+
+<!ENTITY folderdiffer.show.file.manager.label "Show in File Manager">
+<!ENTITY folderdiffer.show.file.manager.accesskey "M">
+
+<!ENTITY folderdiffer.set.base.folder.label "Set as Base Folder">
+<!ENTITY folderdiffer.set.base.folder.accesskey "B">
+
+<!ENTITY folderdiffer.set.base.folder.both.sides.label "Set as Base Folders Both Sides">
+<!ENTITY folderdiffer.set.base.folder.both.sides.accesskey "S">
+
+<!ENTITY folderdiffer.compare.label "Compare files">
+<!ENTITY folderdiffer.compare.accesskey "C">
+
 <!ENTITY folderdiffer.save.session.tooltiptext "Save Session">
 <!ENTITY folderdiffer.expandallfolders.tooltiptext "Expand all Folders">
 <!ENTITY folderdiffer.collapseallfolders.tooltiptext "Collapse all Folders">

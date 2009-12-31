@@ -132,7 +132,7 @@ var gFolderDiffer = {
         } else {
             this.session = window.arguments[0].clone();
         }
-        this.fillSessionMenu(false);
+        FolderMenuBuilder.fillSessionMenu(this.session.manager, this.sessionMenuList, false);
         document.getElementById("displayfilter-menulist").value = this.session.displayFilters;
 
         // used by onSelect event handler
@@ -148,18 +148,6 @@ var gFolderDiffer = {
     diffAfterWindowIsVisible : function() {
         this.makeDiff(this.session.leftPath, this.session.rightPath, true);
         this.leftTreeView.treeElement.focus();
-    },
-
-    fillSessionMenu : function(removeAllItems) {
-        if (removeAllItems) {
-            this.sessionMenuList.removeAllItems();
-        }
-
-        var sessions = this.session.manager.sessions;
-        for (var i = 0; i < sessions.length; i++) {
-            this.sessionMenuList.appendItem(sessions[i].name);
-        }
-        this.sessionMenuList.selectedIndex = this.session.manager.selectedIndex;
     },
 
     onScroll : function(event) {
@@ -196,6 +184,10 @@ var gFolderDiffer = {
             return;
         }
 
+        this.compareFiles();
+    },
+
+    compareFiles : function() {
         var leftItem = this.leftTreeView.currentSelectedItem;
         var rightItem = this.rightTreeView.currentSelectedItem;
 
@@ -340,93 +332,7 @@ var gFolderDiffer = {
     onPopupShowing : function(event) {
         var arr = this.getTreeViewSortedById(
                     document.commandDispatcher.focusedElement.id);
-        var menuitems = document.getElementById("tree-popup").childNodes;
-
-        var indexes = arr[0].selectedIndexes;
-        var hasMultipleSelection = indexes.length > 1;
-
-        // Determine if all selected items aren't files
-        var noneCount = 0;
-        var folderCount = 0;
-        for (var i = 0; i < indexes.length; i++) {
-            var item = arr[0].getItemAt(indexes[i]);
-            if (!item.file) {
-                ++noneCount;
-            } else if (item.isFolderObject) {
-                ++folderCount;
-            }
-        }
-        var fileType;
-        if (noneCount == indexes.length) {
-            fileType = "none";
-        } else if (folderCount == indexes.length) {
-            fileType = "folder";
-        } else {
-            fileType = "file";
-        }
-
-        for (var i = 0; i < menuitems.length; i++) {
-            if (menuitems[i].localName == "menuitem") {
-                this.processMenuItem(menuitems[i], fileType, hasMultipleSelection);
-            }
-        }
-        // TODO: disable copy when under an empty folderstatus
-    },
-
-    processMenuItem : function(menuitem, fileType, hasMultipleSelection) {
-        var enableforobject = menuitem.attributes.getNamedItem("visualdifferenableforobject");
-
-        if (enableforobject) {
-            if (this.isFileTypeSupported(enableforobject.value, fileType, hasMultipleSelection)) {
-                menuitem.removeAttribute("disabled");
-            } else {
-                menuitem.setAttribute("disabled", "true");
-            }
-        }
-
-        var showforobject = menuitem.attributes.getNamedItem("visualdiffershowforobject");
-
-        if (showforobject) {
-            if (this.isFileTypeSupported(showforobject.value, fileType, hasMultipleSelection)) {
-                menuitem.removeAttribute("hidden");
-            } else {
-                menuitem.setAttribute("hidden", "true");
-            }
-        }
-    },
-
-    isFileTypeSupported : function(value, fileType, hasMultipleSelection) {
-        var arr = value.split(":");
-        var allowMultipleSelection = true;
-
-        if (arr.length == 1) {
-            allowMultipleSelection = true;
-        } else {
-            if (arr[1] == "singleSelection") {
-                allowMultipleSelection = false;
-            } else {
-                allowMultipleSelection = true;
-            }
-        }
-
-        switch(arr[0]) {
-            case "both":
-                if (fileType == "none") {
-                    return false;
-                } else {
-                    return allowMultipleSelection ? true : !hasMultipleSelection;
-                }
-                break;
-            case "folder":
-            case "file":
-                if (fileType != arr[0]) {
-                    return false;
-                } else {
-                    return allowMultipleSelection ? true : !hasMultipleSelection;
-                }
-                break;
-        }
-        return false;
+        FolderMenuBuilder.fillContextMenu(arr[0], arr[1], document.getElementById("tree-popup"));
     },
 
     onSetBaseFolder : function(event) {
@@ -434,11 +340,27 @@ var gFolderDiffer = {
         if (targetId == "left-tree") {
             this.makeDiff(this.leftTreeView.currentSelectedItem.file.path,
                           this.rightTreeView.baseFolder.file.path,
-                          false)
+                          false);
         } else {
             this.makeDiff(this.leftTreeView.baseFolder.file.path,
                           this.rightTreeView.currentSelectedItem.file.path,
-                          false)
+                          false);
+        }
+    },
+
+    onSetBaseFolderBothSide : function(event) {
+        var arr = this.getTreeViewSortedById(
+                    document.commandDispatcher.focusedElement.id);
+        var selIndex = arr[0].selectedIndexes;
+        
+        if (selIndex.length == 2) {
+            this.makeDiff(arr[0].getItemAt(selIndex[0]).file.path,
+                          arr[0].getItemAt(selIndex[1]).file.path,
+                          false);
+        } else {
+            this.makeDiff(this.leftTreeView.currentSelectedItem.file.path,
+                          this.rightTreeView.currentSelectedItem.file.path,
+                          false);
         }
     },
 
@@ -646,7 +568,8 @@ var gFolderDiffer = {
             this.session.manager.writeSessions();
             this.session.manager.selectedIndex = this.session.manager
                     .findSessionIndexByName(newName);
-            this.fillSessionMenu(true);
+            this.session = this.session.manager.sessions[this.session.manager.selectedIndex];
+            FolderMenuBuilder.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
         } else {
             var confirmMsg = VisualDifferCommon
                 .getFormattedMessage("session.confirm.overwrite", [newName])
@@ -659,7 +582,8 @@ var gFolderDiffer = {
                 this.session.manager.writeSessions();
                 this.session.manager.selectedIndex = this.session.manager
                         .findSessionIndexByName(newName);
-                this.fillSessionMenu(true);
+                this.session = this.session.manager.sessions[this.session.manager.selectedIndex];
+                FolderMenuBuilder.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
             }
         }
     },
