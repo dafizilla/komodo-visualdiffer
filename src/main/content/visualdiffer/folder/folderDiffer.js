@@ -210,7 +210,7 @@ var gFolderDiffer = {
     onWindowKeyPress : function(event) {
         this.domKeyData.fillByEvent(event);
     },
-    
+
     onTreeKeyPress : function(event) {
         var targetId = document.commandDispatcher.focusedElement.id;
 
@@ -229,7 +229,7 @@ var gFolderDiffer = {
                 // currentIndex
                 var offset = event.keyCode == KeyEvent.DOM_VK_UP ? -1 :
                     event.keyCode == KeyEvent.DOM_VK_DOWN ? 1 : 0;
-                
+
                 if (offset != 0) {
                     var targetId = document.commandDispatcher.focusedElement.id;
                     var arr = this.getTreeViewSortedById(targetId);
@@ -352,7 +352,7 @@ var gFolderDiffer = {
         var arr = this.getTreeViewSortedById(
                     document.commandDispatcher.focusedElement.id);
         var selIndex = arr[0].selectedIndexes;
-        
+
         if (selIndex.length == 2) {
             this.makeDiff(arr[0].getItemAt(selIndex[0]).file.path,
                           arr[0].getItemAt(selIndex[1]).file.path,
@@ -360,6 +360,19 @@ var gFolderDiffer = {
         } else {
             this.makeDiff(this.leftTreeView.currentSelectedItem.file.path,
                           this.rightTreeView.currentSelectedItem.file.path,
+                          false);
+        }
+    },
+
+    onSetBaseFolderOnOtherSide : function(event) {
+        var targetId = document.commandDispatcher.focusedElement.id;
+        if (targetId == "left-tree") {
+            this.makeDiff(this.leftTreeView.baseFolder.file.path,
+                          this.leftTreeView.currentSelectedItem.file.path,
+                          false);
+        } else {
+            this.makeDiff(this.rightTreeView.currentSelectedItem.file.path,
+                          this.rightTreeView.baseFolder.file.path,
                           false);
         }
     },

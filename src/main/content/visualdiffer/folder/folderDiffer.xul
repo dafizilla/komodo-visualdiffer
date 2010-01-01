@@ -226,6 +226,10 @@
             label="&folderdiffer.set.base.folder.label;"
             accesskey="&folderdiffer.set.base.folder.accesskey;"
             oncommand="gFolderDiffer.onSetBaseFolder(event);"/>
+        <menuitem id="ctx-menuitem-set-base-folder-other-side"
+            label="&folderdiffer.set.base.folder.other.side.label;"
+            accesskey="&folderdiffer.set.base.folder.other.side.accesskey;"
+            oncommand="gFolderDiffer.onSetBaseFolderOnOtherSide(event);"/>
         <menuitem id="ctx-menuitem-set-base-folder-both-side"
             label="&folderdiffer.set.base.folder.both.sides.label;"
             accesskey="&folderdiffer.set.base.folder.both.sides.accesskey;"

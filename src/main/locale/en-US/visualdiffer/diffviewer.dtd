@@ -34,6 +34,9 @@
 <!ENTITY folderdiffer.set.base.folder.both.sides.label "Set as Base Folders Both Sides">
 <!ENTITY folderdiffer.set.base.folder.both.sides.accesskey "S">
 
+<!ENTITY folderdiffer.set.base.folder.other.side.label "Set as Base Folder on Other Side">
+<!ENTITY folderdiffer.set.base.folder.other.side.accesskey "O">
+
 <!ENTITY folderdiffer.compare.label "Compare files">
 <!ENTITY folderdiffer.compare.accesskey "C">
 

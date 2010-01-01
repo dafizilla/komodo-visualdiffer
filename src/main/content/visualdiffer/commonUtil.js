@@ -324,7 +324,7 @@ VisualDifferCommon.DOMKeyData.prototype = {
         this.shiftKey = event.shiftKey;
         this.metaKey = event.metaKey;
     },
-    
+
     reset : function() {
         this.keyCode = undefined
         this.ctrlKey = false;

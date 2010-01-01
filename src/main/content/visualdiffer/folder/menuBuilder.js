@@ -91,7 +91,7 @@ var FolderMenuBuilder = {
         if (fileCount) {
             selType |= SEL_TYPE_FILE;
         }
-        
+
         return {selType : selType,
                 nullFileCount : nullFileCount,
                 folderCount : folderCount,
@@ -105,12 +105,15 @@ var FolderMenuBuilder = {
 
         switch (menuitem.id) {
             case "ctx-menuitem-set-base-folder":
+            case "ctx-menuitem-set-base-folder-other-side":
                 cond = focusedSelInfo.selType == SEL_TYPE_FOLDER
+                        && otherSelInfo.selType == SEL_TYPE_NONE
                         && focusedSelInfo.folderCount == 1;
                 break;
             case "ctx-menuitem-set-base-folder-both-side":
                 cond = focusedSelInfo.selType == SEL_TYPE_FOLDER
-                        && (otherSelInfo.selType == SEL_TYPE_FOLDER || otherSelInfo.selType == SEL_TYPE_NONE)
+                        && (otherSelInfo.selType == SEL_TYPE_FOLDER
+                            || otherSelInfo.selType == SEL_TYPE_NONE)
                         && (focusedSelInfo.folderCount + otherSelInfo.folderCount) == 2
                         && (focusedSelInfo.folderCount == 1 || focusedSelInfo.folderCount == 2);
                 break;
