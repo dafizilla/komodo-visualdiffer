@@ -305,6 +305,15 @@ VisualDifferCommon.simpleFormatIntNumber = function(intNumber, thousandsSep) {
     return ret;
 }
 
+VisualDifferCommon.folderExists = function(path) {
+    try {
+        var file = VisualDifferCommon.makeLocalFile(path);
+        return file.exists() && file.isDirectory();
+    } catch (err) {
+        return false;
+    }
+}
+
 /**
  * the DOMKeyData is used by event handlers that don't have any info about
  * keyboard on their event objects (eg onSelect tree handler)

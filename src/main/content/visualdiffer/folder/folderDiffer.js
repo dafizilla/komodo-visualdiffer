@@ -34,8 +34,12 @@
 #
 # ***** END LICENSE BLOCK *****
 */
-var gFolderDiffer = {
-    onLoad : function() {
+if (typeof (gFolderDiffer) == "undefined") {
+    var gFolderDiffer = {};
+}
+
+(function () {
+    this.onLoad = function() {
         try {
             this.initControls();
         } catch (err) {
@@ -44,7 +48,7 @@ var gFolderDiffer = {
         sizeToContent();
     },
 
-    makeDiff : function(leftPath, rightPath, saveMRU) {
+    this.makeDiff = function(leftPath, rightPath, saveMRU) {
         try {
             var leftFolder = VisualDifferCommon.makeLocalFile(leftPath);
             var rightFolder = VisualDifferCommon.makeLocalFile(rightPath);
@@ -99,7 +103,7 @@ var gFolderDiffer = {
         }
     },
 
-    updateInputBoxes : function(leftPath, rightPath, saveMRU) {
+    this.updateInputBoxes = function(leftPath, rightPath, saveMRU) {
         this.leftFolderTextBox.value = leftPath;
         this.rightFolderTextBox.value = rightPath;
 
@@ -109,7 +113,7 @@ var gFolderDiffer = {
         }
     },
 
-    initControls : function() {
+    this.initControls = function() {
         this.panelLayout = document.getElementById("panel-layout");
         this.panelSplitter = document.getElementById("panel-splitter");
         this.leftFolderTextBox = document.getElementById("left-folder-textbox");
@@ -125,14 +129,14 @@ var gFolderDiffer = {
         this.initValues();
     },
 
-    initValues : function() {
+    this.initValues = function() {
         if (window.arguments.length == 2) {
             alert("DBG: Must set manager!!");
             this.session = new VisualDifferSession(window.arguments[0], window.arguments[1]);
         } else {
             this.session = window.arguments[0].clone();
         }
-        FolderMenuBuilder.fillSessionMenu(this.session.manager, this.sessionMenuList, false);
+        this.fillSessionMenu(this.session.manager, this.sessionMenuList, false);
         document.getElementById("displayfilter-menulist").value = this.session.displayFilters;
 
         // used by onSelect event handler
@@ -145,12 +149,12 @@ var gFolderDiffer = {
             gFolderDiffer.diffAfterWindowIsVisible(); }, 100);
     },
 
-    diffAfterWindowIsVisible : function() {
+    this.diffAfterWindowIsVisible = function() {
         this.makeDiff(this.session.leftPath, this.session.rightPath, true);
         this.leftTreeView.treeElement.focus();
     },
 
-    onScroll : function(event) {
+    this.onScroll = function(event) {
         if (event.attrName == "curpos") {
             var arr = this.getTreeViewSortedById(event.target.id);
 
@@ -160,7 +164,7 @@ var gFolderDiffer = {
         }
     },
 
-    onSelect : function(event) {
+    this.onSelect = function(event) {
         if (this.selectionInProgress) {
             return;
         }
@@ -174,7 +178,7 @@ var gFolderDiffer = {
         this.domKeyData.reset();
     },
 
-    onDblClick : function(event) {
+    this.onDblClick = function(event) {
         // if click on null file and the other side is folder toggles its state
         var arr = this.getTreeViewSortedById(
                             document.commandDispatcher.focusedElement.id);
@@ -187,7 +191,7 @@ var gFolderDiffer = {
         this.compareFiles();
     },
 
-    compareFiles : function() {
+    this.compareFiles = function() {
         var leftItem = this.leftTreeView.currentSelectedItem;
         var rightItem = this.rightTreeView.currentSelectedItem;
 
@@ -207,11 +211,11 @@ var gFolderDiffer = {
         DiffCommon.openFileDiffer(leftFile, rightFile);
     },
 
-    onWindowKeyPress : function(event) {
+    this.onWindowKeyPress = function(event) {
         this.domKeyData.fillByEvent(event);
     },
 
-    onTreeKeyPress : function(event) {
+    this.onTreeKeyPress = function(event) {
         var targetId = document.commandDispatcher.focusedElement.id;
 
         if (event.ctrlKey || event.metaKey) {
@@ -253,8 +257,8 @@ var gFolderDiffer = {
         }
     },
 
-    onTextEntered : function(textbox, isLeftTextBox) {
-        if (this._folderExists(textbox.value)) {
+    this.onTextEntered = function(textbox, isLeftTextBox) {
+        if (VisualDifferCommon.folderExists(textbox.value)) {
             var leftPath;
             var rightPath;
 
@@ -269,15 +273,7 @@ var gFolderDiffer = {
         }
     },
 
-    onFolderChanged : function(filePath, isLeftTextBox) {
-        if (isLeftTextBox) {
-            this.makeDiff(filePath.path, this.rightTreeView.baseFolder.file.path, true);
-        } else {
-            this.makeDiff(this.leftTreeView.baseFolder.file.path, filePath.path, true);
-        }
-    },
-
-    onSideBySide : function(toolbarButton) {
+    this.onSideBySide = function(toolbarButton) {
         var orient = toolbarButton.checked ? "horizontal" : "vertical";
 
         this.panelLayout.setAttribute("orient", orient);
@@ -289,7 +285,7 @@ var gFolderDiffer = {
      * @param treeView the tree view where to set selection
      * @param index the index to select, if less that zero the selection is cleared
      */
-    safeSelectIndex : function(treeView, index) {
+    this.safeSelectIndex = function(treeView, index) {
         if (!this.selectionInProgress) {
             this.selectionInProgress = true;
             if (index < 0) {
@@ -305,7 +301,7 @@ var gFolderDiffer = {
      * Returns treeViews array where first element matches passed id.
      * The first element is the 'from' and the second the 'to'
      */
-    getTreeViewSortedById : function(id) {
+    this.getTreeViewSortedById = function(id) {
         var arr = [];
 
         if (id == "left-tree") {
@@ -320,324 +316,15 @@ var gFolderDiffer = {
         return arr;
     },
 
-    _folderExists : function(path) {
-        try {
-            var file = VisualDifferCommon.makeLocalFile(path);
-            return file.exists() && file.isDirectory();
-        } catch (err) {
-            return false;
-        }
-    },
-
-    onPopupShowing : function(event) {
-        var arr = this.getTreeViewSortedById(
-                    document.commandDispatcher.focusedElement.id);
-        FolderMenuBuilder.fillContextMenu(arr[0], arr[1], document.getElementById("tree-popup"));
-    },
-
-    onSetBaseFolder : function(event) {
-        var targetId = document.commandDispatcher.focusedElement.id;
-        if (targetId == "left-tree") {
-            this.makeDiff(this.leftTreeView.currentSelectedItem.file.path,
-                          this.rightTreeView.baseFolder.file.path,
-                          false);
-        } else {
-            this.makeDiff(this.leftTreeView.baseFolder.file.path,
-                          this.rightTreeView.currentSelectedItem.file.path,
-                          false);
-        }
-    },
-
-    onSetBaseFolderBothSide : function(event) {
-        var arr = this.getTreeViewSortedById(
-                    document.commandDispatcher.focusedElement.id);
-        var selIndex = arr[0].selectedIndexes;
-
-        if (selIndex.length == 2) {
-            this.makeDiff(arr[0].getItemAt(selIndex[0]).file.path,
-                          arr[0].getItemAt(selIndex[1]).file.path,
-                          false);
-        } else {
-            this.makeDiff(this.leftTreeView.currentSelectedItem.file.path,
-                          this.rightTreeView.currentSelectedItem.file.path,
-                          false);
-        }
-    },
-
-    onSetBaseFolderOnOtherSide : function(event) {
-        var targetId = document.commandDispatcher.focusedElement.id;
-        if (targetId == "left-tree") {
-            this.makeDiff(this.leftTreeView.baseFolder.file.path,
-                          this.leftTreeView.currentSelectedItem.file.path,
-                          false);
-        } else {
-            this.makeDiff(this.rightTreeView.currentSelectedItem.file.path,
-                          this.rightTreeView.baseFolder.file.path,
-                          false);
-        }
-    },
-
-    onCopy : function(event) {
-        try {
-
-        var targetId = document.commandDispatcher.focusedElement.id;
-        var arr = this.getTreeViewSortedById(targetId);
-
-        var fromFile = arr[0].currentSelectedItem.file;
-        var isLastDirectory = fromFile.isDirectory();
-
-        if (isLastDirectory) {
-            alert("TBD - Copy directory not yet supported");
-            return;
-        }
-
-        var parents = arr[0].getParentIndexes(arr[0].currentSelectedIndex).reverse();
-        var arrFiles = this.buildDestinationFiles(arr[0],
-                                                  arr[1].baseFolder.file,
-                                                  parents);
-
-        if (this.checkConfirmations(arrFiles, isLastDirectory)) {
-            fromFile.copyTo(arrFiles[arrFiles.length - 1].parent, null);
-            arrFiles[arrFiles.length - 1].lastModifiedTime = fromFile.lastModifiedTime;
-            arr[0].currentSelectedItem.status = "S";
-            this.refreshTreeAfterFileOperation(arr[0], arr[1],
-                                               parents, arrFiles,
-                                               this.session.comparator);
-        }
-        } catch (err) {
-            alert(err);
-        }
-    },
-
-    buildDestinationFiles : function(treeView, baseFolderFile, parents) {
-        var arr = [];
-        var destFile = baseFolderFile.clone();
-
-        for (var i = 0; i < parents.length; i++) {
-            var folderStatus = treeView.getItemAt(parents[i]);
-            destFile.append(folderStatus.file.leafName);
-
-            arr.push(destFile.clone())
-        }
-        return arr;
-    },
-
-    checkConfirmations : function(arrFiles, isLastDirectory) {
-        var s = "";
-        var confirmSettings = {
-            confirmCreateFolder : true
-        };
-        for (var i = 0; i < arrFiles.length; i++) {
-            s += arrFiles[i].path + "[" + arrFiles[i].exists() + "]";
-            s += "\n";
-        }
-        //alert(s);
-        return true;
-    },
-
-    /**
-     * Update an existing FolderStatus
-     * File is cloned
-     */
-    updateFolderStatus : function(folderStatus, file, level, parent) {
-        if (!folderStatus.file) {
-            folderStatus.file = file.clone();
-            folderStatus.isFolderObject = file.isDirectory();
-            folderStatus.isFileObject = file.isFile();
-            folderStatus.level = level;
-            folderStatus.status = "S";
-            folderStatus.subfolders = [];
-            folderStatus.parent = parent;
-
-            return true;
-        }
-
-        return false;
-    },
-
-    /**
-     * Align files positions and refresh trees after a file operation
-     * @param fromTreeView the tree view from which file operation started
-     * @param toTreeView the destination tree view
-     * @param parents the parent indexes involved in refresh
-     * @param arrFiles the new nsIFiles to link to toTreeView
-     * @param comparator the difference comparator to use
-     */
-    refreshTreeAfterFileOperation : function(fromTreeView,
-                                             toTreeView,
-                                             parents,
-                                             arrFiles,
-                                             comparator) {
-        var parent = toTreeView.baseFolder;
-        var fromAlignStartFolder = null;
-        var toAlignStartFolder = null;
-
-        for (var i = 0; i < parents.length; i++) {
-            var fromFolderStatus = fromTreeView.getItemAt(parents[i]);
-            var toFolderStatus = toTreeView.getItemAt(parents[i]);
-
-            parent.subfolders.push(toFolderStatus);
-            var isUpdated = this.updateFolderStatus(toFolderStatus,
-                                                    arrFiles[i],
-                                                    fromFolderStatus.level,
-                                                    parent);
-
-            if (isUpdated) {
-                if (!fromAlignStartFolder) {
-                    fromAlignStartFolder = fromFolderStatus;
-                    toAlignStartFolder = toFolderStatus;
-                }
-            }
-            parent = toFolderStatus;
-        }
-
-        if (fromAlignStartFolder) {
-            if (fromTreeView == this.rightTreeView) {
-                var temp = fromAlignStartFolder;
-                fromAlignStartFolder = toAlignStartFolder;
-                toAlignStartFolder = temp;
-            }
-            DiffCommon.alignFolderStatus(fromAlignStartFolder.subfolders,
-                                       toAlignStartFolder.subfolders,
-                                       comparator,
-                                       true);
-        }
-        this.leftTreeView.refresh();
-        this.rightTreeView.refresh();
-    },
-
-    onOpenFilter : function(event) {
-        var result = {isOk : false,
-                      fileFilter : this.session.fileFilter};
-
-        window.openDialog("chrome://visualdiffer/content/folder/filterDialog.xul",
-                          "_blank",
-                          "chrome,resizable=yes,dependent=yes,modal=yes",
-                          result);
-        if (result.isOk) {
-            this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
-        }
-    },
-
-    onDisableFilter : function(toolbarButton) {
-        var attr;
-        if (this.useFileFilter) {
-            this.useFileFilter = false;
-            attr = "tooltiptextenable";
-        } else {
-            this.useFileFilter = true;
-            attr = "tooltiptextdisable";
-        }
-        toolbarButton.setAttribute("tooltiptext", toolbarButton.getAttribute(attr));
-        this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
-    },
-
-    onOpenComparison : function(event) {
-        var result = {isOk : false,
-                      comparator : this.session.comparator};
-
-        window.openDialog("chrome://visualdiffer/content/folder/comparisonDialog.xul",
-                          "_blank",
-                          "chrome,resizable=yes,dependent=yes,modal=yes",
-                          result);
-        if (result.isOk) {
-            this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
-        }
-    },
-
-    onCopyFileName : function(event) {
-        var arr = this.getTreeViewSortedById(
-                    document.commandDispatcher.focusedElement.id);
-        var str = [];
-        var indexes = arr[0].selectedIndexes;
-        for(var i = 0; i < indexes.length; i++) {
-            var item = arr[0].getItemAt(indexes[i]);
-            if (item.file) {
-                str.push(item.file.path);
-            }
-        }
-        VisualDifferCommon.copyToClipboard(str.join("\n"));
-    },
-
-    onSaveSession : function(event) {
-        var newName = ko.dialogs.prompt(null,
-                    VisualDifferCommon.getLocalizedMessage("session.name"),
-                    this.session.name,
-                    VisualDifferCommon.getLocalizedMessage("session.saveas"));
-        if (newName == null) {
-            return;
-        }
-
-        if (VisualDifferCommon.trim(newName).length == 0) {
-            alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
-            return;
-        }
-
-        var idx = this.session.manager.findSessionIndexByName(newName);
-        if (idx < 0) {
-            var newSession = this.createSessionFromCurrent(newName);
-            this.session.manager.addSession(newSession);
-            this.session.manager.sortSessions();
-            this.session.manager.writeSessions();
-            this.session.manager.selectedIndex = this.session.manager
-                    .findSessionIndexByName(newName);
-            this.session = this.session.manager.sessions[this.session.manager.selectedIndex];
-            FolderMenuBuilder.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
-        } else {
-            var confirmMsg = VisualDifferCommon
-                .getFormattedMessage("session.confirm.overwrite", [newName])
-            if (newName == this.session.name) {
-                this.session.manager.sessions[idx] = this.createSessionFromCurrent(newName);
-                this.session.manager.writeSessions();
-            } else if (confirm(confirmMsg)) {
-                this.session.manager.sessions[idx] = this.createSessionFromCurrent(newName);
-                this.session.manager.sortSessions();
-                this.session.manager.writeSessions();
-                this.session.manager.selectedIndex = this.session.manager
-                        .findSessionIndexByName(newName);
-                this.session = this.session.manager.sessions[this.session.manager.selectedIndex];
-                FolderMenuBuilder.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
-            }
-        }
-    },
-
-    createSessionFromCurrent : function(newName) {
-        var newSession = this.session.clone();
-        newSession.name = newName;
-        newSession.leftPath = this.leftFolderTextBox.value;
-        newSession.rightPath = this.rightFolderTextBox.value;
-
-        return newSession;
-    },
-
-    onShowInFileManager : function(event) {
-        var arr = this.getTreeViewSortedById(
-                    document.commandDispatcher.focusedElement.id);
-
-        VisualDifferCommon.showFileInFileManager(arr[0].currentSelectedItem.file.path);
-    },
-
-    onSessionMenuSelect : function() {
-        this.session = this.session.manager.sessions[this.sessionMenuList.selectedIndex];
-        document.getElementById("displayfilter-menulist").value = this.session.displayFilters;
-        this.makeDiff(this.session.leftPath, this.session.rightPath, false);
-    },
-
-    onExpandAllFolders : function() {
+    this.onExpandAllFolders = function() {
         this.leftTreeView.expandAllFolders();
         this.rightTreeView.expandAllFolders();
         this.session.expandAll = true;
     },
 
-    onCollapseAllFolders : function() {
+    this.onCollapseAllFolders = function() {
         this.leftTreeView.collapseAllFolders();
         this.rightTreeView.collapseAllFolders();
         this.session.expandAll = false;
-    },
-
-    onChangeDisplayFolder : function(filterValue) {
-        // parseInt() otherwise isDisplayable doesn't match value
-        this.session.displayFilters = parseInt(filterValue);
-        this.makeDiff(this.leftFolderTextBox.value, this.rightFolderTextBox.value, false);
     }
-}
+}).apply(gFolderDiffer);

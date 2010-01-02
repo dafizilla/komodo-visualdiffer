@@ -40,6 +40,16 @@
             src="chrome://visualdiffer/content/folder/folderDifferTreeView.js" />
     <script type="application/x-javascript"
             src="chrome://visualdiffer/content/folder/folderDiffer.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/actions/folderActions.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/actions/filterActions.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/actions/sessionActions.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/actions/fileSystemActions.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/folder/actions/clipboardActions.js" />
 
     <stringbundleset>
         <stringbundle id="strings" src="chrome://visualdiffer/locale/diffviewer.properties" />
@@ -49,7 +59,7 @@
         <command
             id="cmd_copyFileName"
             key="key_cmd_copySelection"
-            oncommand="gFolderDiffer.onCopyFileName(event);"/>
+            oncommand="gFolderDiffer.onCopyPathsToClipboard(event);"/>
     </commandset>
 
     <keyset id="widekeyset">
@@ -61,7 +71,7 @@
 
     <vbox flex="1">
         <toolbar id="main-toolbar-differ" align="stretch">
-            <menulist id="displayfilter-menulist" oncommand="gFolderDiffer.onChangeDisplayFolder(this.value)">
+            <menulist id="displayfilter-menulist" oncommand="gFolderDiffer.onChangeDisplayFilter(this.value)">
               <menupopup id="displayfilter-menupopup">
                 <menuitem label="&folderdiffer.display.filter.show.all.label;" value="1" />
                 <menuitem label="&folderdiffer.display.filter.only.mismatches.label;" value="2" />
@@ -87,13 +97,13 @@
                 class="comparison"/>
             <toolbarbutton id="open-filter-button"
                 tooltiptext="&folderdiffer.filter.tooltiptext;"
-                oncommand="gFolderDiffer.onOpenFilter(event)"
+                oncommand="gFolderDiffer.onOpenFileFilter(event)"
                 class="filter"/>
             <toolbarbutton id="disable-filter-button"
                 tooltiptext="&folderdiffer.disable.filter.tooltiptext;"
                 tooltiptextenable="&folderdiffer.enable.filter.tooltiptext;"
                 tooltiptextdisable="&folderdiffer.disable.filter.tooltiptext;"
-                oncommand="gFolderDiffer.onDisableFilter(this)"
+                oncommand="gFolderDiffer.onDisableFileFilter(this)"
                 class="disable-filter"
                 type="checkbox" />
             <toolbarbutton id="expandallfolders-button"

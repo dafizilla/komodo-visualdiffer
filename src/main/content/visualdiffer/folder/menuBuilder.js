@@ -14,7 +14,7 @@
 #
 # The Initial Developer of the Original Code is
 # Davide Ficano.
-# Portions created by the Initial Developer are Copyright (C) 2008
+# Portions created by the Initial Developer are Copyright (C) 2009
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
@@ -40,15 +40,24 @@ const SEL_TYPE_FOLDER = 1 << 2;
 const SEL_TYPE_FILE = 1 << 3;
 const SEL_TYPE_BOTH = SEL_TYPE_FILE | SEL_TYPE_FOLDER;
 
-var FolderMenuBuilder = {
-    fillContextMenu : function(focusedTreeView, otherView, popupMenu) {
-        var menuitems = popupMenu.childNodes;
-        var focusedSelInfo = this.getSelectionInfo(focusedTreeView);
-        var otherSelInfo = this.getSelectionInfo(otherView);
+if (typeof (gFolderDiffer) == "undefined") {
+    var gFolderDiffer = {};
+}
+
+(function () {
+    this.onPopupShowing = function(event) {
+        var arr = this.getTreeViewSortedById(
+                    document.commandDispatcher.focusedElement.id);
+        var focusedSelInfo = this.getSelectionInfo(arr[0]);
+        var otherSelInfo = this.getSelectionInfo(arr[1]);
+        var menuitems = event.target.getElementsByTagName("menuitem");
 
         for (var i = 0; i < menuitems.length; i++) {
-            if (menuitems[i].localName == "menuitem") {
-                this.processMenuItem(menuitems[i], focusedSelInfo, otherSelInfo);
+            var menuitem = menuitems[i];
+            if (this.enableMenu(menuitem.id, focusedSelInfo, otherSelInfo)) {
+                menuitem.removeAttribute("hidden");
+            } else {
+                menuitem.setAttribute("hidden", "true");
             }
         }
     },
@@ -63,7 +72,7 @@ var FolderMenuBuilder = {
      * fileCount the count of selected files
      * hasMultipleSelection is true if there are more that one element selected
      */
-    getSelectionInfo : function(treeView) {
+    this.getSelectionInfo = function(treeView) {
         var indexes = treeView.selectedIndexes;
         var hasMultipleSelection = indexes.length > 1;
 
@@ -100,39 +109,29 @@ var FolderMenuBuilder = {
                 };
     },
 
-    processMenuItem : function(menuitem, focusedSelInfo, otherSelInfo) {
-        var cond = true;
-
-        switch (menuitem.id) {
+    this.enableMenu = function(id, focusedSelInfo, otherSelInfo) {
+        switch (id) {
             case "ctx-menuitem-set-base-folder":
             case "ctx-menuitem-set-base-folder-other-side":
-                cond = focusedSelInfo.selType == SEL_TYPE_FOLDER
+                return focusedSelInfo.selType == SEL_TYPE_FOLDER
                         && otherSelInfo.selType == SEL_TYPE_NONE
                         && focusedSelInfo.folderCount == 1;
-                break;
             case "ctx-menuitem-set-base-folder-both-side":
-                cond = focusedSelInfo.selType == SEL_TYPE_FOLDER
+                return focusedSelInfo.selType == SEL_TYPE_FOLDER
                         && (otherSelInfo.selType == SEL_TYPE_FOLDER
                             || otherSelInfo.selType == SEL_TYPE_NONE)
                         && (focusedSelInfo.folderCount + otherSelInfo.folderCount) == 2
                         && (focusedSelInfo.folderCount == 1 || focusedSelInfo.folderCount == 2);
-                break;
             case "ctx-menuitem-copy-filename":
-                cond = (focusedSelInfo.selType & SEL_TYPE_BOTH) != 0;
-                break;
+                return (focusedSelInfo.selType & SEL_TYPE_BOTH) != 0;
             case "ctx-menuitem-show-file-manager":
-                cond = !focusedSelInfo.hasMultipleSelection
+                return !focusedSelInfo.hasMultipleSelection
                         && (focusedSelInfo.selType & SEL_TYPE_BOTH) != 0;
-                break;
         }
-        if (cond) {
-            menuitem.removeAttribute("hidden");
-        } else {
-            menuitem.setAttribute("hidden", "true");
-        }
+        return true;
     },
 
-    fillSessionMenu : function(sessionManager, sessionMenuList, removeAllItems) {
+    this.fillSessionMenu = function(sessionManager, sessionMenuList, removeAllItems) {
         if (removeAllItems) {
             sessionMenuList.removeAllItems();
         }
@@ -143,4 +142,4 @@ var FolderMenuBuilder = {
         }
         sessionMenuList.selectedIndex = sessionManager.selectedIndex;
     }
-}
+}).apply(gFolderDiffer);
