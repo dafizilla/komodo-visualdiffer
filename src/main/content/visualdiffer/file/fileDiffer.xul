@@ -120,7 +120,6 @@
                 </hbox>
 
                 <tree id="left-tree"
-                        class="diffViewer"
                         flex="1"
                         hidecolumnpicker="true"
                         seltype="multiple"
@@ -155,7 +154,6 @@
                         browsetooltiptext="&filediffer.browse.tooltiptext;"/>
                 </hbox>
                 <tree id="right-tree"
-                        class="diffViewer"
                         flex="1"
                         hidecolumnpicker="true"
                         seltype="multiple"
@@ -176,7 +174,7 @@
                 </tree>
                 </vbox>
         </box>
-        <textbox class="diffViewer" id="left-selected-line" value="" />
-        <textbox class="diffViewer" id="right-selected-line" value="" />
+        <textbox class="selected-line" id="left-selected-line" value="" />
+        <textbox class="selected-line" id="right-selected-line" value="" />
     </vbox>
 </dialog>

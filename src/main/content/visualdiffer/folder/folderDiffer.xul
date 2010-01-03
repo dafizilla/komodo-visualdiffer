@@ -147,7 +147,6 @@
                 </hbox>
 
                 <tree id="left-tree"
-                        class="diffViewer"
                         flex="1"
                         hidecolumnpicker="true"
                         seltype="multiple"
@@ -197,7 +196,6 @@
                 </hbox>
 
                 <tree id="right-tree"
-                        class="diffViewer"
                         flex="1"
                         hidecolumnpicker="true"
                         seltype="multiple"
