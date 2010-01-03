@@ -1,8 +1,3 @@
-.diffViewer {
-  /*font-family: "Bitstream Vera Sans Mono", courier;*/
-  font-family: "Sans";
-}
-
 #filename {
   width: 20em;
 }
@@ -12,6 +7,10 @@
 }
 
 #filetime {
+}
+
+.folderTreeChildren::-moz-tree-cell-text {
+  font-family: "Sans";
 }
 
 .folderTreeChildren::-moz-tree-cell-text(changedFile) {

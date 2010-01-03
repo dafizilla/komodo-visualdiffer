@@ -1,6 +1,10 @@
-.diffViewer {
+.selected-line {
   font-family: "monospace";
   font-size: 12px;
+}
+
+.fileTreeChildren::-moz-tree-cell-text {
+  font-family: "Sans";
 }
 
 .fileTreeChildren::-moz-tree-cell(deletedLine) {
