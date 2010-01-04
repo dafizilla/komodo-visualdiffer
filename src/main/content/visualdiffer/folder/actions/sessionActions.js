@@ -46,53 +46,17 @@ if (typeof (gFolderDiffer) == "undefined") {
     },
 
     this.onSaveSession = function(event) {
-        var newName = ko.dialogs.prompt(null,
-                    VisualDifferCommon.getLocalizedMessage("session.name"),
-                    this.session.name,
-                    VisualDifferCommon.getLocalizedMessage("session.saveas"));
-        if (newName == null) {
-            return;
-        }
-
-        if (VisualDifferCommon.trim(newName).length == 0) {
-            alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
-            return;
-        }
-
-        var idx = this.session.manager.findSessionIndexByName(newName);
-        if (idx < 0) {
-            var newSession = this.createSessionFromCurrent(newName);
-            this.session.manager.addSession(newSession);
-            this.session.manager.sortSessions();
-            this.session.manager.writeSessions();
-            this.session.manager.selectedIndex = this.session.manager
-                    .findSessionIndexByName(newName);
-            this.session = this.session.manager.sessions[this.session.manager.selectedIndex];
-            this.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
-        } else {
-            var confirmMsg = VisualDifferCommon
-                .getFormattedMessage("session.confirm.overwrite", [newName])
-            if (newName == this.session.name) {
-                this.session.manager.sessions[idx] = this.createSessionFromCurrent(newName);
-                this.session.manager.writeSessions();
-            } else if (confirm(confirmMsg)) {
-                this.session.manager.sessions[idx] = this.createSessionFromCurrent(newName);
-                this.session.manager.sortSessions();
-                this.session.manager.writeSessions();
-                this.session.manager.selectedIndex = this.session.manager
-                        .findSessionIndexByName(newName);
-                this.session = this.session.manager.sessions[this.session.manager.selectedIndex];
-                this.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
-            }
-        }
-    },
-
-    this.createSessionFromCurrent = function(newName) {
         var newSession = this.session.clone();
-        newSession.name = newName;
         newSession.leftPath = this.leftFolderTextBox.value;
         newSession.rightPath = this.rightFolderTextBox.value;
 
-        return newSession;
+        var idx = this.session.manager.saveSession(newSession);
+        if (idx < 0) {
+            return;
+        }
+
+        this.session.manager.selectedIndex = idx;
+        this.session = newSession;
+        this.fillSessionMenu(this.session.manager, this.sessionMenuList, true);
     }
 }).apply(gFolderDiffer);

@@ -202,38 +202,24 @@ var gChooseCompare = {
     onRenameSession : function() {
         var idx = this.sessionList.selectedIndex;
         if (idx >= 0) {
-            var newName = ko.dialogs.prompt(null,
-                        VisualDifferCommon.getLocalizedMessage("session.name"),
-                        this.data.manager.sessions[idx].name,
-                        VisualDifferCommon.getLocalizedMessage("session.rename"));
-            if (newName == null || this.data.manager.sessions[idx].name == newName) {
-                return;
-            }
+            var session = this.data.manager.sessions[idx];
+            var newIdx = this.data.manager.renameSession(session);
 
-            if (VisualDifferCommon.trim(newName).length == 0) {
-                alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
-                return;
-            }
-
-            if (this.data.manager.findSessionIndexByName(newName) < 0) {
+            if (newIdx >= 0) {
+                var sessionName = session.name;
                 this.data.isSessionListChanged = true;
-                this.data.manager.sessions[idx].name = newName;
-                this.data.manager.sortSessions();
-                var newPos = this.data.manager.findSessionIndexByName(newName);
 
                 this.sessionList.removeItemAt(idx);
 
                 // Check position due to a bug in insertItemAt that
                 // crashes when insert at end
-                if (newPos == this.sessionList.getRowCount()) {
-                    this.sessionList.appendItem(newName);
+                if (newIdx == this.sessionList.getRowCount()) {
+                    this.sessionList.appendItem(sessionName);
                 } else {
-                    this.sessionList.insertItemAt(newPos, newName);
+                    this.sessionList.insertItemAt(newIdx, sessionName);
                 }
-                this.sessionList.selectedIndex = newPos;
+                this.sessionList.selectedIndex = newIdx;
                 this.onSelectSession();
-            } else {
-                alert(VisualDifferCommon.getLocalizedMessage("session.name.already.in.use"));
             }
         }
     }

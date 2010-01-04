@@ -99,8 +99,8 @@ var visualDiffer = {
         var currView = ko.views.manager.currentView;
         var viewDoc = currView.document;
 
-        leftFileName = this._leftFile.displayPath;
-        rightFileName = viewDoc.file.displayPath;
+        var leftFileName = this._leftFile.displayPath;
+        var rightFileName = viewDoc.file.displayPath;
 
         this._leftFile = null;
         DiffCommon.openFileDiffer(leftFileName, rightFileName);

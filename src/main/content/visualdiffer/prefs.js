@@ -244,6 +244,95 @@ VisualDifferSessionManager.prototype = {
 
     setString : function(prefName, prefValue) {
         this._prefBranch.setCharPref(prefName, prefValue);
+    },
+
+    promptSessionName : function(suggestedName, title, promptOverwrite) {
+        var promptService = Components
+                            .classes["@mozilla.org/embedcomp/prompt-service;1"]
+                            .getService(Components.interfaces.nsIPromptService);
+        var retVal = {value : suggestedName};
+        var isOk = promptService.prompt(null, title,
+                        VisualDifferCommon.getLocalizedMessage("session.name"),
+                        retVal, null, {});
+        var name = isOk ? retVal.value : null;
+
+        if (name) {
+            name = VisualDifferCommon.trim(name);
+            if (name.length == 0) {
+                alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
+                return null;
+            }
+            if (promptOverwrite
+                && this.findSessionIndexByName(name) >= 0) {
+                var confirmMsg = VisualDifferCommon.getFormattedMessage(
+                                        "session.confirm.overwrite", [name]);
+                if (!confirm(confirmMsg)) {
+                    return null;
+                }
+            }
+        }
+
+        return name;
+    },
+
+    /**
+     * Rename a session prompting for name.
+     * @param session the session to rename
+     * @returns on success the new index position inside manager, -1 otherwise
+     */
+    renameSession : function(session) {
+        if (session) {
+            var newName = this.promptSessionName(session.name,
+                        VisualDifferCommon.getLocalizedMessage("session.rename"));
+            if (newName == null || session.name == newName) {
+                return -1;
+            }
+
+            if (session.manager.findSessionIndexByName(newName) < 0) {
+                session.name = newName;
+                session.manager.sortSessions();
+                return session.manager.findSessionIndexByName(newName);
+            } else {
+                alert(VisualDifferCommon.getLocalizedMessage("session.name.already.in.use"));
+                return -1;
+            }
+        }
+        return -1;
+    },
+
+    /**
+     * Save the passed session prompting for its name
+     * @param session the session to save
+     * @returns on success the new index position inside manager, -1 otherwise
+     */
+    saveSession : function(session) {
+        var newName = this.promptSessionName(session.name,
+                    VisualDifferCommon.getLocalizedMessage("session.saveas"),
+                    true);
+        if (newName == null) {
+            return -1;
+        }
+
+        var idx = this.findSessionIndexByName(newName);
+        if (idx < 0) {
+            session.name = newName;
+            this.addSession(session);
+            this.sortSessions();
+            this.writeSessions();
+        } else {
+            if (newName == session.name) {
+                // update session
+                this.sessions[idx] = session;
+                this.writeSessions();
+            } else {
+                // overwrite another session with the same name
+                session.name = newName;
+                this.sessions[idx] = session;
+                this.sortSessions();
+                this.writeSessions();
+            }
+        }
+        // after sort can be changed
+        return this.findSessionIndexByName(newName);
     }
 }
-
