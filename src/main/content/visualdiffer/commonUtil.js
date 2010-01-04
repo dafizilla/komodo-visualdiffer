@@ -192,7 +192,11 @@ VisualDifferCommon.formatDateFromMillisecs = function(millisecs) {
 }
 
 VisualDifferCommon.log = function(msg) {
-    ko.logging.getLogger("extensions.visualdiffer").warn(msg);
+    if (typeof (ko) == "undefined") {
+        VisualDifferCommon.debug(msg);
+    } else {
+        ko.logging.getLogger("extensions.visualdiffer").warn(msg);
+    }
 }
 
 VisualDifferCommon.read = function(file) {

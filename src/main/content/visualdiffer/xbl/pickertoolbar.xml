@@ -129,7 +129,9 @@
 
       <method name="addToMRU">
         <body><![CDATA[
-          ko.mru.addFromACTextbox(this._textbox);
+            if (typeof (ko) != "undefined") {
+                ko.mru.addFromACTextbox(this._textbox);
+            }
         ]]></body>
       </method>
 

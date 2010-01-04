@@ -45,11 +45,15 @@ var UnifiedDiffUtil = {
      * @returns the text containing the unified diff results
      */
     getUnifiedDiffContent : function(leftFilePath, rightFilePath) {
-        var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
-                      .createInstance(Components.interfaces.koIDiff);
-        unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);
+        if ("koIDiff" in Components.interfaces) {
+            var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
+                          .createInstance(Components.interfaces.koIDiff);
+            unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);
 
-        return unifiedDiff.diff;
+            return unifiedDiff.diff;
+        }
+        alert("File diff is supported only on Komodo");
+        return "";
     },
 
     /**

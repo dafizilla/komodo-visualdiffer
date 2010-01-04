@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://visualdiffer/locale/visualdiffer.dtd" >
+
+<overlay id="visualdifferOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/htmlutils.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/session.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/prefs.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonUtil.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/commonDiff.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/controller.js" />
+    <script type="application/x-javascript"
+            src="chrome://visualdiffer/content/visualdifferOverlay.js" />
+
+    <!-- Tools menu Firefox, Thunderbird -->
+    <menupopup id="menu_ToolsPopup">
+        <menuitem id="toolsMenu-visualDiffer:mainDialog"
+                label="&visual.compare.menuitem.label;"
+                accesskey="&visual.compare.accesskey;"
+                oncommand="visualDiffer.onShowCompareDialog()"
+                insertafter="devToolsSeparator,javascriptConsole" />
+    </menupopup>
+
+    <menupopup id="taskPopup">
+        <menuitem id="toolsMenu-visualDiffer:mainDialog"
+                label="&visual.compare.menuitem.label;"
+                accesskey="&visual.compare.accesskey;"
+                oncommand="visualDiffer.onShowCompareDialog()"
+                insertafter="devToolsSeparator,downloadmgr" />
+    </menupopup>
+</overlay>
+
