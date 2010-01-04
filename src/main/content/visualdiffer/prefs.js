@@ -256,17 +256,20 @@ VisualDifferSessionManager.prototype = {
                         retVal, null, {});
         var name = isOk ? retVal.value : null;
 
-        if (name) {
+        if (name != null) {
             name = VisualDifferCommon.trim(name);
             if (name.length == 0) {
-                alert(VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
+                promptService.alert(null, title,
+                            VisualDifferCommon.getLocalizedMessage("session.invalid.name"));
                 return null;
             }
-            if (promptOverwrite
+            // do not prompt if suggestedName is equals to name
+            if (name != suggestedName
+                && promptOverwrite
                 && this.findSessionIndexByName(name) >= 0) {
                 var confirmMsg = VisualDifferCommon.getFormattedMessage(
                                         "session.confirm.overwrite", [name]);
-                if (!confirm(confirmMsg)) {
+                if (!promptService.confirm(null, title, confirmMsg)) {
                     return null;
                 }
             }
@@ -293,7 +296,12 @@ VisualDifferSessionManager.prototype = {
                 session.manager.sortSessions();
                 return session.manager.findSessionIndexByName(newName);
             } else {
-                alert(VisualDifferCommon.getLocalizedMessage("session.name.already.in.use"));
+                var promptService = Components
+                            .classes["@mozilla.org/embedcomp/prompt-service;1"]
+                            .getService(Components.interfaces.nsIPromptService);
+                promptService.alert(null,
+                        VisualDifferCommon.getLocalizedMessage("session.rename"),
+                        VisualDifferCommon.getLocalizedMessage("session.name.already.in.use"));
                 return -1;
             }
         }
