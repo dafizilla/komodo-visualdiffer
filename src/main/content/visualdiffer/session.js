@@ -99,15 +99,21 @@ VisualDifferComparator.prototype = {
     prepare : function() {
         this._arrFunctions = [];
 
-        if (this.useTimestamp) {
-            this._arrFunctions.push(this._compareTimestamp);
-        }
-
-        // size and content are mutual exclusive
-        if (this.useSize) {
-            this._arrFunctions.push(this._compareSize);
-        } else if (this.useContent) {
-            this._arrFunctions.push(this._compareContent);
+        if (this.useTimestamp && this.useSize && this.useContent) {
+            var self = this;
+            this._arrFunctions.push(function(l, r) {
+                self._compareContentWhenTimestampSizeDiffers(l, r);
+            });
+        } else {
+            if (this.useTimestamp) {
+                this._arrFunctions.push(this._compareTimestamp);
+            }
+            if (this.useSize) {
+                this._arrFunctions.push(this._compareSize);
+            }
+            if (this.useContent) {
+                this._arrFunctions.push(this._compareContent);
+            }
         }
     },
 
@@ -180,7 +186,66 @@ VisualDifferComparator.prototype = {
     },
 
     _compareContent : function(leftFolderStatus, rightFolderStatus) {
-        // not implemented yet
+        var leftStream = null;
+        var rightStream = null;
+
+        if (!leftFolderStatus.file || !rightFolderStatus.file) {
+            return 0;
+        }
+
+        try {
+            var leftFile = leftFolderStatus.file;
+            var rightFile = rightFolderStatus.file;
+
+            var leftStream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+                .createInstance(Components.interfaces.nsIFileInputStream);
+            leftStream.init(leftFile, -1, 0, 0);
+            leftStream = leftStream.QueryInterface(Components.interfaces.nsILineInputStream);
+
+            var rightStream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+                .createInstance(Components.interfaces.nsIFileInputStream);
+            rightStream.init(rightFile, -1, 0, 0);
+            rightStream = rightStream.QueryInterface(Components.interfaces.nsILineInputStream);
+
+            var leftLine = {value : null};
+            var rightLine = {value : null};
+
+            while (leftStream.readLine(leftLine) && rightStream.readLine(rightLine)) {
+                if (leftLine.value < rightLine.value) {
+                    leftFolderStatus.status = "C";
+                    rightFolderStatus.status = "C";
+                    ++leftFolderStatus.changedFiles;
+                    ++rightFolderStatus.changedFiles;
+                    return -1;
+                }
+                if (leftLine.value > rightLine.value) {
+                    leftFolderStatus.status = "C";
+                    rightFolderStatus.status = "C";
+                    ++leftFolderStatus.changedFiles;
+                    ++rightFolderStatus.changedFiles;
+                    return 1;
+                }
+            }
+        } catch(err) {
+        } finally {
+            if (leftStream) leftStream.close();
+            if (rightStream) rightStream.close();
+        }
+        leftFolderStatus.status = "S";
+        rightFolderStatus.status = "S";
+        ++leftFolderStatus.matchedFiles;
+        ++rightFolderStatus.matchedFiles;
+
+        return 0;
+    },
+
+    _compareContentWhenTimestampSizeDiffers : function(leftFolderStatus, rightFolderStatus) {
+        if (leftFolderStatus.file && rightFolderStatus.file) {
+            if ((leftFolderStatus.file.lastModifiedTime != rightFolderStatus.file.lastModifiedTime)
+                || (leftFolderStatus.file.fileSize != rightFolderStatus.file.fileSize)) {
+                return this._compareContent(leftFolderStatus, rightFolderStatus);
+            }
+        }
         return 0;
     },
 

@@ -1,6 +1,17 @@
 <!ENTITY comparison.title "Comparison Criteria">
 <!ENTITY comparison.criteria "Criteria">
-<!ENTITY comparison.timestamp "Use Timestamp">
-<!ENTITY comparison.contents "Contents">
-<!ENTITY comparison.size "Use Size">
-<!ENTITY comparison.binary "Binary comparison">
+
+<!ENTITY compare.file.content.only.label "Compare file content only">
+<!ENTITY compare.file.content.only.accesskey "c">
+
+<!ENTITY compare.file.content.when.timestamps.different.label "Compare file content when timestamps and/or sizes are different">
+<!ENTITY compare.file.content.when.timestamps.different.label.accesskey "o">
+
+<!ENTITY compare.file.sizes.label "Compare file sizes">
+<!ENTITY compare.file.sizes.accesskey "s">
+
+<!ENTITY compare.file.timestamps.label "Compare file timestamps">
+<!ENTITY compare.file.timestamps.accesskey "t">
+
+<!ENTITY compare.file.timestamps.and.sizes.label "Compare file timestamps and sizes">
+<!ENTITY compare.file.timestamps.and.sizes.accesskey "z">

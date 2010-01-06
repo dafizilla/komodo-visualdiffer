@@ -17,16 +17,23 @@
 
     <groupbox flex="1">
         <caption label="&comparison.criteria;" />
-        <vbox style="margin-bottom: 20px" >
-            <checkbox id="timestamp" label="&comparison.timestamp;" />
-        </vbox>
-
         <vbox>
-            <!--<checkbox id="contents" label="&comparison.contents;" />-->
-            <radiogroup id="content-radiogroup" style="margin-left: 10px">
-                <radio id="size-none" label="None" />
-                <radio id="size-radio" label="&comparison.size;" />
-                <radio id="binary-radio" label="&comparison.binary;" disabled="true"/>
+            <radiogroup id="content-radiogroup">
+                <radio id="c" value="c"
+                    label="&compare.file.content.only.label;"
+                    accesskey="&compare.file.content.only.accesskey;"/>
+                <radio id="tsc" value="tsc"
+                    label="&compare.file.content.when.timestamps.different.label;"
+                    accesskey="&compare.file.content.when.timestamps.different.label.accesskey;"/>
+                <radio id="s" value="s"
+                    label="&compare.file.sizes.label;"
+                    accesskey="&compare.file.sizes.accesskey;"/>
+                <radio id="t" value="t"
+                    label="&compare.file.timestamps.label;"
+                    accesskey="&compare.file.timestamps.accesskey;"/>
+                <radio id="ts" value="ts"
+                    label="&compare.file.timestamps.and.sizes.label;"
+                    accesskey="&compare.file.timestamps.and.sizes.accesskey;"/>
             </radiogroup>
         </vbox>
     </groupbox>

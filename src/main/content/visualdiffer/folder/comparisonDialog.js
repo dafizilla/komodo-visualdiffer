@@ -46,8 +46,6 @@ var gComparison = {
     },
 
     initControls : function() {
-        this.timestamp = document.getElementById("timestamp");
-        this.size = document.getElementById("size-radio");
         this.radioGroup = document.getElementById("content-radiogroup");
 
         this.initValues();
@@ -55,20 +53,42 @@ var gComparison = {
 
     initValues : function() {
         var comparator = window.arguments[0].comparator;
+        var value = "";
 
-        this.timestamp.checked = comparator.useTimestamp;
-        if (comparator.useSize) {
-            this.radioGroup.selectedIndex = 1;
-        } else {
-            this.radioGroup.selectedIndex = 0;
+        // evaluation order is important
+        if (comparator.useTimestamp) {
+            value += "t";
         }
+        if (comparator.useSize) {
+            value += "s";
+        }
+        if (comparator.useContent) {
+            value += "c";
+        }
+        this.radioGroup.value = value;
     },
 
     onAccept : function() {
         var comparator = window.arguments[0].comparator;
+        value = this.radioGroup.value;
 
-        comparator.useTimestamp = this.timestamp.checked;
-        comparator.useSize = this.radioGroup.selectedIndex == 1;
+        comparator.useTimestamp = false;
+        comparator.useSize = false;
+        comparator.useContent = false;
+
+        for (var i in value) {
+            switch (value[i]) {
+                case "t":
+                    comparator.useTimestamp = true;
+                    break;
+                case "s":
+                    comparator.useSize = true;
+                    break;
+                case "c":
+                    comparator.useContent = true;
+                    break;
+            }
+        }
 
         window.arguments[0].isOk = true;
 
