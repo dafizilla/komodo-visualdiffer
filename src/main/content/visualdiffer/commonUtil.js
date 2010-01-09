@@ -42,6 +42,10 @@ VisualDifferCommon.locale = Components.classes["@mozilla.org/intl/stringbundle;1
     .getService(Components.interfaces.nsIStringBundleService)
     .createBundle("chrome://visualdiffer/locale/visualdiffer.properties");
 
+VisualDifferCommon.isKomodo = Components.classes["@mozilla.org/xre/app-info;1"]
+                        .getService(Components.interfaces.nsIXULAppInfo)
+                        .name.indexOf("Komodo") >= 0;
+
 VisualDifferCommon.readFile = function(fullPath) {
     var file = VisualDifferCommon.makeLocalFile(fullPath);
     var fileContent = VisualDifferCommon.read(file);
@@ -192,7 +196,7 @@ VisualDifferCommon.formatDateFromMillisecs = function(millisecs) {
 }
 
 VisualDifferCommon.log = function(msg) {
-    if (typeof (ko) == "undefined") {
+    if (VisualDifferCommon.isKomodo) {
         VisualDifferCommon.debug(msg);
     } else {
         ko.logging.getLogger("extensions.visualdiffer").warn(msg);

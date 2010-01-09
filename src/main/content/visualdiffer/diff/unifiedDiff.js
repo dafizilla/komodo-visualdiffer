@@ -45,7 +45,7 @@ var UnifiedDiffUtil = {
      * @returns the text containing the unified diff results
      */
     getUnifiedDiffContent : function(leftFilePath, rightFilePath) {
-        if ("koIDiff" in Components.interfaces) {
+        if (VisualDifferCommon.isKomodo) {
             var unifiedDiff = Components.classes['@activestate.com/koDiff;1']
                           .createInstance(Components.interfaces.koIDiff);
             unifiedDiff.initByDiffingFiles(leftFilePath, rightFilePath);

@@ -129,7 +129,7 @@
 
       <method name="addToMRU">
         <body><![CDATA[
-            if (typeof (ko) != "undefined") {
+            if (VisualDifferCommon.isKomodo) {
                 ko.mru.addFromACTextbox(this._textbox);
             }
         ]]></body>
