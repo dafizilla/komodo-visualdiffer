@@ -1,5 +1,5 @@
 <!DOCTYPE extension [
-<!ENTITY extension.version "1.0.2">
+<!ENTITY extension.version "1.2">
 ]>
 
 <extension name="visualdiffer">
@@ -41,6 +41,9 @@
 
     <overlays>
         <overlay description="Editor" uri="chrome://komodo/content/komodo.xul" value="chrome://visualdiffer/content/visualdifferOverlay.xul" />
+
+        <overlay description="Firefox - Main window" uri="chrome://browser/content/browser.xul" value="chrome://visualdiffer/content/visualdifferToolkitOverlay.xul" />
+        <overlay description="Mozilla - Main window" uri="chrome://navigator/content/navigator.xul" value="chrome://visualdiffer/content/visualdifferToolkitOverlay.xul" />
     </overlays>
 
     <compatibility>
@@ -56,6 +59,13 @@
             <id>{b1042fb5-9e9c-11db-b107-000d935d3368}</id>
             <minVersion>5.0</minVersion>
             <maxVersion>5.*</maxVersion>
+        </application>
+        
+        <application>
+            <description>Toolkit</description>
+            <id>toolkit@mozilla.org</id>
+            <minVersion>1.9</minVersion>
+            <maxVersion>1.9.2</maxVersion>
         </application>
     </compatibility>
 
