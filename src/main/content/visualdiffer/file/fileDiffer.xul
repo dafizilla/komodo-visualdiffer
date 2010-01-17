@@ -13,6 +13,7 @@
     onload="return gFileDiffer.onLoad();"
     buttons="cancel"
     ondialogcancel="gFileDiffer.onCancel();"
+    onresize="gFileDiffer.onResize(event);"
     title="&fileDiffer.title;"
     buttonlabelcancel="&diffviewer.close;"
     persist="width height screenX screenY">
@@ -78,103 +79,111 @@
              command="cmd_moveNext"/>
     </keyset>
 
-    <vbox flex="1">
-        <toolbar id="main-toolbar-file-differ" align="stretch">
-            <toolbarbutton id="change-layout-button"
-                tooltiptext="&diffviewer.layout.tooltiptext;"
-                oncommand="gFileDiffer.onSideBySide(this)"
-                class="sidebyside"
-                checked="true"
-                type="checkbox" />
-            <toolbarbutton id="move-next-difference-button"
-                tooltiptext="&fileDiffer.move.next;"
-                oncommand="gFileDiffer.onMoveToDifference(event, true)"
-                class="movedifference-down"
-                buttonstyle="pictures"/>
-            <toolbarbutton id="move-prev-difference-button"
-                tooltiptext="&fileDiffer.move.prev;"
-                oncommand="gFileDiffer.onMoveToDifference(event, false)"
-                class="movedifference-up"/>
-            <toolbarbutton id="copy-selection-button"
-                tooltiptext="&diffviewer.copy.tooltiptext;"
-                oncommand="gFileDiffer.onCopySelection(event)"
-                class="copy"/>
-            <toolbarbutton id="goto-line-button"
-                tooltiptext="&diffviewer.gotoline.tooltiptext;"
-                oncommand="gFileDiffer.onGotoLine(event)"
-                class="gotoline"/>
-        </toolbar>
-        <box id="panel-layout" flex="1" orient="horizontal">
-            <vbox flex="1">
-                <hbox>
-                    <pickertoolbar
-                        id="left-file-textbox"
-                        flex="1"
-                        autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
-                        maxrows="10"
-                        browsetype="file"
-                        onbrowse="gFileDiffer.onFileChanged(fullPath, true)"
-                        ontextentered="gFileDiffer.onTextEntered(this, true);this.focus();"
-                        browseclass="browse-button"
-                        browsetooltiptext="&filediffer.browse.tooltiptext;"/>
-                </hbox>
+    <hbox flex="1">
+        <vbox flex="1">
+            <toolbar id="main-toolbar-file-differ" align="stretch">
+                <toolbarbutton id="change-layout-button"
+                    tooltiptext="&diffviewer.layout.tooltiptext;"
+                    oncommand="gFileDiffer.onSideBySide(this)"
+                    class="sidebyside"
+                    checked="true"
+                    type="checkbox" />
+                <toolbarbutton id="move-next-difference-button"
+                    tooltiptext="&fileDiffer.move.next;"
+                    oncommand="gFileDiffer.onMoveToDifference(event, true)"
+                    class="movedifference-down"
+                    buttonstyle="pictures"/>
+                <toolbarbutton id="move-prev-difference-button"
+                    tooltiptext="&fileDiffer.move.prev;"
+                    oncommand="gFileDiffer.onMoveToDifference(event, false)"
+                    class="movedifference-up"/>
+                <toolbarbutton id="copy-selection-button"
+                    tooltiptext="&diffviewer.copy.tooltiptext;"
+                    oncommand="gFileDiffer.onCopySelection(event)"
+                    class="copy"/>
+                <toolbarbutton id="goto-line-button"
+                    tooltiptext="&diffviewer.gotoline.tooltiptext;"
+                    oncommand="gFileDiffer.onGotoLine(event)"
+                    class="gotoline"/>
+            </toolbar>
+            <box id="panel-layout" flex="1" orient="horizontal">
+                <filethumbnail id="filethumbnail" containerclass="filethumbnail"
+                        oncontainerclick="gFileDiffer.onThumbnailClick(event);"/>
+                <vbox flex="1">
+                    <hbox flex="1">
+                        <vbox flex="1">
+                            <hbox>
+                                <pickertoolbar
+                                    id="left-file-textbox"
+                                    flex="1"
+                                    autocompletesearchparam="mru: visual_differ_left_files; maxmru: 10"
+                                    maxrows="10"
+                                    browsetype="file"
+                                    onbrowse="gFileDiffer.onFileChanged(fullPath, true)"
+                                    ontextentered="gFileDiffer.onTextEntered(this, true);this.focus();"
+                                    browseclass="browse-button"
+                                    browsetooltiptext="&filediffer.browse.tooltiptext;"/>
+                            </hbox>
 
-                <tree id="left-tree"
-                        flex="1"
-                        hidecolumnpicker="true"
-                        seltype="multiple"
-                        onselect="return gFileDiffer.onSelect(event)"
-                        onkeypress="gFileDiffer.onTreeKeyPress(event);">
-                  <treecols>
-                    <treecol id="number"
-                              label="&fileDiffer.treecol.number.label;"
-                              style="text-align: right;"
-                              persist="width"/>
-                    <splitter class="tree-splitter"/>
-                    <treecol id="line"
-                              label="&fileDiffer.treecol.left.file.label;"
-                              flex="1"
-                              persist="width"/>
-                  </treecols>
-                  <treechildren class="fileTreeChildren" ondblclick="gFileDiffer.onDblClick(event);"/>
-                </tree>
-            </vbox>
-            <splitter id="panel-splitter" class="panelgrip" orient="horizontal"/>
-            <vbox flex="1">
-                <hbox>
-                    <pickertoolbar
-                        id="right-file-textbox"
-                        flex="1"
-                        autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
-                        maxrows="10"
-                        browsetype="file"
-                        onbrowse="gFileDiffer.onFileChanged(fullPath, false)"
-                        ontextentered="gFileDiffer.onTextEntered(this, false);this.focus();"
-                        browseclass="browse-button"
-                        browsetooltiptext="&filediffer.browse.tooltiptext;"/>
-                </hbox>
-                <tree id="right-tree"
-                        flex="1"
-                        hidecolumnpicker="true"
-                        seltype="multiple"
-                        onselect="return gFileDiffer.onSelect(event)"
-                        onkeypress="gFileDiffer.onTreeKeyPress(event);">
-                  <treecols>
-                    <treecol id="number"
-                              label="&fileDiffer.treecol.number.label;"
-                              style="text-align: right;"
-                              persist="width"/>
-                    <splitter class="tree-splitter"/>
-                    <treecol id="line"
-                              label="&fileDiffer.treecol.right.file.label;"
-                              flex="1"
-                              persist="width"/>
-                  </treecols>
-                  <treechildren class="fileTreeChildren" ondblclick="gFileDiffer.onDblClick(event)"/>
-                </tree>
+                            <tree id="left-tree"
+                                    flex="1"
+                                    hidecolumnpicker="true"
+                                    seltype="multiple"
+                                    onselect="return gFileDiffer.onSelect(event)"
+                                    onkeypress="gFileDiffer.onTreeKeyPress(event);">
+                              <treecols>
+                                <treecol id="number"
+                                          label="&fileDiffer.treecol.number.label;"
+                                          style="text-align: right;"
+                                          persist="width"/>
+                                <splitter class="tree-splitter"/>
+                                <treecol id="line"
+                                          label="&fileDiffer.treecol.left.file.label;"
+                                          flex="1"
+                                          persist="width"/>
+                              </treecols>
+                              <treechildren class="fileTreeChildren" ondblclick="gFileDiffer.onDblClick(event);"/>
+                            </tree>
+                        </vbox>
+                        <splitter id="panel-splitter" class="panelgrip" orient="horizontal"/>
+                        <vbox flex="1">
+                            <hbox>
+                                <pickertoolbar
+                                    id="right-file-textbox"
+                                    flex="1"
+                                    autocompletesearchparam="mru: visual_differ_right_files; maxmru: 10"
+                                    maxrows="10"
+                                    browsetype="file"
+                                    onbrowse="gFileDiffer.onFileChanged(fullPath, false)"
+                                    ontextentered="gFileDiffer.onTextEntered(this, false);this.focus();"
+                                    browseclass="browse-button"
+                                    browsetooltiptext="&filediffer.browse.tooltiptext;"/>
+                            </hbox>
+                            <tree id="right-tree"
+                                    flex="1"
+                                    hidecolumnpicker="true"
+                                    seltype="multiple"
+                                    onselect="return gFileDiffer.onSelect(event)"
+                                    onkeypress="gFileDiffer.onTreeKeyPress(event);">
+                              <treecols>
+                                <treecol id="number"
+                                          label="&fileDiffer.treecol.number.label;"
+                                          style="text-align: right;"
+                                          persist="width"/>
+                                <splitter class="tree-splitter"/>
+                                <treecol id="line"
+                                          label="&fileDiffer.treecol.right.file.label;"
+                                          flex="1"
+                                          persist="width"/>
+                              </treecols>
+                              <treechildren class="fileTreeChildren" ondblclick="gFileDiffer.onDblClick(event)"/>
+                            </tree>
+                        </vbox>
+                    </hbox>
+                    <textbox class="selected-line" id="left-selected-line" value="" />
+                    <textbox class="selected-line" id="right-selected-line" value="" />
                 </vbox>
-        </box>
-        <textbox class="selected-line" id="left-selected-line" value="" />
-        <textbox class="selected-line" id="right-selected-line" value="" />
-    </vbox>
+            </box>
+        </vbox>
+    </hbox>
 </dialog>

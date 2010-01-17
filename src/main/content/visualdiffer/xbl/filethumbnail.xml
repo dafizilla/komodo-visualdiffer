@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings PUBLIC "-//MOZILLA//DTD XBL V1.0//EN" "http://www.mozilla.org/xbl">
+
+<bindings
+    xmlns="http://www.mozilla.org/xbl"
+    xmlns:xbl="http://www.mozilla.org/xbl"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <binding id="filethumbnail">
+    <content>
+      <xul:vbox>
+        <html:div anonid="container"
+            xbl:inherits="class=containerclass,onclick=oncontainerclick">
+        </html:div>
+      </xul:vbox>
+    </content>
+    
+    <implementation>
+      <constructor><![CDATA[
+        this.slider = document.createElement("div");
+        this.slider.setAttribute("class", "thumb-visible-area");
+        this.slider.setAttribute("style", "top: " + 0 + "px;");
+
+        this.container = document.getAnonymousElementByAttribute(this, "anonid", "container");
+        this.container.appendChild(this.slider);
+      ]]></constructor>
+
+      <property name="linesCount" onset="this._linesCount = val;" onget="return this._linesCount"/>
+
+      <property name="containerHeight" onget="return this.container.offsetHeight"/>
+
+      <method name="resizeSlider">
+        <parameter name="size" />
+        <body><![CDATA[
+          this.sliderHeight = this.getPosition(size);
+          this.slider.style.height = this.sliderHeight + "px";
+        ]]></body>
+      </method>
+
+      <method name="moveSlider">
+        <parameter name="position" />
+        <body><![CDATA[
+          var top = this.getPosition(position);
+
+          if ((top + this.sliderHeight) > this.containerHeight) {
+            top = this.containerHeight - this.sliderHeight;
+          }
+          this.slider.style.top = top + "px";
+        ]]></body>
+        </method>
+
+      <method name="getPosition">
+        <parameter name="lineNumber" />
+        <body><![CDATA[
+          if (this.linesCount) {
+            return Math.floor(lineNumber * this.containerHeight / this.linesCount);
+          }
+          alert("linesCount must be set");
+          return null;
+        ]]></body>
+      </method>
+
+      <method name="getPosition2">
+        <parameter name="lineNumber" />
+        <body><![CDATA[
+          if (this.linesCount) {
+            var pos = lineNumber - this.parentNode.boxObject.y;
+            return Math.floor(pos * this.linesCount / this.containerHeight);
+          }
+          alert("linesCount must be set");
+          return null;
+        ]]></body>
+      </method>
+
+      <method name="addDiffContext">
+        <parameter name="startContext" />
+        <parameter name="endContext" />
+        <body><![CDATA[
+            var top = this.getPosition(startContext);
+            var height = this.getPosition(endContext - startContext);
+            if (height < 1) {
+                height = 1;
+            }
+            VisualDifferCommon.debug("top = " + top
+                                     + " height " + height
+                                     + " startContext " + startContext
+                                     + " endContext " + endContext);
+            var div = document.createElement("div");
+            div.setAttribute("class", "thumb-diff");
+            div.setAttribute("style", "top: " + top + "px;"
+                             + "height: " + height + "px;"
+                             + "background-color: red;"
+                             + "color:red;");
+            this.container.appendChild(div);
+        ]]></body>
+        </method>
+
+    </implementation>
+
+    <handlers>
+    </handlers>
+  </binding>
+
+</bindings>

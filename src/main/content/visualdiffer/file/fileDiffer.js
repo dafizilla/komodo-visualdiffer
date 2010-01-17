@@ -57,6 +57,15 @@ var gFileDiffer = {
         if (!this.diffResults) {
             return;
         }
+
+        this.filethumbnail.linesCount = this.diffResults.oldVisualLineStatus.length;
+
+        var sections = this.diffResults.sections;
+        for (var i in sections) {
+            var section = sections[i];
+            this.filethumbnail.addDiffContext(section.start, section.end);
+        }
+
         this.leftTreeView.init(this.diffResults.oldVisualLineStatus,
                         this.diffResults.oldRealLines);
         this.rightTreeView.init(this.diffResults.newVisualLineStatus,
@@ -122,6 +131,7 @@ var gFileDiffer = {
         this.rightFileTextBox = document.getElementById("right-file-textbox");
         this.leftSelectedLine = document.getElementById("left-selected-line");
         this.rightSelectedLine = document.getElementById("right-selected-line");
+        this.filethumbnail = document.getElementById("filethumbnail");
 
         document.getElementById("left-tree").addEventListener("DOMAttrModified",
                         function(event) { gFileDiffer.onScroll(event);}, false);
@@ -168,6 +178,7 @@ var gFileDiffer = {
 
             if (arr[0] && arr[1]) {
                 arr[1].treebox.scrollToRow(arr[0].treebox.getFirstVisibleRow());
+                this.filethumbnail.moveSlider(arr[0].treebox.getFirstVisibleRow());
             }
         }
     },
@@ -360,6 +371,16 @@ var gFileDiffer = {
         } catch (err) {
             return false;
         }
+    },
+
+    onResize : function(event) {
+        this.filethumbnail.resizeSlider(this.leftTreeView.treebox.getPageLength());
+        VisualDifferCommon.debug("resize " + this.leftTreeView.treebox.getPageLength());
+    },
+
+    onThumbnailClick : function(event) {
+        var start = this.filethumbnail.getPosition2(event.clientY);
+        this.leftTreeView.selectAndEnsureVisible(start);
     }
 }
 

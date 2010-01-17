@@ -50,3 +50,36 @@
 .fileTreeChildren::-moz-tree-cell-text(lineNumber) {
   color: #000;
 }
+
+.filethumbnail {
+  left: 10px;
+  width: 20px;
+  height: 200px;
+  border-style: solid;
+  border-width: 1px;
+  z-index: 3;
+  position: absolute;
+}
+
+.thumb-diff {
+  color: red;
+  left: 0px;
+  width: 18px;
+
+  z-index: 2;
+  position: absolute;
+}
+
+.thumb-visible-area {
+  color: white;
+  background-color: white;
+  left: -4px;
+  width: 22px;
+
+  z-index: 1;
+  position: absolute;
+}
+
+filethumbnail {
+  -moz-binding: url('chrome://visualdiffer/content/xbl/filethumbnail.xml#filethumbnail')
+}
