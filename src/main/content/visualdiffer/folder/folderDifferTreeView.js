@@ -380,6 +380,18 @@ try {
 }
       },
 
+    canDrop: function(index, orientation, dataTransfer) {},
+    drop: function(row, orientation, dataTransfer) {},
+    getProgressMode: function(row, col) {},
+    getCellValue: function(row, col) {},
+    selectionChanged: function() {},
+    isEditable: function(row, col) {},
+    isSelectable: function(row, col) {},
+    setCellValue: function(row, col, value) {},
+    setCellText: function(row, col, value) {},
+    performAction: function(action) {},
+    performActionOnRow: function(action, row) {},
+    performActionOnCell: function(action, row, col) {},
     cycleCell: function(row, column) {},
     cycleHeader: function(col, elem) {},
     isSeparator: function(row){ return false; },
@@ -387,4 +399,3 @@ try {
     getRowProperties: function(row,col,props){},
     getColumnProperties: function(colid,col,props){}
 };
-
