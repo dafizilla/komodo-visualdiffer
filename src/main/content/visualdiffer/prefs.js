@@ -165,7 +165,7 @@ VisualDifferSessionManager.prototype = {
         var data = new VisualDifferComparator();
         data.useTimestamp = useTimestamp;
         data.useSize = useSize;
-        data.useContent = false; // not yet used
+        data.useContent = useContent;
 
         return data;
     },
