@@ -1,0 +1,10 @@
+<!ENTITY choosecompare.title "Comparação Visual - Abrir">
+<!ENTITY folders.label "Pastas">
+<!ENTITY files.label "Arquivos">
+<!ENTITY left.folders.label "Pasta da Esquerda">
+<!ENTITY right.folders.label "Pasta da Direita">
+<!ENTITY left.file.label "Arquivo da Esquerda">
+<!ENTITY right.file.label "Arquivo da Direita">
+<!ENTITY sessions.label "Lista da Sessão">
+<!ENTITY remove.label "Remover">
+<!ENTITY rename.label "Renomear">

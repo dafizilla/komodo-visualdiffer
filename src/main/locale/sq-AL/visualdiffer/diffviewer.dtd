@@ -1,0 +1,26 @@
+<!ENTITY diffviewer.close "Mbylle">
+<!ENTITY diffviewer.copy.tooltiptext "Kopjo pjesën e zgjedhur">
+<!ENTITY diffviewer.copy.label "Kopjo">
+<!ENTITY diffviewer.gotoline.tooltiptext "Kalo tek vija">
+<!ENTITY diffviewer.layout.tooltiptext "Ndrysho Pamjen e Panelit">
+<!ENTITY fileDiffer.title "Krahaso Rezultatet e Skedave">
+<!ENTITY fileDiffer.treecol.left.file.label "Skeda e Parë">
+<!ENTITY fileDiffer.treecol.right.file.label "Skeda e Dytë">
+<!ENTITY fileDiffer.treecol.number.label "#">
+<!ENTITY fileDiffer.move.next "Kalo te dallimi i ardhshëm">
+<!ENTITY fileDiffer.move.prev "Kalo tek dallimi paraprak">
+<!ENTITY filediffer.browse.tooltiptext "Sjell Skedat">
+<!ENTITY folderdiffer.title "Dryshim Dosjesh">
+<!ENTITY folderdiffer.treecol.filename.label "Emri">
+<!ENTITY folderdiffer.treecol.filesize.label "Madhësia">
+<!ENTITY folderdiffer.treecol.filetime.label "Ndryshuar">
+<!ENTITY folderdiffer.filter.tooltiptext "Zgjedh Filtruesit e Skedave">
+<!ENTITY folderdiffer.browse.tooltiptext "Sjell Dosjet">
+<!ENTITY folderdiffer.browseup.tooltiptext "Kalo tek Dosja Kryesore">
+<!ENTITY folderdiffer.comparison.tooltiptext "Zgjedh Metodë Krahasuese">
+<!ENTITY folderdiffer.enable.filter.tooltiptext "Aktivizo Filtruesin e Skedave">
+<!ENTITY folderdiffer.disable.filter.tooltiptext "Çaktivizo Filtruesin e Skedave">
+<!ENTITY folderdiffer.copy.filename "Kopjo Emrin e Skedës">
+<!ENTITY folderdiffer.show.file.manager "Paraqit të Menaxhuesi i Skedave">
+<!ENTITY folderdiffer.set.base.folder "Bëje Bazë të Dosjeve">
+<!ENTITY folderdiffer.save.session.tooltiptext "Ruaje Sesionin">

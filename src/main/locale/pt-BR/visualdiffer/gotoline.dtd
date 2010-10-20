@@ -1,0 +1,5 @@
+<!ENTITY gotoline.title "Ir para linha">
+<!ENTITY line.number.label "Número da linha">
+<!ENTITY at.left.label "À esquerda">
+<!ENTITY at.right.label "À direita">
+<!ENTITY invalid.number "Número inválido">

@@ -1,0 +1,6 @@
+<!ENTITY comparison.title "Critério de Comparação">
+<!ENTITY comparison.criteria "Critério">
+<!ENTITY comparison.timestamp "Usar data/hora">
+<!ENTITY comparison.contents "Conteúdo">
+<!ENTITY comparison.size "Usar tamanho">
+<!ENTITY comparison.binary "Comparação binária">

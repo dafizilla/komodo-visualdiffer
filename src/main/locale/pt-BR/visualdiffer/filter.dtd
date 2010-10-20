@@ -1,0 +1,5 @@
+<!ENTITY filter.title "Filtros de Arquivo">
+<!ENTITY include.label "Incluir">
+<!ENTITY exclude.label "Excluir">
+<!ENTITY files.label "Arquivos">
+<!ENTITY folders.label "Pastas">

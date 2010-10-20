@@ -1,0 +1,5 @@
+<!ENTITY filter.title "Filtres des fichiers">
+<!ENTITY include.label "Inclure">
+<!ENTITY exclude.label "Exclure">
+<!ENTITY files.label "Fichiers">
+<!ENTITY folders.label "Dossiers">

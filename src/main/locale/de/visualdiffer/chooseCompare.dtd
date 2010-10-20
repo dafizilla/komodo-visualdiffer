@@ -1,0 +1,10 @@
+<!ENTITY choosecompare.title "Visualcompare - Öffnen">
+<!ENTITY folders.label "Verzeichnis">
+<!ENTITY files.label "Dateien">
+<!ENTITY left.folders.label "Linkes Verzeichnis">
+<!ENTITY right.folders.label "Rechtes Verzeichnis">
+<!ENTITY left.file.label "Linke Datei">
+<!ENTITY right.file.label "Rechte Datei">
+<!ENTITY sessions.label "Sitzungsliste">
+<!ENTITY remove.label "Entfernen">
+<!ENTITY rename.label "Umbenennen">

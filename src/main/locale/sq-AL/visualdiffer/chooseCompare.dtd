@@ -1,0 +1,10 @@
+<!ENTITY choosecompare.title "Krahasimi Vizual - Hapur">
+<!ENTITY folders.label "Dosjet">
+<!ENTITY files.label "Skedat">
+<!ENTITY left.folders.label "Dosja Majtas">
+<!ENTITY right.folders.label "Dosja Djathtas">
+<!ENTITY left.file.label "Skeda Majtas">
+<!ENTITY right.file.label "Skeda Djathtas">
+<!ENTITY sessions.label "Lista e Sesioneve">
+<!ENTITY remove.label "Largo">
+<!ENTITY rename.label "Riemëro">

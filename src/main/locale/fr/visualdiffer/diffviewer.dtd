@@ -1,0 +1,26 @@
+<!ENTITY diffviewer.close "fermer">
+<!ENTITY diffviewer.copy.tooltiptext "Copier la sélection dans le presse-papiers">
+<!ENTITY diffviewer.copy.label "Copier">
+<!ENTITY diffviewer.gotoline.tooltiptext "Aller à la ligne">
+<!ENTITY diffviewer.layout.tooltiptext "Modifier la disposition des panneaux">
+<!ENTITY fileDiffer.title "Résultat de la comparaison de fichiers">
+<!ENTITY fileDiffer.treecol.left.file.label "Premier fichier">
+<!ENTITY fileDiffer.treecol.right.file.label "Deuxième fichier">
+<!ENTITY fileDiffer.treecol.number.label "#">
+<!ENTITY fileDiffer.move.next "Aller à la différence suivante">
+<!ENTITY fileDiffer.move.prev "Aller à la différence précédente">
+<!ENTITY filediffer.browse.tooltiptext "Parcourir le fichier">
+<!ENTITY folderdiffer.title "Différence entre dossiers">
+<!ENTITY folderdiffer.treecol.filename.label "Nom">
+<!ENTITY folderdiffer.treecol.filesize.label "Taille">
+<!ENTITY folderdiffer.treecol.filetime.label "Modifié le">
+<!ENTITY folderdiffer.filter.tooltiptext "Choisir des filtres pour le fichiers">
+<!ENTITY folderdiffer.browse.tooltiptext "Parcourir le dossier">
+<!ENTITY folderdiffer.browseup.tooltiptext "Aller au dossier parent">
+<!ENTITY folderdiffer.comparison.tooltiptext "Choisir la méthode de comparaison">
+<!ENTITY folderdiffer.enable.filter.tooltiptext "Activer les filtres de fichiers">
+<!ENTITY folderdiffer.disable.filter.tooltiptext "Désactiver les filtres de fichiers">
+<!ENTITY folderdiffer.copy.filename "Copier le(s) nom(s) de fichier(s)">
+<!ENTITY folderdiffer.show.file.manager "Afficher dans le gestionnaire de fichiers">
+<!ENTITY folderdiffer.set.base.folder "Prendre pour dossier racine">
+<!ENTITY folderdiffer.save.session.tooltiptext "Enregistrer la session">

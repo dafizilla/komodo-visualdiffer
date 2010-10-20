@@ -1,0 +1,10 @@
+<!ENTITY choosecompare.title "Comparaison visuelle - Ouverture">
+<!ENTITY folders.label "Dossiers">
+<!ENTITY files.label "Fichiers">
+<!ENTITY left.folders.label "Dossier de gauche">
+<!ENTITY right.folders.label "Dossier de droite">
+<!ENTITY left.file.label "Fichier de gauche">
+<!ENTITY right.file.label "Fichier de droite">
+<!ENTITY sessions.label "Liste des sessions">
+<!ENTITY remove.label "Supprimer">
+<!ENTITY rename.label "Renommer">
